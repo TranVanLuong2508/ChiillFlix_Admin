@@ -1,0 +1,77 @@
+"use client";
+
+import { authService } from "@/services/authService";
+import { LoginInput } from "@/types/authen.type";
+import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { toast } from "sonner";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const input: LoginInput = {
+        email: email,
+        password: password,
+      };
+      const res = await authService.callLogin(input);
+
+      if (res && res.EC === 1) {
+        toast.success("login sucess");
+      }
+      console.log("chekic res", res);
+    } catch {
+      // Handle error
+    }
+    console.log("Login submit", { email, password });
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm"
+        aria-label="Login form"
+      >
+        <h1 className="text-xl font-semibold mb-6 text-gray-900">Đăng nhập</h1>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="admin@example.com"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Mật khẩu
+          </label>
+          <input
+            type="password"
+            name="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <Button type="submit" className="w-full cursor-pointer">
+          Đăng nhập
+        </Button>
+      </form>
+    </div>
+  );
+}
