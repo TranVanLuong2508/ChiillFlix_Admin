@@ -1,17 +1,13 @@
-import { ClientProviders } from "./providers";
+import { ClientProviders } from "../providers/ClientProvider";
 import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export const metadata = {
-  title: "FilmStream Admin Panel",
+  title: "ChillFlix | Admin",
   description: "Next.js App Router Admin Dashboard",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>

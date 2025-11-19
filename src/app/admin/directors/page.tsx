@@ -1,4 +1,3 @@
-// app/admin/directors/page.tsx (Giả định)
 "use client";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";

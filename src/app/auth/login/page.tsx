@@ -23,9 +23,7 @@ export default function LoginPage() {
         toast.success("login sucess");
       }
       console.log("chekic res", res);
-    } catch {
-      // Handle error
-    }
+    } catch {}
     console.log("Login submit", { email, password });
   };
 

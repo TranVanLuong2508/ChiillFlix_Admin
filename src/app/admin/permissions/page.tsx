@@ -1,4 +1,3 @@
-// app/movies/page.tsx
 "use client";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
