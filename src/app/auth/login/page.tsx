@@ -61,7 +61,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@example.com"
+            placeholder="login@example.com"
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -79,10 +79,10 @@ export default function LoginPage() {
           />
         </div>
 
-        <Button type="submit" className="w-full cursor-pointer">
+        <Button type="submit" className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white">
           {isLoggingIn ? (
             <>
-              <Loader className="animate-spin bg-blue-600" size={20} />
+              <Loader className="animate-spin text-white" size={20} />
               Đang đăng nhập...
             </>
           ) : (
