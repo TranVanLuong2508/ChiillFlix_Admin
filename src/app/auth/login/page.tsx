@@ -5,26 +5,43 @@ import { LoginInput } from "@/types/authen.type";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores/authStore";
+import { AuthMessage } from "@/constants/messages/authMessage";
+import { Loader } from "lucide-react";
+import { useAppRouter } from "@/hooks/useAppRouter";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { loginAction, setIsLoggingIn, isLoggingIn } = useAuthStore();
+  const { goAdmin } = useAppRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoggingIn(true);
+
     try {
       const input: LoginInput = {
         email: email,
         password: password,
       };
-      const res = await authService.callLogin(input);
-
-      if (res && res.EC === 1) {
-        toast.success("login sucess");
+      const loginResponse = await authService.callLogin(input);
+      if (loginResponse && loginResponse.EC === 1) {
+        if (loginResponse.data) {
+          const loginData = loginResponse.data;
+          loginAction(loginData);
+        }
+        setTimeout(() => {
+          setIsLoggingIn(false);
+          toast.success(AuthMessage.success);
+        }, 500);
+        goAdmin();
       }
-      console.log("chekic res", res);
-    } catch {}
-    console.log("Login submit", { email, password });
+    } catch (error) {
+      console.log("error login", error);
+      setIsLoggingIn(false);
+      toast.error(AuthMessage.errorLogin);
+    }
   };
 
   return (
@@ -37,9 +54,7 @@ export default function LoginPage() {
         <h1 className="text-xl font-semibold mb-6 text-gray-900">Đăng nhập</h1>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
           <input
             type="email"
             name="email"
@@ -52,9 +67,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Mật khẩu
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Mật khẩu</label>
           <input
             type="password"
             name="password"
@@ -67,7 +80,14 @@ export default function LoginPage() {
         </div>
 
         <Button type="submit" className="w-full cursor-pointer">
-          Đăng nhập
+          {isLoggingIn ? (
+            <>
+              <Loader className="animate-spin bg-blue-600" size={20} />
+              Đang đăng nhập...
+            </>
+          ) : (
+            "Đăng nhập"
+          )}
         </Button>
       </form>
     </div>
