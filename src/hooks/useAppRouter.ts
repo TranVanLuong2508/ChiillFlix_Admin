@@ -7,5 +7,6 @@ export const useAppRouter = () => {
   return {
     goAdmin: () => router.push(appPath.ADMIN),
     goLogin: () => router.push(appPath.LOGIN),
+    replaceLogin: () => router.replace(appPath.LOGIN),
   };
 };

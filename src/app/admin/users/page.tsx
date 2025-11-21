@@ -1,19 +1,18 @@
+"use client";
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, UserPlus, Mail, Ban } from "lucide-react";
 import { usersData } from "@/data/user";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/stores/authStore";
 
 const UsersPage = () => {
+  const { authUser, isAuthenticated } = useAuthStore();
+  console.log("chek auth", authUser);
+  console.log("chek isAuthenticated", isAuthenticated);
   return (
     <div className="flex flex-col h-full w-full">
       <header className="flex items-center sticky top-0 z-10 gap-4 border-b bg-white px-6 py-4">
@@ -58,36 +57,18 @@ const UsersPage = () => {
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          user.plan === "Premium" ? "default" : "secondary"
-                        }
-                      >
-                        {user.plan}
-                      </Badge>
+                      <Badge variant={user.plan === "Premium" ? "default" : "secondary"}>{user.plan}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          user.status === "Active" ? "default" : "destructive"
-                        }
-                      >
-                        {user.status}
-                      </Badge>
+                      <Badge variant={user.status === "Active" ? "default" : "destructive"}>{user.status}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {user.joined}
-                    </TableCell>
+                    <TableCell className="text-muted-foreground">{user.joined}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
                         <Button variant="ghost" size="sm">
                           <Mail className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600"
-                        >
+                        <Button variant="ghost" size="sm" className="text-red-600">
                           <Ban className="h-4 w-4" />
                         </Button>
                       </div>
