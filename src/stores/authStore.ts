@@ -146,6 +146,6 @@ export const useAuthStore = create<IAuthState & authAction>()(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

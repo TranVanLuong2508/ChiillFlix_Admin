@@ -18,6 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isRefreshToken) {
       toast.error(errorRefreshToken);
       setRefreshTokenAction(false, "");
+      goLogin();
     }
   }, [isRefreshToken]);
   const fetchAccount = async () => {
