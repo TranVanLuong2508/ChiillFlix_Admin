@@ -14,23 +14,20 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  Film,
-  Users,
-  FolderTree,
-  Clapperboard,
-} from "lucide-react";
+import { LayoutDashboard, Film, Users, FolderTree, Clapperboard } from "lucide-react";
+import { adminPath } from "@/constants/path";
+import { useAuthStore } from "@/stores/authStore";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { isAuthenticated, authUser } = useAuthStore();
 
   const menuItems = [
-    { title: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-    { title: "Phim", icon: Film, href: "/admin/movies" },
-    { title: "Người dùng", icon: Users, href: "/admin/users" },
-    { title: "Quyền hạn", icon: FolderTree, href: "/admin/permissions" },
-    { title: "Vai trò", icon: FolderTree, href: "/admin/roles" },
+    { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
+    { title: "Phim", icon: Film, href: adminPath.MOVIES },
+    { title: "Người dùng", icon: Users, href: adminPath.USERS },
+    { title: "Quyền hạn", icon: FolderTree, href: adminPath.PERMISSIONS },
+    { title: "Vai trò", icon: FolderTree, href: adminPath.ROLES },
   ];
 
   return (
@@ -67,9 +64,7 @@ export function AppSidebar() {
                 ChillFLix
               </span>
             </h1>
-            <p className="text-xs tracking-wider text-amber-300/80 font-medium mt-1">
-              Trang quản trị
-            </p>
+            <p className="text-xs tracking-wider text-amber-300/80 font-medium mt-1">Trang quản trị</p>
           </div>
         </div>
       </SidebarHeader>
@@ -94,8 +89,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
         <div className="text-xs text-muted-foreground">
-          <p className="font-medium">Admin User</p>
-          <p>admin@filmstream.com</p>
+          {isAuthenticated === true ? (
+            <>
+              <p className="font-medium">{`Name: ${authUser.fullName}`}</p>
+              <p>{authUser.email}</p>
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

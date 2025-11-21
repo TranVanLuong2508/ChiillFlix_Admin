@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/admin/AppSidebar";
+import { AppSidebar } from "@/components/admin/layout/AppSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

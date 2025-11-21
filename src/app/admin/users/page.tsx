@@ -8,6 +8,8 @@ import { Search, UserPlus, Mail, Ban } from "lucide-react";
 import { usersData } from "@/data/user";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores/authStore";
+import AccountDropDown from "@/components/admin/layout/AdminHeader";
+import AdminHeader from "@/components/admin/layout/AdminHeader";
 
 const UsersPage = () => {
   const { authUser, isAuthenticated } = useAuthStore();
@@ -15,11 +17,7 @@ const UsersPage = () => {
   console.log("chek isAuthenticated", isAuthenticated);
   return (
     <div className="flex flex-col h-full w-full">
-      <header className="flex items-center sticky top-0 z-10 gap-4 border-b bg-white px-6 py-4">
-        <SidebarTrigger />
-        <h1 className="text-2xl font-bold ">user Management</h1>
-      </header>
-
+      <AdminHeader />
       <main className="flex-1 overflow-auto p-6 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
