@@ -2,7 +2,7 @@
 
 import AdminHeader from "@/components/admin/layout/AdminHeader";
 
-const RolesPage = () => {
+const VipPlanPage = () => {
   return (
     <div className="flex flex-col h-full w-full">
       <AdminHeader />
@@ -12,4 +12,4 @@ const RolesPage = () => {
   );
 };
 
-export default RolesPage;
+export default VipPlanPage;

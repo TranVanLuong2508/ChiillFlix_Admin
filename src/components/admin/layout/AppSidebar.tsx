@@ -14,7 +14,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Film, Users, FolderTree, Clapperboard } from "lucide-react";
+import { LayoutDashboard, Film, Users, Clapperboard, ShieldCheck, UserCheck, Gem } from "lucide-react";
 import { adminPath } from "@/constants/path";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -25,9 +25,10 @@ export function AppSidebar() {
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
     { title: "Phim", icon: Film, href: adminPath.MOVIES },
+    { title: "Gói VIP", icon: Gem, href: adminPath.VIP_PLANS },
     { title: "Người dùng", icon: Users, href: adminPath.USERS },
-    { title: "Quyền hạn", icon: FolderTree, href: adminPath.PERMISSIONS },
-    { title: "Vai trò", icon: FolderTree, href: adminPath.ROLES },
+    { title: "Quyền hạn", icon: ShieldCheck, href: adminPath.PERMISSIONS },
+    { title: "Vai trò", icon: UserCheck, href: adminPath.ROLES },
   ];
 
   return (

@@ -1,19 +1,17 @@
 "use client";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, UserPlus, Mail, Ban } from "lucide-react";
+import { Search, UserPlus, Mail, Ban, User } from "lucide-react";
 import { usersData } from "@/data/user";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores/authStore";
-import AccountDropDown from "@/components/admin/layout/AdminHeader";
 import AdminHeader from "@/components/admin/layout/AdminHeader";
+import { SquarePen, Trash2 } from "lucide-react";
 
 const UsersPage = () => {
   const { authUser, isAuthenticated } = useAuthStore();
-  console.log("chek auth", authUser);
   console.log("chek isAuthenticated", isAuthenticated);
   return (
     <div className="flex flex-col h-full w-full">
@@ -25,7 +23,7 @@ const UsersPage = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search users..." className="pl-10" />
             </div>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
               <UserPlus className="h-4 w-4 mr-2" />
               Add User
             </Button>
@@ -34,12 +32,12 @@ const UsersPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>User</TableHead>
+                  <TableHead>Người dùng</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Plan</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>VIP</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Ngày tham gia</TableHead>
+                  <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -47,9 +45,10 @@ const UsersPage = () => {
                   <TableRow key={user.id} className="hover:bg-gray-50">
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
-                          {user.name.charAt(0)}
+                        <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                          <User className="h-6 w-6 text-white" />
                         </div>
+
                         <span className="font-medium">{user.name}</span>
                       </div>
                     </TableCell>
@@ -63,11 +62,11 @@ const UsersPage = () => {
                     <TableCell className="text-muted-foreground">{user.joined}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
-                        <Button variant="ghost" size="sm">
-                          <Mail className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" className="cursor-pointer">
+                          <SquarePen className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-600">
-                          <Ban className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" className="text-red-600 cursor-pointer">
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>

@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { NotPermitted } from "./not-permitted";
 import { useAppRouter } from "@/hooks/useAppRouter";
 import { useEffect } from "react";
+import { Loading } from "../shared/loading";
 
 export const RoleBaseRoute = ({ children }: { children: React.ReactNode }) => {
   const { authUser } = useAuthStore();
@@ -20,14 +21,31 @@ export const RoleBaseRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, authUser } = useAuthStore();
+  const { isAuthenticated, authUser, isLoading } = useAuthStore();
   const { goLogin } = useAppRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       goLogin();
     }
-  }, []);
+  }, [isLoading]);
 
-  return <RoleBaseRoute>{children}</RoleBaseRoute>;
+  return (
+    <>
+      {isLoading === true ? (
+        <>
+          <Loading />
+        </>
+      ) : (
+        <>
+          {isAuthenticated === true ? (
+            <>
+              <RoleBaseRoute>{children}</RoleBaseRoute>
+            </>
+          ) : null}
+        </>
+      )}
+    </>
+  );
 };
+// return <RoleBaseRoute>{children}</RoleBaseRoute>;

@@ -10,6 +10,7 @@ export const adminPath = {
   USERS: "/admin/users",
   PERMISSIONS: "/admin/permissions",
   MOVIES: "/admin/movies",
+  VIP_PLANS: "/admin/plans",
 };
 
 export const TabHeaderName: Record<string, string> = {
@@ -18,4 +19,5 @@ export const TabHeaderName: Record<string, string> = {
   "/admin/movies": "Quản Lý Phim",
   "/admin/permissions": "Quản Lý Quyền Hạn",
   "/admin/roles": "Quản Lý Vai Trò",
+  "/admin/plans": "Quản lý gói VIP",
 };

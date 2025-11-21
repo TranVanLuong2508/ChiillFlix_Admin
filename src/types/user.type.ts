@@ -3,6 +3,7 @@ export interface IUser {
   email: string;
   fullName: string;
   roleId: number;
+  roleName: string;
   genderCode: string;
   isVip: boolean;
   statusCode: string;
