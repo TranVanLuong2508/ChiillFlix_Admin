@@ -33,46 +33,79 @@ export const columns: ColumnDef<FilmColumn>[] = [
   {
     accessorKey: "filmId",
     header: "ID",
+    meta: {
+      label: "ID",
+    },
   },
   {
     accessorKey: "title",
     header: "Tên phim",
+    meta: {
+      label: "Tên phim",
+    },
   },
   {
     accessorKey: "originalTitle",
     header: "Tên gốc",
+    meta: {
+      label: "Tên gốc",
+    },
   },
   {
     accessorKey: "slug",
     header: "Slug",
+    meta: {
+      label: "Slug",
+    },
   },
   {
     accessorKey: "view",
-    header: "View",
+    header: "Lượt xem",
+    meta: {
+      label: "Lượt xem",
+    },
   },
   {
-    accessorKey: "publicStatusCode",
-    header: "Trang thái",
+    accessorKey: "publicStatus",
+    header: "Trạng thái",
+    meta: {
+      label: "Trạng thái",
+    },
   },
   {
     accessorKey: "duration",
     header: "Thời gian",
+    meta: {
+      label: "Thời gian",
+    },
   },
   {
     accessorKey: "country",
     header: "Quốc gia",
+    meta: {
+      label: "Quốc gia",
+    },
   },
   {
     accessorKey: "language",
     header: "Ngôn ngữ",
+    meta: {
+      label: "Ngôn ngữ",
+    },
   },
   {
     accessorKey: "createdAt",
     header: "Ngày tạo",
+    meta: {
+      label: "Ngày tạo",
+    },
   },
   {
     accessorKey: "updatedAt",
     header: "Ngày cập nhật",
+    meta: {
+      label: "Ngày cập nhật",
+    },
   },
   {
     id: "actions",
