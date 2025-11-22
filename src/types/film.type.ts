@@ -5,7 +5,7 @@ export type FilmColumn = {
   slug: string
   view: number
   duration: number
-  publicStatusCode: string
+  publicStatus: string
   createdAt: string
   updatedAt: string
   country: string
