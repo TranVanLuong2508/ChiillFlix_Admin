@@ -7,6 +7,7 @@ export interface IUser {
   genderCode: string;
   isVip: boolean;
   statusCode: string;
+  avatarUrl: string;
   permissions?: {
     name: string;
     apiPath: string;

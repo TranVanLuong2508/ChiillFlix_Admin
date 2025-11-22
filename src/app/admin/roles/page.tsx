@@ -1,13 +1,17 @@
 "use client";
 
 import AdminHeader from "@/components/admin/layout/AdminHeader";
+import { DataTableDemo } from "@/components/admin/roles/DataTableDemo";
+import { RolesTable } from "@/components/admin/roles/RolesTable";
 
 const RolesPage = () => {
   return (
     <div className="flex flex-col h-full w-full">
       <AdminHeader />
 
-      <main className="flex-1 overflow-auto p-6 bg-gray-50"></main>
+      <main className="flex-1 overflow-auto p-6 bg-gray-50">
+        <RolesTable />
+      </main>
     </div>
   );
 };

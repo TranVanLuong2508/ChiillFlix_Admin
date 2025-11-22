@@ -11,6 +11,7 @@ export interface IAuthUser {
   genderCode: string;
   isVip: boolean | null;
   statusCode: string;
+  avatarUrl: string;
   permissions?: {
     name: string;
     apiPath: string;
@@ -47,6 +48,7 @@ const initialAuthState: IAuthState = {
     genderCode: "",
     isVip: null,
     statusCode: "",
+    avatarUrl: "",
     permissions: [],
   },
 };
@@ -99,6 +101,7 @@ export const useAuthStore = create<IAuthState & authAction>()(
             genderCode: "",
             isVip: null,
             statusCode: "",
+            avatarUrl: "",
             permissions: [],
           },
         });
@@ -130,6 +133,7 @@ export const useAuthStore = create<IAuthState & authAction>()(
             genderCode: user.genderCode,
             isVip: user.isVip,
             statusCode: user.statusCode,
+            avatarUrl: "",
             permissions: user.permissions || [],
           },
         });

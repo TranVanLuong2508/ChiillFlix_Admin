@@ -1,0 +1,185 @@
+"use client";
+
+import * as React from "react";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+import { ChevronDown } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { IRole } from "@/types/role.type";
+import { RoleService } from "@/services/roleService";
+import { roleColumns } from "./table/RoleColums";
+import { CreateRoleModal } from "./modals/CreateRoleModal";
+
+export function RolesTable() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [roleList, setRoleList] = React.useState<IRole[]>([]);
+  const [openAddRoleModal, setOpenAddRoleModal] = React.useState(false);
+
+  const handleEditRole = (roleId: number) => {
+    console.log("Edit role", roleId);
+  };
+
+  const handleDeleteRole = (roleId: number) => {
+    console.log("Delete role", roleId);
+  };
+
+  const table = useReactTable({
+    data: roleList,
+    columns: roleColumns(handleEditRole, handleDeleteRole),
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
+  React.useEffect(() => {
+    fetchRoleData();
+  }, []);
+
+  const fetchRoleData = async () => {
+    try {
+      const res = await RoleService.CallFetchRolesList();
+      if (res?.EC === 1 && res.data?.roles) {
+        setRoleList(res.data.roles);
+      }
+    } catch (error) {
+      console.log("Error loading roles:", error);
+    }
+  };
+
+  const handleOpenModal = () => {
+    setOpenAddRoleModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenAddRoleModal(false);
+  };
+
+  return (
+    <>
+      <div className="w-full">
+        {/* FILTER */}
+        <div className="flex items-center py-4 gap-3">
+          <Input
+            placeholder="Tìm theo tên vai trò..."
+            value={(table.getColumn("roleName")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => table.getColumn("roleName")?.setFilterValue(event.target.value)}
+            className="max-w-sm"
+          />
+
+          <Button onClick={() => handleOpenModal()} className="bg-black text-white">
+            + Thêm vai trò
+          </Button>
+
+          {/* COLUMN VISIBILITY */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* TABLE */}
+        <div className="overflow-hidden rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={roleColumns.length} className="h-24 text-center">
+                    Không có dữ liệu
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* PAGINATION */}
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            Next
+          </Button>
+        </div>
+      </div>
+
+      <CreateRoleModal open={openAddRoleModal} onClose={handleCloseModal} onSuccess={() => fetchRoleData()} />
+    </>
+  );
+}
