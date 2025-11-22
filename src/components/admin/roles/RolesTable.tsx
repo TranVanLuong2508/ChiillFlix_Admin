@@ -13,7 +13,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +28,7 @@ import { IRole } from "@/types/role.type";
 import { RoleService } from "@/services/roleService";
 import { roleColumns } from "./table/RoleColums";
 import { CreateRoleModal } from "./modals/CreateRoleModal";
+import { DataTablePagination } from "@/components/table/data-table-pagination";
 
 export function RolesTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -78,6 +79,16 @@ export function RolesTable() {
       console.log("Error loading roles:", error);
     }
   };
+  const fetchRoleDataReverse = async () => {
+    try {
+      const res = await RoleService.CallFetchRolesList();
+      if (res?.EC === 1 && res.data?.roles) {
+        setRoleList(res.data.roles.reverse());
+      }
+    } catch (error) {
+      console.log("Error loading roles:", error);
+    }
+  };
 
   const handleOpenModal = () => {
     setOpenAddRoleModal(true);
@@ -89,8 +100,7 @@ export function RolesTable() {
 
   return (
     <>
-      <div className="w-full">
-        {/* FILTER */}
+      <div className="w-full space-y-4">
         <div className="flex items-center py-4 gap-3">
           <Input
             placeholder="Tìm theo tên vai trò..."
@@ -99,15 +109,17 @@ export function RolesTable() {
             className="max-w-sm"
           />
 
-          <Button onClick={() => handleOpenModal()} className="bg-black text-white">
+          <Button
+            onClick={() => handleOpenModal()}
+            className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer transition-all duration-300"
+          >
             + Thêm vai trò
           </Button>
 
-          {/* COLUMN VISIBILITY */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown />
+              <Button variant="outline" className="ml-auto cursor-pointer">
+                <Settings2 /> Xem
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -117,7 +129,7 @@ export function RolesTable() {
                 .map((column) => (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className="capitalize cursor-pointer"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
@@ -128,7 +140,6 @@ export function RolesTable() {
           </DropdownMenu>
         </div>
 
-        {/* TABLE */}
         <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader>
@@ -162,24 +173,9 @@ export function RolesTable() {
             </TableBody>
           </Table>
         </div>
-
-        {/* PAGINATION */}
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div>
+        <DataTablePagination table={table} />
       </div>
-
-      <CreateRoleModal open={openAddRoleModal} onClose={handleCloseModal} onSuccess={() => fetchRoleData()} />
+      <CreateRoleModal open={openAddRoleModal} onClose={handleCloseModal} onSuccess={() => fetchRoleDataReverse()} />
     </>
   );
 }

@@ -11,3 +11,9 @@ export interface IRole {
 export interface IRoleData {
   roles: IRole[];
 }
+
+export interface createRoleData {
+  roleName: string;
+  description: string;
+  isActive: boolean;
+}
