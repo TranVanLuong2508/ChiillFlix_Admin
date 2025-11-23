@@ -14,31 +14,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { formSchema } from "@/lib/validators/film"
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, Copy, ImageUp } from "lucide-react";
-import { useState } from "react";
-import { formatDate, isValidDate } from "@/utils/formateDate";
+import { useEffect, useState } from "react";
 import { DatePicker } from "./datePicker";
-import UploadService from "@/services/upload.service";
 import { toast } from "sonner";
 import { UploadImage } from "./uploadImage";
+import allCodeServie from "@/services/all_code.service";
+import { ALL_CODE_TYPES } from "@/types/all_code.type";
+import { AllCodeRow } from "@/types/backend.type";
+import { SelectForm } from "./selectForm";
+import { MultiSelectForm } from "./multiSelectForm";
 
 export const FormCreateNewFilm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -79,6 +66,41 @@ export const FormCreateNewFilm = () => {
     console.log(values)
   }
 
+  const [rating, setRating] = useState<AllCodeRow[]>([])
+  const [country, setCountry] = useState<AllCodeRow[]>([])
+  const [version, setVersion] = useState<AllCodeRow[]>([])
+  const [filmType, setFilmType] = useState<AllCodeRow[]>([])
+  const [genre, setGenre] = useState<AllCodeRow[]>([])
+  const [filmStatus, setFilmStatus] = useState<AllCodeRow[]>([])
+
+  const handleFetchRating = async (type: ALL_CODE_TYPES, setRating: React.Dispatch<React.SetStateAction<AllCodeRow[]>>) => {
+    try {
+      const res = await allCodeServie.getByType(type);
+      if (res.EC !== 0 && res.data) {
+        setRating(res.data[type]);
+      } else {
+        toast.error(res.EM);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchConfigs = [
+      { type: ALL_CODE_TYPES.RANK, setter: setRating },
+      { type: ALL_CODE_TYPES.COUNTRY, setter: setCountry },
+      { type: ALL_CODE_TYPES.VERSION, setter: setVersion },
+      { type: ALL_CODE_TYPES.FILM_TYPE, setter: setFilmType },
+      { type: ALL_CODE_TYPES.GENRE, setter: setGenre },
+      { type: ALL_CODE_TYPES.FILM_STATUS, setter: setFilmStatus },
+    ];
+
+    fetchConfigs.forEach(({ type, setter }) => {
+      handleFetchRating(type, setter);
+    });
+  }, []);
+
   return (
     <div className="mx-[200px]">
       <h1 className="text-2xl font-semibold text-center">Form Tạo Film</h1>
@@ -118,7 +140,7 @@ export const FormCreateNewFilm = () => {
           <div className="flex items-center justify-between gap-4">
             <FormField
               control={form.control}
-              name="title"
+              name="duration"
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormLabel>Thời lượng phim</FormLabel>
@@ -131,7 +153,7 @@ export const FormCreateNewFilm = () => {
             />
             <FormField
               control={form.control}
-              name="title"
+              name="year"
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormLabel>Năm</FormLabel>
@@ -159,76 +181,40 @@ export const FormCreateNewFilm = () => {
           <div className="flex items-center justify-between gap-4">
             <FormField
               control={form.control}
-              name="title"
+              name="ageCode"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Giới hạn độ tuổi</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn giới hạn độ tuổi" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <SelectForm
+                  label="Giới hạn độ tuổi"
+                  placeholder="Chọn giới hạn độ tuổi"
+                  field={field}
+                  selectOption={rating}
+                />
               )}
             />
 
             <FormField
               control={form.control}
-              name="title"
+              name="langCode"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Ngôn ngữ</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn ngôn ngữ" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <SelectForm
+                  label="Ngôn ngữ"
+                  placeholder="Chọn ngôn ngữ"
+                  field={field}
+                  selectOption={version}
+                />
               )}
             />
 
             <FormField
               control={form.control}
-              name="title"
+              name="countryCode"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Quốc gia</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn quốc gia" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <SelectForm
+                  label="Quốc gia"
+                  placeholder="Chọn quốc gia"
+                  field={field}
+                  selectOption={country}
+                />
               )}
             />
           </div>
@@ -238,24 +224,12 @@ export const FormCreateNewFilm = () => {
               control={form.control}
               name="typeCode"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Phân loại</FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn loại hình phim" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <SelectForm
+                  label="Phân loại"
+                  placeholder="Chọn loại hình phim"
+                  field={field}
+                  selectOption={filmType}
+                />
               )}
             />
 
@@ -275,23 +249,53 @@ export const FormCreateNewFilm = () => {
 
             <FormField
               control={form.control}
-              name="title"
+              name="slug"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Thể loại phim</FormLabel>
+                  <FormLabel>Trạng thái</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <FormField
+              control={form.control}
+              name="genreCodes"
+              render={({ field }) => (
+                <MultiSelectForm
+                  label="Thể loại phim"
+                  placeholder="Chọn thể loại phim..."
+                  field={field}
+                  options={genre}
+                  message="Chưa chọn thể loại phim"
+                />
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="genreCodes"
+              render={({ field }) => (
+                <MultiSelectForm
+                  label="Nhà sản xuất"
+                  placeholder="Chọn nhà sản xuất..."
+                  field={field}
+                  options={genre}
+                  message="Chưa chọn nhà sản xuất"
+                />
+              )}
+            />
           </div>
 
           <FormField
             control={form.control}
-            name="title"
+            name="description"
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormLabel>Mô tả</FormLabel>

@@ -38,9 +38,6 @@ export const formSchema = z.object({
   typeCode: z.string().min(2, {
     message: "Loại không được bỏ trống",
   }),
-  genreCodes: z.array(z.string()).min(2, {
-    message: "Thể loại không được bỏ trống",
-  }),
   countryCode: z.string().min(2, {
     message: "Quốc gia không được bỏ trống",
   }),
@@ -58,6 +55,9 @@ export const formSchema = z.object({
   }),
   producers: z.array(z.string()).min(2, {
     message: "Vui lòng chọn nhà sản xuất",
+  }),
+  genreCodes: z.array(z.string()).min(2, {
+    message: "Thể loại không được bỏ trống",
   }),
   filmImages: z.array(filmImageSchema).min(3, {
     message: "Vui lòng upload đủ ảnh cần thiết",

@@ -42,3 +42,52 @@ export interface IFilmPagination {
   }
   result: IFilmPaginationRes[]
 }
+
+
+// Create New Film Request
+export enum ImageType {
+  POSTER = 'poster',
+  HORIZONTAL = 'horizontal',
+  BACKDROP = 'backdrop'
+}
+
+export interface FilmImage {
+  type: ImageType;
+  url: string;
+}
+
+export interface Director {
+  directorId: number;
+  isMain: boolean;
+}
+
+export interface Actor {
+  actorId: number;
+  characterName: string;
+}
+
+export interface Producer {
+  producerId: number;
+  isMain: boolean;
+}
+
+export interface IFilmCreateReq {
+  originalTitle: string;
+  title: string;
+  description: string;
+  releaseDate: string;
+  year: string;
+  slug: string;
+  thumbUrl: string;
+  ageCode: string;
+  duration: number;
+  typeCode: string;
+  genreCodes: string[];
+  countryCode: string;
+  langCode: string;
+  publicStatusCode: string;
+  filmImages: FilmImage[];
+  directors: Director[];
+  actors: Actor[];
+  producers: Producer[];
+}
