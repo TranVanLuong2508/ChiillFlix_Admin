@@ -10,4 +10,8 @@ export const RoleService = {
   CallCreateRole: (roleData: createRoleData): Promise<IBackendRes<IRole>> => {
     return privateAxios.post("/roles", roleData);
   },
+
+  CallGetRoleDetail: (roleId: number): Promise<IBackendRes<IRole>> => {
+    return privateAxios.get(`/roles/get-by-id/${roleId}`);
+  },
 };

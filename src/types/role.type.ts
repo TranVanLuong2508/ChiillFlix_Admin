@@ -6,6 +6,7 @@ export interface IRole {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  rolePermission?: any;
 }
 
 export interface IRoleData {
@@ -16,4 +17,5 @@ export interface createRoleData {
   roleName: string;
   description: string;
   isActive: boolean;
+  permissionIds: number[];
 }

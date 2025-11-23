@@ -1,11 +1,19 @@
 import { IRole } from "@/types/role.type";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, SquarePen, Trash2 } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, SquarePen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import * as dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -18,7 +26,7 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] cursor-pointer"
       />
     ),
     cell: ({ row }) => (
@@ -26,7 +34,7 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className="translate-y-[2px]"
+        className="translate-y-[2px] cursor-pointer"
       />
     ),
     enableSorting: false,
@@ -36,7 +44,11 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
   {
     accessorKey: "roleId",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        className="cursor-pointer"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         ID <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -44,7 +56,11 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
   {
     accessorKey: "roleName",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        className="cursor-pointer"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Tên vai trò <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -52,7 +68,11 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
   {
     accessorKey: "description",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        className="cursor-pointer"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Mô tả <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -61,7 +81,7 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
   {
     accessorKey: "isActive",
     header: ({ column }) => (
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center ">
         <Button variant="ghost">Trạng thái</Button>
       </div>
     ),
@@ -87,7 +107,11 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        className="cursor-pointer"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Ngày tạo <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -99,7 +123,11 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
   {
     accessorKey: "updatedAt",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        className="cursor-pointer"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Ngày chỉnh sửa <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -109,32 +137,36 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
     },
   },
   {
-    id: "actions",
-    header: "Thao tác",
-    enableSorting: false,
+    id: "menu",
     enableHiding: false,
     cell: ({ row }) => {
       const role = row.original;
+
       return (
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              onEdit(role.roleId);
-            }}
-            className="text-blue-500 cursor-pointer"
-          >
-            {" "}
-            <SquarePen className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => {
-              onDelete(role.roleId);
-            }}
-            className="text-red-500 cursor-pointer "
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0  cursor-pointer">
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => navigator.clipboard.writeText(role.roleName.toString())}
+            >
+              Copy Tên vai trò
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(role.roleId)}>
+              Chỉnh sửa
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(role.roleId)}>
+              Xóa
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },

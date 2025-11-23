@@ -13,7 +13,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronDown, Settings2 } from "lucide-react";
+import { Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,9 +28,10 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { IRole } from "@/types/role.type";
 import { RoleService } from "@/services/roleService";
-import { roleColumns } from "./table/RoleColums";
-import { CreateRoleModal } from "./modals/CreateRoleModal";
+import { roleColumns } from "./RoleColums";
+import { CreateRoleModal } from "../modals/CreateRoleModal";
 import { DataTablePagination } from "@/components/table/data-table-pagination";
+import { EditRoleModal } from "../modals/EditRoleModal";
 
 export function RolesTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -38,10 +39,16 @@ export function RolesTable() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [roleList, setRoleList] = React.useState<IRole[]>([]);
+
   const [openAddRoleModal, setOpenAddRoleModal] = React.useState(false);
+  const [openEditRoleModal, setOpenEditRoleModal] = React.useState(false);
+
+  const [editingRoleId, setEditingRoleId] = React.useState<number | null>(null);
 
   const handleEditRole = (roleId: number) => {
+    setEditingRoleId(roleId);
     console.log("Edit role", roleId);
+    setOpenEditRoleModal(true);
   };
 
   const handleDeleteRole = (roleId: number) => {
@@ -92,13 +99,23 @@ export function RolesTable() {
     }
   };
 
-  const handleOpenModal = () => {
+  const handleOpenCreateModal = () => {
     setOpenAddRoleModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseCreateModal = () => {
     setOpenAddRoleModal(false);
   };
+
+  const handleOpenEditModal = () => {
+    setOpenEditRoleModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setOpenEditRoleModal(false);
+  };
+
+  console.log("Check editting role Id: ", editingRoleId);
 
   return (
     <>
@@ -112,13 +129,13 @@ export function RolesTable() {
           />
 
           <Button
-            onClick={() => handleOpenModal()}
+            onClick={() => handleOpenCreateModal()}
             className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer transition-all duration-300"
           >
             + Thêm vai trò
           </Button>
 
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto cursor-pointer">
                 <Settings2 /> Xem
@@ -180,7 +197,7 @@ export function RolesTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={roleColumns.length} className="h-24 text-center">
+                  <TableCell colSpan={roleColumns.length} className="h-24 text-center ">
                     Không có dữ liệu
                   </TableCell>
                 </TableRow>
@@ -190,7 +207,17 @@ export function RolesTable() {
         </div>
         <DataTablePagination table={table} />
       </div>
-      <CreateRoleModal open={openAddRoleModal} onClose={handleCloseModal} onSuccess={() => fetchRoleDataReverse()} />
+      <EditRoleModal
+        open={openEditRoleModal}
+        onClose={handleCloseEditModal}
+        onSuccess={() => fetchRoleDataReverse()}
+        roleId={editingRoleId}
+      />
+      <CreateRoleModal
+        open={openAddRoleModal}
+        onClose={handleCloseCreateModal}
+        onSuccess={() => fetchRoleDataReverse()}
+      />
     </>
   );
 }

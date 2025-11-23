@@ -16,7 +16,8 @@ import { PermissionModule } from "@/types/permission.type";
 import _ from "lodash";
 import { PermmissionService } from "@/services/permissionService";
 import PermissionSelector from "../PermissionSelector";
-import "../../../../styles/createRoleModal.css";
+import "../../../../styles/RoleModal.css";
+import PermissionSelectorEdit from "../PermissionSelectorEdit";
 
 interface ModalProps {
   open: boolean;
@@ -36,8 +37,6 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
     const init = async () => {
       const res = await PermmissionService.CallFetchPermissionList();
       if (res && res.EC === 1) {
-        console.log("Check list permission: ", res.data?.permissions);
-        console.log("Check  after group : ", groupByPermission(res.data?.permissions));
         setListPermissions(groupByPermission(res.data?.permissions));
       }
     };
@@ -65,7 +64,11 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
 
   const handleSubmit = async () => {
     if (!roleName.trim()) {
-      toast.error("Vui lòng nhập tên vai trò");
+      toast.warning(roleMessage.emptyRole);
+      return;
+    }
+    if (!description.trim()) {
+      toast.error(roleMessage.emptyDes);
       return;
     }
 
@@ -75,8 +78,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
         roleName: roleName.trim(),
         description: description.trim(),
         isActive,
-        // Nếu backend hỗ trợ gửi kèm permissionIds thì thêm vào đây
-        // permissionIds: selectedPermissions,
+        permissionIds: selectedPermissions,
       };
 
       const createRoleResponse = await RoleService.CallCreateRole(payload);
@@ -135,7 +137,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
 
           <div className="space-y-2">
             <Label htmlFor="description" className="text-base font-medium">
-              Mô tả
+              Mô tả <span className="text-red-500">*</span>
             </Label>
             <Textarea
               id="description"
@@ -148,7 +150,11 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
           </div>
 
           <div className="space-y-3">
-            <PermissionSelector listPermissions={listPermissions} onChange={(data) => setSelectedPermissions(data)} />
+            <PermissionSelectorEdit
+              listPermissions={listPermissions}
+              value={selectedPermissions}
+              onChange={(data) => setSelectedPermissions(data)}
+            />
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
@@ -157,7 +163,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={loading || !roleName.trim()}
+              disabled={loading || !roleName.trim() || !description.trim()}
               className="bg-blue-600 hover:bg-blue-700 text-white min-w-32 cursor-pointer"
             >
               {loading ? "Đang lưu..." : "Lưu vai trò"}
