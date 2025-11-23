@@ -46,7 +46,7 @@ export const columns: ColumnDef<ActorColumn>[] = [
       const avatarUrl = row.getValue("avatarUrl") as string;
       const actorName = row.getValue("actorName") as string;
       return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-10 h-10">
           {avatarUrl ? (
             <img
               src={avatarUrl}

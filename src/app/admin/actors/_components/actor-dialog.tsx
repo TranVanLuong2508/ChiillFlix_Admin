@@ -13,8 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { parse, format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -22,13 +26,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useDirectorStore } from "@/stores/directorStore";
 import { ActorColumn, CreateActorDto } from "@/types/actor.type";
-import { DirectorColumn } from "@/types/director.type";
 import { allCodeService } from "@/services/allCodeService";
 import { AllCodeRow } from "@/types/backend.type";
 import { useActorStore } from "@/stores/actorStore";
-
+import { formatDate } from "@/utils/formateDate";
+import "@/styles/hideScroll.css";
 interface ActorDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -100,9 +103,21 @@ export function ActorDialog({
 
     useEffect(() => {
         if (actor && mode === "edit") {
+            let formattedBirthDate = "";
+            if (actor.birthDate) {
+                try {
+                    const [year, month, day] = actor.birthDate.split("-");
+                    if (year && month && day) {
+                        formattedBirthDate = `${day}/${month}/${year}`;
+                    }
+                } catch (error) {
+                    console.error("Error parsing birthDate:", error);
+                }
+            }
+
             reset({
                 actorName: actor.actorName,
-                birthDate: actor.birthDate,
+                birthDate: formattedBirthDate,
                 genderCode: actor.genderCode,
                 shortBio: actor.shortBio,
                 avatarUrl: actor.avatarUrl,
@@ -121,12 +136,33 @@ export function ActorDialog({
     }, [actor, mode, reset]);
 
     const onSubmit = async (data: ActorFormData) => {
+        if (data.birthDate && !/^\d{2}\/\d{2}\/\d{4}$/.test(data.birthDate)) {
+            toast.error("Ngày sinh phải đúng định dạng dd/mm/yyyy");
+            return;
+        }
+        if (data.avatarUrl?.trim()) {
+            try {
+                new URL(data.avatarUrl);
+            } catch {
+                toast.error("URL Avatar không hợp lệ");
+                return;
+            }
+        }
+
         setIsSubmitting(true);
         try {
             const defaultAvatar = "https://ui-avatars.com/api/?name=Actor&background=random";
+            let backendBirthDate = "";
+            if (data.birthDate) {
+                const [day, month, year] = data.birthDate.split("/");
+                if (day && month && year) {
+                    backendBirthDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+                }
+            }
+
             const dto: CreateActorDto = {
                 actorName: data.actorName,
-                birthDate: data.birthDate || undefined,
+                birthDate: backendBirthDate || undefined,
                 genderCode: data.genderCode || undefined,
                 shortBio: data.shortBio || undefined,
                 avatarUrl: data.avatarUrl?.trim() ? data.avatarUrl : defaultAvatar,
@@ -163,7 +199,7 @@ export function ActorDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto hide-scrollbar">
                 <DialogHeader>
                     <DialogTitle>
                         {mode === "create" ? "Thêm Diễn Viên Mới" : "Chỉnh Sửa Diễn Viên"}
@@ -197,13 +233,29 @@ export function ActorDialog({
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="birthDate">Ngày Sinh</Label>
-                            <Input
-                                id="birthDate"
-                                type="date"
-                                {...register("birthDate")}
-                            />
+                            <div className="relative">
+                                <DatePicker
+                                    id="birthDate"
+                                    selected={
+                                        !!watch('birthDate') && /^\d{2}\/\d{2}\/\d{4}$/.test(watch('birthDate'))
+                                            ? parse(watch('birthDate'), 'dd/MM/yyyy', new Date())
+                                            : null
+                                    }
+                                    onChange={(date: Date | null) => setValue('birthDate', date ? format(date, 'dd/MM/yyyy') : '')}
+                                    dateFormat="dd/MM/yyyy"
+                                    placeholderText="dd/mm/yyyy"
+                                    className="w-full border rounded px-3 py-2 pr-10"
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    maxDate={new Date()}
+                                />
+                                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            </div>
+                            {errors.birthDate && (
+                                <p className="text-sm text-red-500">{errors.birthDate.message}</p>
+                            )}
                         </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="genderCode">Giới Tính</Label>
                             <Select

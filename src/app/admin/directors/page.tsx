@@ -31,7 +31,6 @@ const DirectorsPage = () => {
   };
 
   const handleDeleteSelected = async (ids: string[]) => {
-    // Xóa từng đạo diễn theo danh sách ids
     for (const id of ids) {
       await deleteDirector(Number(id));
     }
