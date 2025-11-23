@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import UploadService from "@/services/upload.service";
-import { Copy, CornerDownRight, ImageUp, Loader, Loader2 } from "lucide-react";
+import { Copy, CornerDownRight, ImageUp, Loader } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -53,6 +53,11 @@ export const UploadImage = ({
     const s = str.trim();
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
+
+  // Check data image
+  const values = form.watch("filmImages");
+  console.log("Check data image: ", values);
+  // Check data image
 
   return (
     <div className="flex flex-col gap-4 pt-2">
