@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatDate } from "@/utils/formateDate";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -116,8 +117,7 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
       </Button>
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return <div>{date.toLocaleString("vi-VN")}</div>;
+      return <div>{formatDate(row.getValue("createdAt"))}</div>;
     },
   },
   {
@@ -132,8 +132,7 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
       </Button>
     ),
     cell: ({ row }) => {
-      const date = new Date(row.getValue("updatedAt"));
-      return <div>{date.toLocaleString("vi-VN")}</div>;
+      return <div>{formatDate(row.getValue("updatedAt"))}</div>;
     },
   },
   {

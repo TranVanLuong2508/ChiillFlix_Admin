@@ -1,7 +1,6 @@
 "use client";
 
 import AdminHeader from "@/components/admin/layout/AdminHeader";
-import { DataTableDemo } from "@/components/admin/roles/DataTableDemo";
 import { RolesTable } from "@/components/admin/roles/table/RolesTable";
 
 const RolesPage = () => {

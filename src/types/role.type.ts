@@ -19,10 +19,3 @@ export interface ModalRoleData {
   isActive: boolean;
   permissionIds: number[];
 }
-
-export interface ModalRoleData {
-  roleName: string;
-  description: string;
-  isActive: boolean;
-  permissionIds: number[];
-}
