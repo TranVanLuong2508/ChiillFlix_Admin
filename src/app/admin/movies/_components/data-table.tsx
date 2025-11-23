@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react"
 
@@ -25,8 +25,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
-import { DataTablePagination } from "../../../../components/table/data-table-pagination"
-import { DataTableViewOptions } from "../../../../components/table/data-table-view-option"
+import { Button } from "@/components/ui/button"
+import { DataTablePagination } from "@/components/table/data-table-pagination"
+import { DataTableViewOptions } from "@/components/table/data-table-view-option"
+import { CirclePlus } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,6 +48,7 @@ export function DataTable<TData, TValue>({
   pageCount,
   setPagination,
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -79,7 +83,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center">
+      <div className="flex items-center justify-between">
         <Input
           placeholder="Filter title..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -88,7 +92,20 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <DataTableViewOptions table={table} />
+        <div className="flex items-center gap-2">
+          <DataTableViewOptions table={table} />
+          <div>
+            <Button
+              size={"sm"}
+              variant={"outline"}
+              className="flex items-center gap-2 bg-white hover:bg-white text-black hover:text-lime-500 hover:border-lime-500 cursor-pointer"
+              onClick={() => router.push("/admin/movies/create")}
+            >
+              <CirclePlus />
+              <span>Tạo mới</span>
+            </Button>
+          </div>
+        </div>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
