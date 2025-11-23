@@ -29,6 +29,7 @@ export function AppSidebar() {
     { title: "Người dùng", icon: Users, href: adminPath.USERS },
     { title: "Quyền hạn", icon: ShieldCheck, href: adminPath.PERMISSIONS },
     { title: "Vai trò", icon: UserCheck, href: adminPath.ROLES },
+    { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
   ];
 
   return (

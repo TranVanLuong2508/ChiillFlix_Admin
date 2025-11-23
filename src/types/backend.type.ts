@@ -6,6 +6,21 @@ export interface IBackendRes<T> {
   statusCode: string;
 }
 
+export interface IGenreData {
+  GENRE: AllCodeRow[];
+  statusCode?: number;
+}
+
+export interface ICountryData {
+  COUNTRY: AllCodeRow[];
+  statusCode?: number;
+}
+
+export interface IGenderData {
+  GENDER: AllCodeRow[];
+  statusCode?: number;
+}
+
 export interface AllCodeRow {
   id: number;
   keyMap: string;
