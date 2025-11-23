@@ -26,7 +26,7 @@ import { ALL_CODE_TYPES } from "@/types/all_code.type";
 import { AllCodeRow } from "@/types/backend.type";
 import { SelectForm } from "./selectForm";
 import { MultiSelectForm } from "./multiSelectForm";
-import { ActorForm } from "./actorForm";
+import { ActorForm } from "./actor/actorForm";
 import { DirectorForm } from "./directorForm";
 
 export const FormCreateNewFilm = () => {
@@ -314,17 +314,18 @@ export const FormCreateNewFilm = () => {
               )}
             />
           </div>
+
           <FormField
             control={form.control}
-            name="genreCodes"
+            name="actors"
             render={({ field }) => (
-              <ActorForm field={field} genre={genre} />
+              <ActorForm field={field} />
             )}
           />
 
           <FormField
             control={form.control}
-            name="genreCodes"
+            name="directors"
             render={({ field }) => (
               <DirectorForm field={field} genre={genre} />
             )}

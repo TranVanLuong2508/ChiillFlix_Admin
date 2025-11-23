@@ -2,6 +2,18 @@ export interface ISearchFilmResponse {
   films: IFilmSearch[];
 }
 
+export interface ISearchActorResponse {
+  actors: IActorSearch[];
+}
+
+export interface ISearchDirectorResponse {
+  directors: IDirectorSearch[];
+}
+
+export interface ISearchProducerResponse {
+  producers: IProducerSearch[];
+}
+
 export interface IFilmSearch {
   filmId: string;
   title: string;
@@ -13,16 +25,16 @@ export interface IFilmSearch {
 }
 
 export interface IActorSearch {
-  actorId: string;
+  actorId: number;
   actorName: string;
 }
 
 export interface IDirectorSearch {
-  directorId: string;
+  directorId: number;
   directorName: string;
 }
 
 export interface IProducerSearch {
-  producerId: string;
+  producerId: number;
   producerName: string;
 }

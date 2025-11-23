@@ -8,7 +8,7 @@ const filmImageSchema = z.object({
 });
 
 const actorSchema = z.object({
-  actorId: z.string(),
+  actorId: z.number(),
   characterName: z.string(),
 });
 
