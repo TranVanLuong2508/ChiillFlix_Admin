@@ -16,6 +16,7 @@ import { PermissionModule } from "@/types/permission.type";
 import _ from "lodash";
 import { PermmissionService } from "@/services/permissionService";
 import PermissionSelector from "../PermissionSelector";
+import "../../../../styles/createRoleModal.css";
 
 interface ModalProps {
   open: boolean;
@@ -35,6 +36,8 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
     const init = async () => {
       const res = await PermmissionService.CallFetchPermissionList();
       if (res && res.EC === 1) {
+        console.log("Check list permission: ", res.data?.permissions);
+        console.log("Check  after group : ", groupByPermission(res.data?.permissions));
         setListPermissions(groupByPermission(res.data?.permissions));
       }
     };
@@ -95,13 +98,12 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleCloseModal}>
-      <DialogContent className="max-w-5xl w-full max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent className=" max-w-[95vw] w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 hide-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Thêm vai trò mới</DialogTitle>
         </DialogHeader>
 
         <div className="mt-6 space-y-6">
-          {/* Dòng 1: Tên vai trò + Trạng thái */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="roleName" className="text-base font-medium">
@@ -123,15 +125,14 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
                   <Switch
                     checked={isActive}
                     onCheckedChange={setIsActive}
-                    className="data-[state=checked]:bg-blue-600"
+                    className="data-[state=checked]:bg-blue-600 cursor-pointer"
                   />
-                  <span className="text-sm font-medium">{isActive ? "Hoạt động" : "Tạm khóa"}</span>
+                  <span className="text-sm font-medium">{isActive ? "Active" : "InActive"}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Dòng 2: Mô tả - chiếm toàn bộ chiều rộng */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-base font-medium">
               Mô tả
@@ -146,12 +147,10 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
             />
           </div>
 
-          {/* Permission Selector - phần quan trọng nhất */}
           <div className="space-y-3">
             <PermissionSelector listPermissions={listPermissions} onChange={(data) => setSelectedPermissions(data)} />
           </div>
 
-          {/* Nút hành động */}
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button variant="outline" onClick={handleCloseModal} disabled={loading}>
               Hủy
@@ -159,7 +158,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
             <Button
               onClick={handleSubmit}
               disabled={loading || !roleName.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white min-w-32"
+              className="bg-blue-600 hover:bg-blue-700 text-white min-w-32 cursor-pointer"
             >
               {loading ? "Đang lưu..." : "Lưu vai trò"}
             </Button>

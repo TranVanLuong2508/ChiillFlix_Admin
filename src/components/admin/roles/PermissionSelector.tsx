@@ -44,7 +44,7 @@ export default function PermissionSelector({
   if (!listPermissions) return null;
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 min-w-[720px]">
       <Label className="text-base font-semibold">Quyền hạn</Label>
 
       <Accordion type="multiple" className="mt-4 space-y-3">
@@ -54,22 +54,21 @@ export default function PermissionSelector({
 
           return (
             <AccordionItem key={module.module} value={module.module} className="border rounded-md">
-              <AccordionTrigger className="px-4 hover:no-underline">
-                <div className="flex items-center justify-between w-full pr-4">
-                  <span className="font-semibold text-left">{module.module}</span>
+              <div className="flex items-center justify-between w-full border rounded-md">
+                <AccordionTrigger className="px-4 hover:no-underline flex-1 text-left cursor-pointer">
+                  <span className="font-semibold">{module.module}</span>
+                </AccordionTrigger>
 
-                  <div
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                    className="flex items-center"
-                  >
-                    <Switch checked={isAllChecked} onCheckedChange={(v) => toggleModule(module.permissions, v)} />
-                  </div>
+                <div className="px-4" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <Switch
+                    checked={isAllChecked}
+                    onCheckedChange={(v) => toggleModule(module.permissions, v)}
+                    className="data-[state=checked]:bg-blue-600 cursor-pointer"
+                  />
                 </div>
-              </AccordionTrigger>
-
+              </div>
               <AccordionContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 p-4 gap-6">
                   {module.permissions.map((item) => (
                     <div
                       key={item.permissionId}
@@ -98,6 +97,7 @@ export default function PermissionSelector({
                         <Switch
                           checked={selected.includes(item.permissionId)}
                           onCheckedChange={() => togglePermission(item.permissionId)}
+                          className="data-[state=checked]:bg-blue-600 cursor-pointer"
                         />
                       </div>
                     </div>
