@@ -1,6 +1,6 @@
 import { format } from "date-fns"
 
-export function formatDate(isoString?: string | null) {
+export function formatDate(isoString?: string | null | Date) {
   if (!isoString) return ""
 
   try {
@@ -8,4 +8,11 @@ export function formatDate(isoString?: string | null) {
   } catch {
     return ""
   }
+}
+
+export function isValidDate(date: Date | undefined) {
+  if (!date) {
+    return false
+  }
+  return !isNaN(date.getTime())
 }
