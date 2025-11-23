@@ -23,34 +23,35 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useDirectorStore } from "@/stores/directorStore";
-import { CreateDirectorDto } from "@/types/director.type";
+import { ActorColumn, CreateActorDto } from "@/types/actor.type";
 import { DirectorColumn } from "@/types/director.type";
 import { allCodeService } from "@/services/allCodeService";
 import { AllCodeRow } from "@/types/backend.type";
+import { useActorStore } from "@/stores/actorStore";
 
-interface DirectorDialogProps {
+interface ActorDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    director?: DirectorColumn | null;
+    actor?: ActorColumn | null;
     mode: "create" | "edit";
 }
 
-interface DirectorFormData {
-    directorName: string;
+interface ActorFormData {
+    actorName: string;
     birthDate: string;
     genderCode: string;
-    story: string;
+    shortBio: string;
     avatarUrl: string;
     nationalityCode: string;
 }
 
-export function DirectorDialog({
+export function ActorDialog({
     open,
     onOpenChange,
-    director,
+    actor,
     mode,
-}: DirectorDialogProps) {
-    const { createDirector, updateDirector } = useDirectorStore();
+}: ActorDialogProps) {
+    const { createActor, updateActor } = useActorStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [countries, setCountries] = useState<AllCodeRow[]>([]);
     const [genders, setGenders] = useState<AllCodeRow[]>([]);
@@ -62,12 +63,12 @@ export function DirectorDialog({
         setValue,
         watch,
         formState: { errors },
-    } = useForm<DirectorFormData>({
+    } = useForm<ActorFormData>({
         defaultValues: {
-            directorName: "",
+            actorName: "",
             birthDate: "",
             genderCode: "M",
-            story: "",
+            shortBio: "",
             avatarUrl: "",
             nationalityCode: "",
         },
@@ -98,54 +99,54 @@ export function DirectorDialog({
     }, []);
 
     useEffect(() => {
-        if (director && mode === "edit") {
+        if (actor && mode === "edit") {
             reset({
-                directorName: director.directorName,
-                birthDate: director.birthDate,
-                genderCode: director.genderCode,
-                story: director.story,
-                avatarUrl: director.avatarUrl,
-                nationalityCode: director.nationalityCode,
+                actorName: actor.actorName,
+                birthDate: actor.birthDate,
+                genderCode: actor.genderCode,
+                shortBio: actor.shortBio,
+                avatarUrl: actor.avatarUrl,
+                nationalityCode: actor.nationalityCode,
             });
         } else {
             reset({
-                directorName: "",
+                actorName: "",
                 birthDate: "",
                 genderCode: "M",
-                story: "",
+                shortBio: "",
                 avatarUrl: "",
                 nationalityCode: "",
             });
         }
-    }, [director, mode, reset]);
+    }, [actor, mode, reset]);
 
-    const onSubmit = async (data: DirectorFormData) => {
+    const onSubmit = async (data: ActorFormData) => {
         setIsSubmitting(true);
         try {
-            const defaultAvatar = "https://ui-avatars.com/api/?name=Director&background=random";
-            const dto: CreateDirectorDto = {
-                directorName: data.directorName,
+            const defaultAvatar = "https://ui-avatars.com/api/?name=Actor&background=random";
+            const dto: CreateActorDto = {
+                actorName: data.actorName,
                 birthDate: data.birthDate || undefined,
                 genderCode: data.genderCode || undefined,
-                story: data.story || undefined,
+                shortBio: data.shortBio || undefined,
                 avatarUrl: data.avatarUrl?.trim() ? data.avatarUrl : defaultAvatar,
                 nationalityCode: data.nationalityCode || undefined,
             };
 
             let success = false;
             if (mode === "create") {
-                success = await createDirector(dto);
+                success = await createActor(dto);
                 if (success) {
-                    toast.success("Thêm đạo diễn thành công!");
+                    toast.success("Thêm diễn viên thành công!");
                 } else {
-                    toast.error("Thêm đạo diễn thất bại!");
+                    toast.error("Thêm diễn viên thất bại!");
                 }
-            } else if (director) {
-                success = await updateDirector(parseInt(director.directorId), dto);
+            } else if (actor) {
+                success = await updateActor(parseInt(actor.actorId), dto);
                 if (success) {
-                    toast.success("Cập nhật đạo diễn thành công!");
+                    toast.success("Cập nhật diễn viên thành công!");
                 } else {
-                    toast.error("Cập nhật đạo diễn thất bại!");
+                    toast.error("Cập nhật diễn viên thất bại!");
                 }
             }
 
@@ -165,30 +166,30 @@ export function DirectorDialog({
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === "create" ? "Thêm Đạo Diễn Mới" : "Chỉnh Sửa Đạo Diễn"}
+                        {mode === "create" ? "Thêm Diễn Viên Mới" : "Chỉnh Sửa Diễn Viên"}
                     </DialogTitle>
                     <DialogDescription>
                         {mode === "create"
-                            ? "Điền thông tin để thêm đạo diễn mới"
-                            : "Cập nhật thông tin đạo diễn"}
+                            ? "Điền thông tin để thêm diễn viên mới"
+                            : "Cập nhật thông tin diễn viên"}
                     </DialogDescription>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="directorName">
-                            Tên Đạo Diễn <span className="text-red-500">*</span>
+                        <Label htmlFor="actorName">
+                            Tên Diễn Viên <span className="text-red-500">*</span>
                         </Label>
                         <Input
-                            id="directorName"
-                            {...register("directorName", {
-                                required: "Tên đạo diễn là bắt buộc",
+                            id="actorName"
+                            {...register("actorName", {
+                                required: "Tên diễn viên là bắt buộc",
                             })}
-                            placeholder="Nhập tên đạo diễn"
+                            placeholder="Nhập tên diễn viên"
                         />
-                        {errors.directorName && (
+                        {errors.actorName && (
                             <p className="text-sm text-red-500">
-                                {errors.directorName.message}
+                                {errors.actorName.message}
                             </p>
                         )}
                     </div>
@@ -253,11 +254,11 @@ export function DirectorDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="story">Tiểu Sử</Label>
+                        <Label htmlFor="shortBio">Tiểu Sử</Label>
                         <Textarea
-                            id="story"
-                            {...register("story")}
-                            placeholder="Nhập tiểu sử đạo diễn..."
+                            id="shortBio"
+                            {...register("shortBio")}
+                            placeholder="Nhập tiểu sử diễn viên..."
                             rows={5}
                         />
                     </div>
@@ -275,7 +276,7 @@ export function DirectorDialog({
                             {isSubmitting
                                 ? "Đang xử lý..."
                                 : mode === "create"
-                                    ? "Thêm Đạo Diễn"
+                                    ? "Thêm Diễn Viên"
                                     : "Cập Nhật"}
                         </Button>
                     </DialogFooter>

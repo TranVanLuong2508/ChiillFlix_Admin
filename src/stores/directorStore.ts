@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { directorService, CreateDirectorDto, UpdateDirectorDto } from "@/services/directorService";
+import { directorService } from "@/services/directorService";
 import type { DirectorColumn } from "@/types/director.type";
+import { CreateDirectorDto, UpdateDirectorDto } from "@/types/director.type";
 
 interface DirectorState {
   directors: DirectorColumn[];

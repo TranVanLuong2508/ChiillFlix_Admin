@@ -14,7 +14,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Film, Users, Clapperboard, ShieldCheck, UserCheck, Gem } from "lucide-react";
+import { LayoutDashboard, Film, Users, Clapperboard, ShieldCheck, UserCheck, Gem, Star, UserRound } from "lucide-react";
 import { adminPath } from "@/constants/path";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -30,6 +30,7 @@ export function AppSidebar() {
     { title: "Quyền hạn", icon: ShieldCheck, href: adminPath.PERMISSIONS },
     { title: "Vai trò", icon: UserCheck, href: adminPath.ROLES },
     { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
+    { title: "Diễn Viên", icon: UserRound, href: adminPath.ACTORS },
   ];
 
   return (

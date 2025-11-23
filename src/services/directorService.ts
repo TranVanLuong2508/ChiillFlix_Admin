@@ -2,24 +2,8 @@ import publicAxios from "@/lib/axios/publicAxios";
 import privateAxios from "@/lib/axios/privateAxios";
 import { IBackendRes } from "@/types/backend.type";
 import { IDirectorPagination, Director } from "@/types/director.type";
-
-export interface CreateDirectorDto {
-  directorName: string;
-  birthDate?: string;
-  genderCode?: string;
-  story?: string;
-  avatarUrl?: string;
-  nationalityCode?: string;
-}
-
-export interface UpdateDirectorDto {
-  directorName?: string;
-  birthDate?: string;
-  genderCode?: string;
-  story?: string;
-  avatarUrl?: string;
-  nationalityCode?: string;
-}
+import { CreateDirectorDto } from "@/types/director.type";
+import { UpdateDirectorDto } from "@/types/director.type";
 
 export const directorService = {
   getAllDirectors: (
@@ -44,7 +28,7 @@ export const directorService = {
       });
     }
 
-    return publicAxios.get(`/director/get-all-directors?${params.toString()}`);
+    return privateAxios.get(`/director/get-all-directors?${params.toString()}`);
   },
 
   getDirectorById: (directorId: number): Promise<IBackendRes<Director>> => {

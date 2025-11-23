@@ -25,10 +25,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { DataTablePagination } from "../../../../components/table-director/data-table-pagination";
-import { DataTableViewOptions } from "../../../../components/table-director/data-table-view-option";
-import { DirectorColumn } from "@/types/director.type";
-import { DeleteDirectorDialog } from "./delete-director-dialog";
+import { DataTablePagination } from "./data-table-pagination";
+import { DataTableViewOptions } from "./data-table-view-option";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -40,7 +38,6 @@ interface DataTableProps<TData, TValue> {
     searchPlaceholder?: string;
     onSearch?: (value: string) => void;
     addButton?: React.ReactNode;
-    onDeleteSelected?: (ids: string[]) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -53,7 +50,6 @@ export function DataTable<TData, TValue>({
     searchPlaceholder,
     onSearch,
     addButton,
-    onDeleteSelected,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -86,54 +82,22 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        manualPagination: false, // Changed to false for client-side filtering
+        manualPagination: true,
     });
-
-    const selectedRows = React.useMemo(
-        () => {
-            return table.getSelectedRowModel().rows.map((row) => row.original as DirectorColumn);
-        },
-        [rowSelection, table]
-    );
-    const selectedRowIds = selectedRows.map((d) => d.directorId);
-
-    // State for bulk delete dialog
-    const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
 
     return (
         <div className="space-y-4">
-            {/* Bulk Delete Dialog */}
-            <DeleteDirectorDialog
-                open={bulkDeleteOpen}
-                onOpenChange={setBulkDeleteOpen}
-                directorId={selectedRowIds.join(",")}
-                directorName={selectedRows.map((d) => d.directorName).join(", ")}
-                isBulk
-                onBulkDelete={async () => {
-                    if (onDeleteSelected) await onDeleteSelected(selectedRowIds);
-                    setBulkDeleteOpen(false);
-                }}
-            />
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1">
-                    <input
-                        type="text"
-                        placeholder={searchPlaceholder || "Tìm kiếm..."}
-                        value={(table.getColumn("directorName")?.getFilterValue() as string) ?? ""}
-                        onChange={(e) =>
-                            table.getColumn("directorName")?.setFilterValue(e.target.value)
-                        }
-                        className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {addButton}
-                    {selectedRowIds.length > 0 && onDeleteSelected && (
-                        <button
-                            className="ml-2 px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                            onClick={() => setBulkDeleteOpen(true)}
-                        >
-                            Xóa đã chọn ({selectedRowIds.length})
-                        </button>
+                    {onSearch && (
+                        <input
+                            type="text"
+                            placeholder={searchPlaceholder || "Tìm kiếm..."}
+                            onChange={(e) => onSearch(e.target.value)}
+                            className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     )}
+                    {addButton}
                 </div>
                 <DataTableViewOptions table={table} />
             </div>

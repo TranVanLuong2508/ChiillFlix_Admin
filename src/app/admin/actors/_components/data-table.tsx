@@ -25,10 +25,10 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { DataTablePagination } from "../../../../components/table-director/data-table-pagination";
-import { DataTableViewOptions } from "../../../../components/table-director/data-table-view-option";
-import { DirectorColumn } from "@/types/director.type";
-import { DeleteDirectorDialog } from "./delete-director-dialog";
+import { DataTablePagination } from "../../../../components/table-actor/data-table-pagination";
+import { DataTableViewOptions } from "../../../../components/table-actor/data-table-view-option";
+import { DeleteActorDialog } from "./delete-actor-dialog";
+import { ActorColumn } from "@/types/actor.type";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -86,28 +86,25 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        manualPagination: false, // Changed to false for client-side filtering
+        manualPagination: true,
     });
 
     const selectedRows = React.useMemo(
         () => {
-            return table.getSelectedRowModel().rows.map((row) => row.original as DirectorColumn);
+            return table.getSelectedRowModel().rows.map((row) => row.original as ActorColumn);
         },
         [rowSelection, table]
     );
-    const selectedRowIds = selectedRows.map((d) => d.directorId);
-
-    // State for bulk delete dialog
+    const selectedRowIds = selectedRows.map((d) => d.actorId);
     const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
 
     return (
         <div className="space-y-4">
-            {/* Bulk Delete Dialog */}
-            <DeleteDirectorDialog
+            <DeleteActorDialog
                 open={bulkDeleteOpen}
                 onOpenChange={setBulkDeleteOpen}
-                directorId={selectedRowIds.join(",")}
-                directorName={selectedRows.map((d) => d.directorName).join(", ")}
+                actorId={selectedRowIds.join(",")}
+                actorName={selectedRows.map((d) => d.actorName).join(", ")}
                 isBulk
                 onBulkDelete={async () => {
                     if (onDeleteSelected) await onDeleteSelected(selectedRowIds);
@@ -119,16 +116,16 @@ export function DataTable<TData, TValue>({
                     <input
                         type="text"
                         placeholder={searchPlaceholder || "Tìm kiếm..."}
-                        value={(table.getColumn("directorName")?.getFilterValue() as string) ?? ""}
+                        value={(table.getColumn("actorName")?.getFilterValue() as string) ?? ""}
                         onChange={(e) =>
-                            table.getColumn("directorName")?.setFilterValue(e.target.value)
+                            table.getColumn("actorName")?.setFilterValue(e.target.value)
                         }
                         className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {addButton}
                     {selectedRowIds.length > 0 && onDeleteSelected && (
                         <button
-                            className="ml-2 px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                            className="ml-2 px-2 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600"
                             onClick={() => setBulkDeleteOpen(true)}
                         >
                             Xóa đã chọn ({selectedRowIds.length})

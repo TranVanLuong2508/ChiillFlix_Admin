@@ -10,27 +10,28 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useActorStore } from "@/stores/actorStore";
 import { useDirectorStore } from "@/stores/directorStore";
 import { useState } from "react";
 
-interface DeleteDirectorDialogProps {
+interface DeleteActorDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    directorId: string;
-    directorName: string;
+    actorId: string;
+    actorName: string;
     isBulk?: boolean;
     onBulkDelete?: () => void;
 }
 
-export function DeleteDirectorDialog({
+export function DeleteActorDialog({
     open,
     onOpenChange,
-    directorId,
-    directorName,
+    actorId,
+    actorName,
     isBulk = false,
     onBulkDelete,
-}: DeleteDirectorDialogProps) {
-    const { deleteDirector } = useDirectorStore();
+}: DeleteActorDialogProps) {
+    const { deleteActor } = useActorStore();
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
@@ -40,7 +41,7 @@ export function DeleteDirectorDialog({
                 await onBulkDelete();
                 onOpenChange(false);
             } else {
-                const success = await deleteDirector(parseInt(directorId));
+                const success = await deleteActor(parseInt(actorId));
                 if (success) {
                     onOpenChange(false);
                 }
@@ -58,12 +59,12 @@ export function DeleteDirectorDialog({
                     <AlertDialogDescription>
                         {isBulk ? (
                             <>
-                                Hành động này không thể hoàn tác. Các đạo diễn sau sẽ bị xóa vĩnh viễn khỏi hệ thống:<br />
-                                <span className="font-semibold">{directorName}</span>
+                                Hành động này không thể hoàn tác. Các diễn viên sau sẽ bị xóa vĩnh viễn khỏi hệ thống:<br />
+                                <span className="font-semibold">{actorName}</span>
                             </>
                         ) : (
                             <>
-                                Hành động này không thể hoàn tác. Đạo diễn <span className="font-semibold">{directorName}</span> sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                                Hành động này không thể hoàn tác. Diễn viên <span className="font-semibold">{actorName}</span> sẽ bị xóa vĩnh viễn khỏi hệ thống.
                             </>
                         )}
                     </AlertDialogDescription>

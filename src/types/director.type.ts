@@ -82,3 +82,21 @@ export interface IDirectorPagination {
   };
   directors: IDirectorRes[];
 }
+
+export interface CreateDirectorDto {
+  directorName: string;
+  birthDate?: string;
+  genderCode?: string;
+  story?: string;
+  avatarUrl?: string;
+  nationalityCode?: string;
+}
+
+export interface UpdateDirectorDto {
+  directorName?: string;
+  birthDate?: string;
+  genderCode?: string;
+  story?: string;
+  avatarUrl?: string;
+  nationalityCode?: string;
+}
