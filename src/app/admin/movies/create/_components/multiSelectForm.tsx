@@ -75,7 +75,7 @@ export const MultiSelectForm = ({
                 <ChevronsUpDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+            <PopoverContent className="w-[300px] p-0" side="left">
               <Command>
                 <CommandInput placeholder="Tìm..." />
                 <CommandEmpty>Không có kết quả.</CommandEmpty>

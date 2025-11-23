@@ -26,6 +26,8 @@ import { ALL_CODE_TYPES } from "@/types/all_code.type";
 import { AllCodeRow } from "@/types/backend.type";
 import { SelectForm } from "./selectForm";
 import { MultiSelectForm } from "./multiSelectForm";
+import { ActorForm } from "./actorForm";
+import { DirectorForm } from "./directorForm";
 
 export const FormCreateNewFilm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -137,6 +139,25 @@ export const FormCreateNewFilm = () => {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Mô tả</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Nhập mô tả phim"
+                    className="min-h-[100px]"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <div className="flex items-center justify-between gap-4">
             <FormField
               control={form.control}
@@ -292,22 +313,19 @@ export const FormCreateNewFilm = () => {
               )}
             />
           </div>
+          <FormField
+            control={form.control}
+            name="genreCodes"
+            render={({ field }) => (
+              <ActorForm field={field} genre={genre} />
+            )}
+          />
 
           <FormField
             control={form.control}
-            name="description"
+            name="genreCodes"
             render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Mô tả</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Nhập mô tả phim"
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <DirectorForm field={field} genre={genre} />
             )}
           />
 

@@ -7,6 +7,21 @@ const filmImageSchema = z.object({
   url: z.string(),
 });
 
+const actorSchema = z.object({
+  actorId: z.string(),
+  characterName: z.string(),
+});
+
+const directorSchema = z.object({
+  directorId: z.string(),
+  isMain: z.boolean(),
+});
+
+const producerSchema = z.object({
+  producerId: z.string(),
+  isMain: z.boolean(),
+});
+
 export const formSchema = z.object({
   originalTitle: z.string().min(2, {
     message: "Tên gốc phim không được bỏ trống",
@@ -47,13 +62,13 @@ export const formSchema = z.object({
   publicStatusCode: z.string().min(2, {
     message: "Trạng thái không được bỏ trống",
   }),
-  directors: z.array(z.string()).min(2, {
+  directors: z.array(directorSchema).min(2, {
     message: "Vui lòng chọn đạo diễn",
   }),
-  actors: z.array(z.string()).min(2, {
+  actors: z.array(actorSchema).min(2, {
     message: "Vui lòng chọn diễn viên",
   }),
-  producers: z.array(z.string()).min(2, {
+  producers: z.array(producerSchema).min(2, {
     message: "Vui lòng chọn nhà sản xuất",
   }),
   genreCodes: z.array(z.string()).min(2, {

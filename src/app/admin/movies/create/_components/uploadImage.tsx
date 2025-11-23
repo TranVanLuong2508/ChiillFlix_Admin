@@ -72,6 +72,7 @@ export const UploadImage = ({
                     <Input
                       type="file"
                       accept="image/*"
+                      className="cursor-pointer"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -106,7 +107,7 @@ export const UploadImage = ({
                       className="cursor-pointer"
                       onClick={() => {
                         navigator.clipboard.writeText(fieldProps.value);
-                        toast.success(`Đã sao chép URL ${capitalize(field.type)}`);
+                        toast.success(`Đã sao chép ${capitalize(field.type)} URL`);
                       }}
                     >
                       <Copy size={4} />
