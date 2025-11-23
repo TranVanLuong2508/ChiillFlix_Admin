@@ -107,8 +107,8 @@ export const FormCreateNewFilm = () => {
     <div className="mx-[200px]">
       <h1 className="text-2xl font-semibold text-center">Form Tạo Film</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="space-y-4">
             <FormField
               control={form.control}
               name="originalTitle"
@@ -138,25 +138,26 @@ export const FormCreateNewFilm = () => {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Mô tả</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Nhập mô tả phim"
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Mô tả</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Nhập mô tả phim"
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <div className="flex items-center justify-between gap-4">
             <FormField

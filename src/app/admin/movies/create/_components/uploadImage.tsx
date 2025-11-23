@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import UploadService from "@/services/upload.service";
-import { Copy, ImageUp, Loader, Loader2 } from "lucide-react";
+import { Copy, CornerDownRight, ImageUp, Loader, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -64,7 +64,7 @@ export const UploadImage = ({
           render={({ field: fieldProps }) => (
             <FormItem>
               <FormLabel className="capitalize">
-                - {field.type}
+                <CornerDownRight size={20} /> {capitalize(field.type)}
               </FormLabel>
               <FormControl>
                 <div className="flex flex-col gap-2 pl-6 w-full">
