@@ -106,23 +106,25 @@ export function EditRoleModal({ open, roleId, onClose, onSuccess }: ModalProps) 
         permissionIds: selectedPermissions,
       };
 
-      const createRoleResponse = await RoleService.CallCreateRole(payload);
+      const EditRoleResponse = await RoleService.CallUpdateRole(roleId!, payload);
+      console.log("Cchek res", EditRoleResponse);
 
-      if (createRoleResponse?.EC === 1) {
-        toast.success(roleMessage.createSucess || "Tạo vai trò thành công!");
+      if (EditRoleResponse?.EC === 1) {
+        toast.success(roleMessage.editSuccess);
         onSuccess();
         handleCloseModal();
-      } else if (createRoleResponse?.EC === 2) {
-        toast.warning(roleMessage.alreadyExist || "Tên vai trò đã tồn tại!");
+      } else {
+        toast.error(roleMessage.error);
       }
     } catch (error) {
-      console.error("Error creating role:", error);
-      toast.error("Đã có lỗi xảy ra");
+      console.error("Error editing role:", error);
+      toast.error(roleMessage.error);
     } finally {
       setLoading(false);
     }
   };
 
+  console.log("Check selected perrmisson: ", selectedPermissions);
   return (
     <Dialog open={open} onOpenChange={handleCloseModal} modal={false}>
       <DialogContent className=" max-w-[95vw] w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 hide-scrollbar">

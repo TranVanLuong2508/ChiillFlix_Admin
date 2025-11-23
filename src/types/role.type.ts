@@ -13,7 +13,14 @@ export interface IRoleData {
   roles: IRole[];
 }
 
-export interface createRoleData {
+export interface ModalRoleData {
+  roleName: string;
+  description: string;
+  isActive: boolean;
+  permissionIds: number[];
+}
+
+export interface ModalRoleData {
   roleName: string;
   description: string;
   isActive: boolean;
