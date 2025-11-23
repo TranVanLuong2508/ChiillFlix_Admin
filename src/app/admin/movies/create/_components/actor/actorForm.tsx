@@ -15,7 +15,7 @@ import {
 
 import { Search } from "./search";
 import { ChevronsUpDown, ListChecks } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { IActorSearch } from "@/types/search.type";
 import { Input } from "@/components/ui/input";
 
@@ -42,13 +42,29 @@ export const ActorForm = ({
     setSelectedActor([...selectedActor, actor]);
   };
 
+
+  const valueMap = useMemo(
+    () => new Map(field.value.map((v: any) => [v.actorId, v.characterName])),
+    [field.value]
+  );
+
+  const handleCharacterNameChange = useCallback(
+    (actorId: number, characterName: string) => {
+      const newValue = field.value.map((v: any) =>
+        v.actorId === actorId ? { ...v, characterName } : v
+      );
+      field.onChange(newValue);
+    },
+    [field]
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
         <FormLabel>Diễn viên</FormLabel>
         <FormControl>
           <Search
-            field={field}
+            selectedActor={selectedActor}
             handleSelectActor={handleSelectActor}
           />
         </FormControl>
@@ -94,13 +110,7 @@ export const ActorForm = ({
               <Input
                 value={field.value.find((v: any) => v.actorId === item.actorId)?.characterName || ""}
                 onChange={(e) => {
-                  const newValue = field.value.map((v: any) => {
-                    if (v.actorId === item.actorId) {
-                      return { ...v, characterName: e.target.value };
-                    }
-                    return v;
-                  });
-                  field.onChange(newValue);
+                  handleCharacterNameChange(item.actorId, e.target.value);
                 }}
                 placeholder="Tên nhân vật"
               />

@@ -1,17 +1,17 @@
 import { Input } from "@/components/ui/input";
 import SearchService from "@/services/search.service";
 import { IActorSearch } from "@/types/search.type";
-import { Loader } from "lucide-react";
+import { Check, Loader } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface SearchProps {
-  field: any;
+  selectedActor: IActorSearch[];
   handleSelectActor: (actor: IActorSearch) => void;
 }
 
 export const Search = ({
-  field,
+  selectedActor,
   handleSelectActor,
 }: SearchProps) => {
 
@@ -99,6 +99,7 @@ export const Search = ({
     <div ref={wrapperRef}>
       <div className="relative">
         <Input
+          value={keyword}
           placeholder={"Nhập tên diễn viên để tìm kiếm"}
           onChange={handleChangSeachValue}
         />
@@ -128,19 +129,25 @@ export const Search = ({
                 <p className="text-amber-400 text-sm mb-2">Danh sách diễn viên</p>
 
                 <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                  {dataSearch.map((actor) => (
-                    <div
-                      key={actor.actorId}
-                      onClick={() => handleSelect(actor)}
-                      className="flex items-center gap-3 cursor-pointer p-2 hover:bg-[#2a3040] rounded-lg transition"
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-white font-semibold text-sm">
-                          {actor.actorName}
-                        </span>
+                  {dataSearch.map((actor) => {
+                    const isSelected = selectedActor.some((item) => item.actorId === actor.actorId);
+                    return (
+                      <div
+                        key={actor.actorId}
+                        onClick={() => handleSelect(actor)}
+                        className="flex items-center gap-3 cursor-pointer p-2 hover:bg-[#2a3040] rounded-lg transition"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="text-white font-semibold text-sm">
+                            {actor.actorName}
+                          </div>
+                          {isSelected && (
+                            <Check className="ml-auto h-4 w-4 text-amber-400" />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </>
             )}
