@@ -10,8 +10,12 @@ import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 
 import FilmService from "@/services/film.service";
+import { useFilmStore } from "@/stores/film.store";
 
 const MoviesPage = () => {
+  const { isLoadingDelete } = useFilmStore();
+
+
   const [filmData, setFilmData] = useState<FilmColumn[]>([]);
   const [pageCount, setPageCount] = useState<number>(1);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -51,8 +55,10 @@ const MoviesPage = () => {
   };
 
   useEffect(() => {
+    if (isLoadingDelete) return;
+
     getFilmPagination()
-  }, [pagination.pageIndex, pagination.pageSize]);
+  }, [pagination.pageIndex, pagination.pageSize, isLoadingDelete]);
 
   return (
     <div>

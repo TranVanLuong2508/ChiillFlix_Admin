@@ -44,7 +44,7 @@ export interface IFilmPagination {
 }
 
 
-// Create New Film Request
+// Create New Film
 export enum ImageType {
   POSTER = 'poster',
   HORIZONTAL = 'horizontal',
@@ -96,3 +96,10 @@ export interface IFilmCreateRes {
   id: string;
   createdAt: string;
 }
+// Create New Film
+// Delete Film 
+export interface IFilmDeleteRes {
+  id: string;
+  deleted: boolean;
+}
+// Delete Film 

@@ -12,12 +12,16 @@ import { Button } from "@/components/ui/button"
 import { Copy, MoreHorizontal, SquarePen, Trash2 } from "lucide-react"
 import { FilmColumn } from "@/types/film.type"
 import { toast } from "sonner";
+import FilmService from "@/services/film.service";
+import { useFilmStore } from "@/stores/film.store";
 
 interface ActionsProps {
   row: FilmColumn
 }
 
 export const Actions = ({ row }: ActionsProps) => {
+  const { handleDeletedFilm } = useFilmStore();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -49,7 +53,7 @@ export const Actions = ({ row }: ActionsProps) => {
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer text-red-600 focus:text-red-600"
-          onClick={() => { console.log("OK") }}
+          onClick={() => handleDeletedFilm(row.filmId)}
         >
           <Trash2 size={4} className="text-red-600" />
           Xóa

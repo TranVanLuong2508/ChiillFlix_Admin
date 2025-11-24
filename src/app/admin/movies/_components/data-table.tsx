@@ -98,7 +98,7 @@ export function DataTable<TData, TValue>({
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex items-center gap-2 bg-white hover:bg-white text-black hover:text-lime-500 hover:border-lime-500 cursor-pointer"
+              className="flex items-center gap-2 bg-white hover:bg-white text-black cursor-pointer"
               onClick={() => router.push("/admin/movies/create")}
             >
               <CirclePlus />

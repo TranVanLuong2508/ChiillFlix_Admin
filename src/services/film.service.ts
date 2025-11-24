@@ -1,7 +1,12 @@
 import privateAxios from "@/lib/axios/privateAxios";
 import publicAxios from "@/lib/axios/publicAxios";
 import { IBackendRes } from "@/types/backend.type";
-import { IFilmCreateReq, IFilmCreateRes, IFilmPagination } from "@/types/film.type";
+import {
+  IFilmCreateReq,
+  IFilmCreateRes,
+  IFilmDeleteRes,
+  IFilmPagination,
+} from "@/types/film.type";
 
 const FilmService = {
   getFilmPagination: (
@@ -18,6 +23,9 @@ const FilmService = {
   },
   createFilm: (payload: IFilmCreateReq): Promise<IBackendRes<IFilmCreateRes>> => {
     return privateAxios.post(`/films`, payload)
+  },
+  deleteFilm: (filmId: string): Promise<IBackendRes<IFilmDeleteRes>> => {
+    return privateAxios.delete(`/films/${filmId}`)
   }
 }
 
