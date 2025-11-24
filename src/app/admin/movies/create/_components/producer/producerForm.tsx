@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   FormControl,
+  FormDescription,
   FormItem,
   FormLabel,
   FormMessage
@@ -70,6 +71,9 @@ export const ProducerForm = ({
             handleSelectProducer={handleSelectProducer}
           />
         </FormControl>
+        <FormDescription>
+          *Vui lòng kiểm tra và chọn nhà sản xuất chính
+        </FormDescription>
         <FormMessage />
       </FormItem>
       <Collapsible

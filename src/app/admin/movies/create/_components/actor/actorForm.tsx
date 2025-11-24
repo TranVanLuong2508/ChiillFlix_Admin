@@ -7,6 +7,7 @@ import { IActorSearch } from "@/types/search.type";
 
 import {
   FormControl,
+  FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
@@ -64,6 +65,9 @@ export const ActorForm = ({
             handleSelectActor={handleSelectActor}
           />
         </FormControl>
+        <FormDescription>
+          *Vui lòng kiểm tra và nhập tên nhân vật mà diễn viên đóng
+        </FormDescription>
         <FormMessage />
       </FormItem>
       <Collapsible

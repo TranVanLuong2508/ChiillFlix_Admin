@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   FormControl,
+  FormDescription,
   FormItem,
   FormLabel,
   FormMessage
@@ -71,6 +72,9 @@ export const DirectorForm = ({
             handleSelectDirector={handleSelectDirector}
           />
         </FormControl>
+        <FormDescription>
+          *Vui lòng kiểm tra và chọn đạo diễn chính
+        </FormDescription>
         <FormMessage />
       </FormItem>
       <Collapsible
