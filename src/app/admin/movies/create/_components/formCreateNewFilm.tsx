@@ -27,7 +27,7 @@ import { AllCodeRow } from "@/types/backend.type";
 import { SelectForm } from "./selectForm";
 import { MultiSelectForm } from "./multiSelectForm";
 import { ActorForm } from "./actor/actorForm";
-import { DirectorForm } from "./directorForm";
+import { DirectorForm } from "./director/directorForm";
 
 export const FormCreateNewFilm = () => {
   const form = useForm<z.infer<typeof formSchema>>({

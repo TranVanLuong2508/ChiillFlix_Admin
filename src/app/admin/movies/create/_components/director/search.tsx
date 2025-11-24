@@ -1,21 +1,21 @@
 import { Input } from "@/components/ui/input";
 import SearchService from "@/services/search.service";
-import { IActorSearch } from "@/types/search.type";
+import { IActorSearch, IDirectorSearch } from "@/types/search.type";
 import { Check, Loader } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface SearchProps {
-  selectedActor: IActorSearch[];
-  handleSelectActor: (actor: IActorSearch) => void;
+  selectedDirector: IDirectorSearch[];
+  handleSelectDirector: (director: IDirectorSearch) => void;
 }
 
 export const Search = ({
-  selectedActor,
-  handleSelectActor,
+  selectedDirector,
+  handleSelectDirector,
 }: SearchProps) => {
 
-  const [dataSearch, setDataSearch] = useState<IActorSearch[]>([]);
+  const [dataSearch, setDataSearch] = useState<IDirectorSearch[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [keyword, setKeyword] = useState("");
@@ -59,20 +59,20 @@ export const Search = ({
     setIsSearching(true);
     setShowDropdown(true);
     try {
-      const res = await SearchService.searchActor(debouncedKeyword);
+      const res = await SearchService.searchDirector(debouncedKeyword);
       await new Promise((r) => setTimeout(r, 500));
       if (res && res.EC === 1) {
         if (
           res.data !== undefined &&
-          res.data.actors.length > 0
+          res.data.directors.length > 0
         ) {
-          setDataSearch(res.data.actors);
+          setDataSearch(res.data.directors);
         } else {
           setDataSearch([]);
         }
       }
     } catch (error) {
-      console.log("Error from search actor fetch function: ", error);
+      console.log("Error from search film fetch function: ", error);
       toast.error("Có lỗi xảy ra khi tìm kiếm, vui lòng thử lại khi khác");
     } finally {
       setIsSearching(false);
@@ -86,13 +86,13 @@ export const Search = ({
     setDataSearch([]);
   };
 
-  const handleSelect = (item: IActorSearch) => {
+  const handleSelect = (item: IDirectorSearch) => {
     setKeyword("");
     setDebouncedKeyword("");
     setShowDropdown(false);
     setDataSearch([]);
 
-    handleSelectActor(item);
+    handleSelectDirector(item);
   }
 
   return (
@@ -100,7 +100,7 @@ export const Search = ({
       <div className="relative">
         <Input
           value={keyword}
-          placeholder={"Nhập tên diễn viên để tìm kiếm"}
+          placeholder={"Nhập tên đạo diễn để tìm kiếm"}
           onChange={handleChangSeachValue}
         />
         {showDropdown && (
@@ -112,7 +112,7 @@ export const Search = ({
                   size={20}
                   style={{ animationDuration: "1.5s" }}
                 />{" "}
-                <span className="ml-1.5">Đang tìm diễn viên</span>
+                <span className="ml-1.5">Đang tìm đạo diễn</span>
               </div>
             )}
 
@@ -126,20 +126,20 @@ export const Search = ({
             {/* Có kết quả */}
             {!isSearching && dataSearch.length > 0 && (
               <>
-                <p className="text-amber-400 text-sm mb-2">Danh sách diễn viên</p>
+                <p className="text-amber-400 text-sm mb-2">Danh sách đạo diễn</p>
 
                 <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                  {dataSearch.map((actor) => {
-                    const isSelected = selectedActor.some((item) => item.actorId === actor.actorId);
+                  {dataSearch.map((director) => {
+                    const isSelected = selectedDirector.some((item) => item.directorId === director.directorId);
                     return (
                       <div
-                        key={actor.actorId}
-                        onClick={() => handleSelect(actor)}
+                        key={director.directorId}
+                        onClick={() => handleSelect(director)}
                         className="flex items-center gap-3 cursor-pointer p-2 hover:bg-[#2a3040] rounded-lg transition"
                       >
                         <div className="flex items-center gap-2">
                           <div className="text-white font-semibold text-sm">
-                            {actor.actorName}
+                            {director.directorName}
                           </div>
                           {isSelected && (
                             <Check className="ml-auto h-4 w-4 text-amber-400" />

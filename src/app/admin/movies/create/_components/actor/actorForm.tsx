@@ -1,5 +1,10 @@
 "use client";
 
+import { useCallback, useMemo, useState } from "react";
+
+import { ChevronsUpDown, ListChecks } from "lucide-react";
+import { IActorSearch } from "@/types/search.type";
+
 import {
   FormControl,
   FormItem,
@@ -12,12 +17,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import { Input } from "@/components/ui/input";
 
 import { Search } from "./search";
-import { ChevronsUpDown, ListChecks } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { IActorSearch } from "@/types/search.type";
-import { Input } from "@/components/ui/input";
 
 interface ActorFormProps {
   field: any;
@@ -41,12 +43,6 @@ export const ActorForm = ({
     field.onChange([...field.value, newActorEntry]);
     setSelectedActor([...selectedActor, actor]);
   };
-
-
-  const valueMap = useMemo(
-    () => new Map(field.value.map((v: any) => [v.actorId, v.characterName])),
-    [field.value]
-  );
 
   const handleCharacterNameChange = useCallback(
     (actorId: number, characterName: string) => {
