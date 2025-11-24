@@ -19,3 +19,5 @@ export interface ModalRoleData {
   isActive: boolean;
   permissionIds: number[];
 }
+
+export type filteType = "all" | "active" | "deleted";

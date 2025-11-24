@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { RoleService } from "@/services/roleService";
-import { createRoleData } from "@/types/role.type";
+import { ModalRoleData } from "@/types/role.type";
 import { toast } from "sonner";
 import { roleMessage } from "@/constants/messages/roleMessage";
 import { PermissionModule } from "@/types/permission.type";
@@ -22,7 +22,7 @@ import PermissionSelectorEdit from "../PermissionSelectorEdit";
 interface ModalProps {
   open: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (roleId: number) => void;
 }
 
 export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
@@ -74,7 +74,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
 
     setLoading(true);
     try {
-      const payload: createRoleData = {
+      const payload: ModalRoleData = {
         roleName: roleName.trim(),
         description: description.trim(),
         isActive,
@@ -85,7 +85,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
 
       if (createRoleResponse?.EC === 1) {
         toast.success(roleMessage.createSucess || "Tạo vai trò thành công!");
-        onSuccess();
+        if (createRoleResponse.data?.roleId) onSuccess(createRoleResponse.data?.roleId);
         handleCloseModal();
       } else if (createRoleResponse?.EC === 2) {
         toast.warning(roleMessage.alreadyExist || "Tên vai trò đã tồn tại!");
@@ -158,7 +158,7 @@ export function CreateRoleModal({ open, onClose, onSuccess }: ModalProps) {
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={handleCloseModal} disabled={loading}>
+            <Button className="cursor-pointer" variant="outline" onClick={handleCloseModal} disabled={loading}>
               Hủy
             </Button>
             <Button

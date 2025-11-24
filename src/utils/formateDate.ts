@@ -4,7 +4,7 @@ export function formatDate(isoString?: string | null) {
   if (!isoString) return "";
 
   try {
-    return format(new Date(isoString), "dd/MM/yyyy");
+    return format(new Date(isoString), "HH:mm:ss dd/MM/yyyy");
   } catch {
     return "";
   }

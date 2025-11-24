@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -26,33 +25,102 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { IRole } from "@/types/role.type";
+import { filteType, IRole } from "@/types/role.type";
 import { RoleService } from "@/services/roleService";
 import { roleColumns } from "./RoleColums";
 import { CreateRoleModal } from "../modals/CreateRoleModal";
 import { DataTablePagination } from "@/components/table/data-table-pagination";
 import { EditRoleModal } from "../modals/EditRoleModal";
+import { ConfirmDeleteRoleModal } from "../modals/ConfirmDeleteRoleModal";
+import { DropdownFilter } from "@/components/table/DropdownFilter";
+import { toast } from "sonner";
 
 export function RolesTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
   const [roleList, setRoleList] = React.useState<IRole[]>([]);
+  const [originalRoles, setOriginalRoles] = React.useState<IRole[]>([]);
 
   const [openAddRoleModal, setOpenAddRoleModal] = React.useState(false);
   const [openEditRoleModal, setOpenEditRoleModal] = React.useState(false);
 
   const [editingRoleId, setEditingRoleId] = React.useState<number | null>(null);
+  const [deletingRole, setDeletingRole] = React.useState<IRole | null>(null);
+
+  const [statusFilter, setStatusFilter] = React.useState<filteType>("all");
+
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
+  const [deleteMeta, setDeleteMeta] = React.useState<{
+    userCount: number;
+    alternativeRoles: { roleId: number; roleName: string }[];
+  } | null>(null);
 
   const handleEditRole = (roleId: number) => {
     setEditingRoleId(roleId);
-    console.log("Edit role", roleId);
     setOpenEditRoleModal(true);
   };
 
-  const handleDeleteRole = (roleId: number) => {
-    console.log("Delete role", roleId);
+  const handleDeleteRole = async (roleId: number) => {
+    try {
+      const role = roleList.find((r) => r.roleId === roleId) || null;
+      setDeletingRole(role);
+
+      const res = await RoleService.CallCheckRoleBeforeDelete(roleId);
+
+      console.log("Check res CallCheckRoleBeforeDelete: ", res);
+
+      if (res?.EC === 1 && res.data) {
+        setDeleteMeta({
+          userCount: res.data.userCount,
+          alternativeRoles: res.data.alternativeRoles,
+        });
+        setConfirmDeleteOpen(true);
+      } else if (res?.EC === 0) {
+        toast.error("Không thể xoá vai trò");
+      }
+    } catch (error) {
+      console.error("Error check delete role:", error);
+      toast.error("Lỗi khi kiểm tra vai trò trước khi xoá");
+    }
+  };
+
+  const handleReassignAndDelete = async (targetRoleId: number) => {
+    if (!deletingRole) return;
+    try {
+      const res = await RoleService.CallReassignAndDeleteRole(deletingRole.roleId, targetRoleId);
+      console.log("Check res CallReassignAndDeleteRole: ", res);
+
+      if (res?.EC === 1) {
+        toast.success("Chuyển người dùng & xoá vai trò thành công");
+        await fetchRoleData();
+      } else {
+        toast.error("Không thể xoá vai trò");
+      }
+    } catch (error) {
+      console.error("Error reassign & delete:", error);
+      toast.error("Lỗi khi chuyển role & xoá");
+    }
+  };
+
+  const handleDeleteWithoutUser = async () => {
+    if (!deletingRole) return;
+    try {
+      const res = await RoleService.CallDeleteRole(deletingRole.roleId);
+      console.log("Check res handleDeleteWithoutUser: ", res);
+
+      if (res?.EC === 1) {
+        toast.success("Xoá vai trò thành công");
+        await fetchRoleData();
+      } else {
+        toast.error("Không thể xoá vai trò");
+      }
+    } catch (error) {
+      console.error("Error delete role:", error);
+      toast.error("Lỗi khi xoá vai trò");
+    }
   };
 
   const table = useReactTable({
@@ -82,20 +150,35 @@ export function RolesTable() {
     try {
       const res = await RoleService.CallFetchRolesList();
       if (res?.EC === 1 && res.data?.roles) {
+        setOriginalRoles(res.data.roles);
         setRoleList(res.data.roles);
       }
     } catch (error) {
       console.log("Error loading roles:", error);
     }
   };
-  const fetchRoleDataReverse = async () => {
+
+  const fetchRoleDataToTop = async (roleId: number) => {
     try {
       const res = await RoleService.CallFetchRolesList();
+
       if (res?.EC === 1 && res.data?.roles) {
-        setRoleList(res.data.roles.reverse());
+        const roles = res.data.roles;
+        const updatedRole = roles.find((r) => r.roleId === roleId);
+
+        if (!updatedRole) {
+          setOriginalRoles(roles);
+          setRoleList(roles);
+          return;
+        }
+
+        const newList = [updatedRole, ...roles.filter((r) => r.roleId !== roleId)];
+
+        setOriginalRoles(newList);
+        setRoleList(newList);
       }
     } catch (error) {
-      console.log("Error loading roles:", error);
+      console.log("Error fetch role data to top:", error);
     }
   };
 
@@ -115,7 +198,26 @@ export function RolesTable() {
     setOpenEditRoleModal(false);
   };
 
-  console.log("Check editting role Id: ", editingRoleId);
+  const applyFilter = (status: filteType) => {
+    setStatusFilter(status);
+
+    if (status === "all") {
+      setRoleList(originalRoles);
+      return;
+    }
+
+    if (status === "active") {
+      setRoleList(originalRoles.filter((role) => !role.isDeleted));
+      return;
+    }
+
+    if (status === "deleted") {
+      setRoleList(originalRoles.filter((role) => role.isDeleted));
+      return;
+    }
+  };
+
+  console.log("Check roleList: ", roleList);
 
   return (
     <>
@@ -127,6 +229,8 @@ export function RolesTable() {
             onChange={(event) => table.getColumn("roleName")?.setFilterValue(event.target.value)}
             className="max-w-sm"
           />
+
+          <DropdownFilter applyFilter={applyFilter} statusFilter={statusFilter} />
 
           <Button
             onClick={() => handleOpenCreateModal()}
@@ -210,13 +314,32 @@ export function RolesTable() {
       <EditRoleModal
         open={openEditRoleModal}
         onClose={handleCloseEditModal}
-        onSuccess={() => fetchRoleDataReverse()}
+        onSuccess={(newRoleId) => fetchRoleDataToTop(newRoleId)}
         roleId={editingRoleId}
       />
       <CreateRoleModal
         open={openAddRoleModal}
         onClose={handleCloseCreateModal}
-        onSuccess={() => fetchRoleDataReverse()}
+        onSuccess={(newRoleId) => fetchRoleDataToTop(newRoleId)}
+      />
+      <ConfirmDeleteRoleModal
+        open={confirmDeleteOpen}
+        onClose={() => {
+          setConfirmDeleteOpen(false);
+          setDeletingRole(null);
+          setDeleteMeta(null);
+        }}
+        onDeleted={() => {
+          setConfirmDeleteOpen(false);
+          setDeletingRole(null);
+          setDeleteMeta(null);
+        }}
+        roleId={deletingRole?.roleId ?? null}
+        roleName={deletingRole?.roleName}
+        userCount={deleteMeta?.userCount ?? 0}
+        alternativeRoles={deleteMeta?.alternativeRoles ?? []}
+        onReassignAndDelete={handleReassignAndDelete}
+        onDeleteWithoutUser={handleDeleteWithoutUser}
       />
     </>
   );

@@ -9,13 +9,12 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { RoleService } from "@/services/roleService";
-import { createRoleData } from "@/types/role.type";
+import { ModalRoleData } from "@/types/role.type";
 import { toast } from "sonner";
 import { roleMessage } from "@/constants/messages/roleMessage";
 import { PermissionModule } from "@/types/permission.type";
 import _ from "lodash";
 import { PermmissionService } from "@/services/permissionService";
-import PermissionSelector from "../PermissionSelector";
 import "../../../../styles/RoleModal.css";
 import PermissionSelectorEdit from "../PermissionSelectorEdit";
 
@@ -23,7 +22,7 @@ interface ModalProps {
   open: boolean;
   roleId: number | null;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (roleId: number) => void;
 }
 
 export function EditRoleModal({ open, roleId, onClose, onSuccess }: ModalProps) {
@@ -111,7 +110,7 @@ export function EditRoleModal({ open, roleId, onClose, onSuccess }: ModalProps) 
 
       if (EditRoleResponse?.EC === 1) {
         toast.success(roleMessage.editSuccess);
-        onSuccess();
+        if (EditRoleResponse.data?.roleId) onSuccess(EditRoleResponse.data?.roleId);
         handleCloseModal();
       } else {
         toast.error(roleMessage.error);
@@ -129,7 +128,7 @@ export function EditRoleModal({ open, roleId, onClose, onSuccess }: ModalProps) 
     <Dialog open={open} onOpenChange={handleCloseModal} modal={false}>
       <DialogContent className=" max-w-[95vw] w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 hide-scrollbar">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Thêm vai trò mới</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Chỉnh sửa vai trò</DialogTitle>
         </DialogHeader>
 
         <div className="mt-6 space-y-6">
@@ -185,7 +184,7 @@ export function EditRoleModal({ open, roleId, onClose, onSuccess }: ModalProps) 
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={handleCloseModal} disabled={loading}>
+            <Button className="cursor-pointer" variant="outline" onClick={handleCloseModal} disabled={loading}>
               Hủy
             </Button>
             <Button

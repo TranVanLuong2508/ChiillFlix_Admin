@@ -3,9 +3,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, SquarePen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import * as dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,9 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/utils/formateDate";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number) => void): ColumnDef<IRole>[] => [
   {
@@ -150,7 +144,7 @@ export const roleColumns = (onEdit: (id: number) => void, onDelete: (id: number)
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => navigator.clipboard.writeText(role.roleName.toString())}
