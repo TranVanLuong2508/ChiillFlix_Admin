@@ -1,21 +1,21 @@
 import { Input } from "@/components/ui/input";
 import SearchService from "@/services/search.service";
-import { IActorSearch, IDirectorSearch } from "@/types/search.type";
+import { IProducerSearch } from "@/types/search.type";
 import { Check, Loader } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface SearchProps {
-  selectedDirector: IDirectorSearch[];
-  handleSelectDirector: (director: IDirectorSearch) => void;
+  selectedProducer: IProducerSearch[];
+  handleSelectProducer: (producer: IProducerSearch) => void;
 }
 
 export const Search = ({
-  selectedDirector,
-  handleSelectDirector,
+  selectedProducer,
+  handleSelectProducer,
 }: SearchProps) => {
 
-  const [dataSearch, setDataSearch] = useState<IDirectorSearch[]>([]);
+  const [dataSearch, setDataSearch] = useState<IProducerSearch[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [keyword, setKeyword] = useState("");
@@ -36,7 +36,7 @@ export const Search = ({
 
   useEffect(() => {
     if (debouncedKeyword.trim() === "") return;
-    fetchSearchDirectorResult();
+    fetchSearchProducerResult();
   }, [debouncedKeyword]);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export const Search = ({
   }, []);
 
 
-  const fetchSearchDirectorResult = async () => {
+  const fetchSearchProducerResult = async () => {
     if (debouncedKeyword.trim() === "") {
       setDataSearch([]);
       setShowDropdown(false);
@@ -59,14 +59,14 @@ export const Search = ({
     setIsSearching(true);
     setShowDropdown(true);
     try {
-      const res = await SearchService.searchDirector(debouncedKeyword);
+      const res = await SearchService.searchProducer(debouncedKeyword);
       await new Promise((r) => setTimeout(r, 500));
       if (res && res.EC === 1) {
         if (
           res.data !== undefined &&
-          res.data.directors.length > 0
+          res.data.producers.length > 0
         ) {
-          setDataSearch(res.data.directors);
+          setDataSearch(res.data.producers);
         } else {
           setDataSearch([]);
         }
@@ -86,13 +86,13 @@ export const Search = ({
     setDataSearch([]);
   };
 
-  const handleSelect = (item: IDirectorSearch) => {
+  const handleSelect = (item: IProducerSearch) => {
     setKeyword("");
     setDebouncedKeyword("");
     setShowDropdown(false);
     setDataSearch([]);
 
-    handleSelectDirector(item);
+    handleSelectProducer(item);
   }
 
   return (
@@ -100,7 +100,7 @@ export const Search = ({
       <div className="relative">
         <Input
           value={keyword}
-          placeholder={"Nhập tên đạo diễn để tìm kiếm"}
+          placeholder={"Nhập tên nhà sản xuất để tìm kiếm"}
           onChange={handleChangSeachValue}
         />
         {showDropdown && (
@@ -112,7 +112,7 @@ export const Search = ({
                   size={20}
                   style={{ animationDuration: "1.5s" }}
                 />{" "}
-                <span className="ml-1.5">Đang tìm đạo diễn</span>
+                <span className="ml-1.5">Đang tìm nhà sản xuất</span>
               </div>
             )}
 
@@ -126,20 +126,22 @@ export const Search = ({
             {/* Có kết quả */}
             {!isSearching && dataSearch.length > 0 && (
               <>
-                <p className="text-amber-400 text-sm mb-2">Danh sách đạo diễn</p>
+                <p className="text-amber-400 text-sm mb-2">
+                  Danh sách nhà sản xuất
+                </p>
 
                 <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
-                  {dataSearch.map((director) => {
-                    const isSelected = selectedDirector.some((item) => item.directorId === director.directorId);
+                  {dataSearch.map((producer) => {
+                    const isSelected = selectedProducer.some((item) => item.producerId === producer.producerId);
                     return (
                       <div
-                        key={director.directorId}
-                        onClick={() => handleSelect(director)}
+                        key={producer.producerId}
+                        onClick={() => handleSelect(producer)}
                         className="flex items-center gap-3 cursor-pointer p-2 hover:bg-[#2a3040] rounded-lg transition"
                       >
                         <div className="flex items-center gap-2">
                           <div className="text-white font-semibold text-sm">
-                            {director.directorName}
+                            {producer.producerName}
                           </div>
                           {isSelected && (
                             <Check className="ml-auto h-4 w-4 text-amber-400" />
