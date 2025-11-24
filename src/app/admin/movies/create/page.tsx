@@ -5,13 +5,31 @@ import { useRouter } from "next/navigation"
 import { FormCreateNewFilm } from "./_components/formCreateNewFilm";
 import z from "zod";
 import { formSchema } from "@/lib/validators/film";
+import FilmService from "@/services/film.service";
+import { toast } from "sonner";
 
 const CreatePage = () => {
   const router = useRouter();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(">>>Check data submit<<<")
-    console.log(values)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const payload = {
+        ...values,
+        duration: Number(values.duration),
+      }
+
+      const res = await FilmService.createFilm(payload);
+      if (res.EC === 0 && res.data) {
+        toast.success("Thêm phim thành công")
+        setTimeout(() => {
+          router.push(`/admin/movies`);
+        }, 1000)
+      } else {
+        toast.error(res.EM);
+      }
+    } catch (error) {
+      console.log("Error when create new film: ", error);
+    }
   }
 
   return (

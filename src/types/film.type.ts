@@ -91,3 +91,8 @@ export interface IFilmCreateReq {
   actors: Actor[];
   producers: Producer[];
 }
+
+export interface IFilmCreateRes {
+  id: string;
+  createdAt: string;
+}

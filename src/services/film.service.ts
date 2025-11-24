@@ -1,6 +1,7 @@
+import privateAxios from "@/lib/axios/privateAxios";
 import publicAxios from "@/lib/axios/publicAxios";
 import { IBackendRes } from "@/types/backend.type";
-import { IFilmPagination } from "@/types/film.type";
+import { IFilmCreateReq, IFilmCreateRes, IFilmPagination } from "@/types/film.type";
 
 const FilmService = {
   getFilmPagination: (
@@ -14,6 +15,9 @@ const FilmService = {
         pageSize,
       }
     })
+  },
+  createFilm: (payload: IFilmCreateReq): Promise<IBackendRes<IFilmCreateRes>> => {
+    return privateAxios.post(`/films`, payload)
   }
 }
 
