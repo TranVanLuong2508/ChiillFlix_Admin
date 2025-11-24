@@ -28,8 +28,14 @@ import { SelectForm } from "./selectForm";
 import { MultiSelectForm } from "./multiSelectForm";
 import { ActorForm } from "./actor/actorForm";
 import { DirectorForm } from "./director/directorForm";
+import { ProducerForm } from "./producer/producerForm";
+import { UploadThumb } from "./uploadThumb";
 
-export const FormCreateNewFilm = () => {
+interface FormCreateNewFilmProps {
+  onSubmit: (values: z.infer<typeof formSchema>) => void;
+}
+
+export const FormCreateNewFilm = ({ onSubmit }: FormCreateNewFilmProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,7 +47,7 @@ export const FormCreateNewFilm = () => {
       slug: "",
       thumbUrl: "",
       ageCode: "",
-      duration: 0,
+      duration: "",
       typeCode: "",
       genreCodes: [],
       countryCode: "",
@@ -62,11 +68,6 @@ export const FormCreateNewFilm = () => {
     control: form.control,
     name: "filmImages",
   });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    alert("Submit success");
-    console.log(values)
-  }
 
   const [rating, setRating] = useState<AllCodeRow[]>([])
   const [country, setCountry] = useState<AllCodeRow[]>([])
@@ -107,7 +108,7 @@ export const FormCreateNewFilm = () => {
     <div className="mx-[200px]">
       <h1 className="text-2xl font-semibold text-center">Form Tạo Film</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log(errors))} className="space-y-8">
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -275,18 +276,21 @@ export const FormCreateNewFilm = () => {
               )}
             />
 
-            {/* <FormField
+            <FormField
               control={form.control}
               name="publicStatusCode"
               render={({ field }) => (
-                <SelectForm
-                  label="Trạng thái"
-                  placeholder="Chọn trạng thái"
-                  field={field}
-                  selectOption={filmStatus}
-                />
+                <div className="flex flex-col flex-1">
+                  <SelectForm
+                    label="Trạng thái"
+                    placeholder="Chọn trạng thái"
+                    field={field}
+                    selectOption={filmStatus}
+                  />
+                  <div className="invisible">&nbsp;</div>
+                </div>
               )}
-            /> */}
+            />
 
           </div>
           <div className="flex items-center justify-between gap-4">
@@ -304,20 +308,14 @@ export const FormCreateNewFilm = () => {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="producers"
-              render={({ field }) => (
-                <MultiSelectForm
-                  label="Nhà sản xuất"
-                  placeholder="Chọn nhà sản xuất..."
-                  field={field}
-                  options={genre}
-                  message="Chưa chọn nhà sản xuất"
-                />
-              )}
-            />
           </div>
+          <FormField
+            control={form.control}
+            name="producers"
+            render={({ field }) => (
+              <ProducerForm field={field} />
+            )}
+          />
 
           <FormField
             control={form.control}
@@ -334,6 +332,21 @@ export const FormCreateNewFilm = () => {
               <DirectorForm field={field} />
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="thumbUrl"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Upload thumbnail</FormLabel>
+                <FormControl>
+                  <UploadThumb field={field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
 
           <FormItem>
             <FormLabel>Upload ảnh</FormLabel>

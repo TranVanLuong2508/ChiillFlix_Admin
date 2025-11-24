@@ -13,65 +13,65 @@ const actorSchema = z.object({
 });
 
 const directorSchema = z.object({
-  directorId: z.string(),
+  directorId: z.number(),
   isMain: z.boolean(),
 });
 
 const producerSchema = z.object({
-  producerId: z.string(),
+  producerId: z.number(),
   isMain: z.boolean(),
 });
 
 export const formSchema = z.object({
-  originalTitle: z.string().min(2, {
+  originalTitle: z.string().min(1, {
     message: "Tên gốc phim không được bỏ trống",
   }),
-  title: z.string().min(2, {
+  title: z.string().min(1, {
     message: "Tên phim không được bỏ trống",
   }),
-  description: z.string().min(2, {
+  description: z.string().min(1, {
     message: "Mô tả không được bỏ trống",
   }),
-  releaseDate: z.string().min(2, {
+  releaseDate: z.string().min(1, {
     message: "Ngày phát hành không được bỏ trống",
   }),
-  year: z.string().min(2, {
+  year: z.string().min(1, {
     message: "Năm không được bỏ trống",
   }),
-  slug: z.string().min(2, {
+  slug: z.string().min(1, {
     message: "Slug không được bỏ trống",
   }),
-  thumbUrl: z.string().min(2, {
+  thumbUrl: z.string().min(1, {
     message: "ThumbURL không được bỏ trống",
   }),
-  ageCode: z.string().min(2, {
+  ageCode: z.string().min(1, {
     message: "Khối độ không được bỏ trống",
   }),
-  duration: z.number().min(2, {
+  duration: z.string().min(1, {
     message: "Thời lượng không được bỏ trống",
   }),
-  typeCode: z.string().min(2, {
+  typeCode: z.string().min(1, {
     message: "Loại không được bỏ trống",
   }),
-  countryCode: z.string().min(2, {
+  countryCode: z.string().min(1, {
     message: "Quốc gia không được bỏ trống",
   }),
-  langCode: z.string().min(2, {
+  langCode: z.string().min(1, {
     message: "Ngôn ngữ không được bỏ trống",
   }),
-  publicStatusCode: z.string().min(2, {
+  publicStatusCode: z.string().min(1, {
     message: "Trạng thái không được bỏ trống",
   }),
-  directors: z.array(directorSchema).min(2, {
+  directors: z.array(directorSchema).min(1, {
     message: "Vui lòng chọn đạo diễn",
   }),
-  actors: z.array(actorSchema).min(2, {
+  actors: z.array(actorSchema).min(1, {
     message: "Vui lòng chọn diễn viên",
   }),
-  producers: z.array(producerSchema).min(2, {
+  producers: z.array(producerSchema).min(1, {
     message: "Vui lòng chọn nhà sản xuất",
   }),
-  genreCodes: z.array(z.string()).min(2, {
+  genreCodes: z.array(z.string()).min(1, {
     message: "Thể loại không được bỏ trống",
   }),
   filmImages: z.array(filmImageSchema).min(3, {
