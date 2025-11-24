@@ -13,9 +13,12 @@ import { useActorStore } from "@/stores/actorStore";
 
 const ActorsPage = () => {
   const { actors, meta, loading, fetchActors, deleteActor } = useActorStore();
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+  const [pagination, setPagination] = useState<PaginationState>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('actor-pagination');
+      if (saved) return JSON.parse(saved);
+    }
+    return { pageIndex: 0, pageSize: 10 };
   });
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
@@ -25,7 +28,10 @@ const ActorsPage = () => {
     const page = pagination.pageIndex + 1;
     const limit = pagination.pageSize;
     fetchActors(page, limit);
-  }, [pagination.pageIndex, pagination.pageSize, fetchActors]);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('actor-pagination', JSON.stringify(pagination));
+    }
+  }, [pagination.pageIndex, pagination.pageSize, fetchActors, pagination]);
 
   const handleAddActor = () => {
     setAddDialogOpen(true);

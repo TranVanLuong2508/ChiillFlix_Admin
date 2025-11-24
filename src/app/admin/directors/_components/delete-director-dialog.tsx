@@ -11,6 +11,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDirectorStore } from "@/stores/directorStore";
+import { toast } from "sonner";
 import { useState } from "react";
 
 interface DeleteDirectorDialogProps {
@@ -38,11 +39,15 @@ export function DeleteDirectorDialog({
         try {
             if (isBulk && onBulkDelete) {
                 await onBulkDelete();
+                toast.success("Đã xóa các đạo diễn đã chọn!");
                 onOpenChange(false);
             } else {
                 const success = await deleteDirector(parseInt(directorId));
                 if (success) {
+                    toast.success("Xóa đạo diễn thành công!");
                     onOpenChange(false);
+                } else {
+                    toast.error("Xóa đạo diễn thất bại!");
                 }
             }
         } finally {

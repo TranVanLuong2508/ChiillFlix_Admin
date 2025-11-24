@@ -12,9 +12,12 @@ import { useDirectorStore } from "@/stores/directorStore";
 
 const DirectorsPage = () => {
   const { directors, meta, loading, fetchDirectors, deleteDirector } = useDirectorStore();
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+  const [pagination, setPagination] = useState<PaginationState>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('director-pagination');
+      if (saved) return JSON.parse(saved);
+    }
+    return { pageIndex: 0, pageSize: 10 };
   });
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 

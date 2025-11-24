@@ -54,7 +54,7 @@ export function ActorDialog({
     actor,
     mode,
 }: ActorDialogProps) {
-    const { createActor, updateActor } = useActorStore();
+    const { createActor, updateActor, fetchActors, actors, meta } = useActorStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [countries, setCountries] = useState<AllCodeRow[]>([]);
     const [genders, setGenders] = useState<AllCodeRow[]>([]);
@@ -136,8 +136,15 @@ export function ActorDialog({
     }, [actor, mode, reset]);
 
     const onSubmit = async (data: ActorFormData) => {
-        if (data.birthDate && !/^\d{2}\/\d{2}\/\d{4}$/.test(data.birthDate)) {
+        if (data.birthDate === "") {
             toast.error("Ngày sinh phải đúng định dạng dd/mm/yyyy");
+            return;
+        } else if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data.birthDate)) {
+            toast.error("Ngày sinh phải đúng định dạng dd/mm/yyyy");
+            return;
+        }
+        if (data.nationalityCode === "") {
+            toast.error("Vui lòng chọn quốc tịch");
             return;
         }
         if (data.avatarUrl?.trim()) {
@@ -170,9 +177,26 @@ export function ActorDialog({
             };
 
             let success = false;
+            let tempActors = [...actors];
             if (mode === "create") {
                 success = await createActor(dto);
                 if (success) {
+                    const gender = genders.find(g => g.keyMap === dto.genderCode);
+                    const nationality = countries.find(c => c.keyMap === dto.nationalityCode);
+                    const newActor = {
+                        actorId: Date.now().toString(),
+                        actorName: dto.actorName,
+                        birthDate: dto.birthDate || '',
+                        genderCode: dto.genderCode || '',
+                        shortBio: dto.shortBio || '',
+                        avatarUrl: dto.avatarUrl || '',
+                        nationalityCode: dto.nationalityCode || '',
+                        gender: gender ? gender.valueVi : '',
+                        nationality: nationality ? nationality.valueVi : '',
+                        slug: '',
+                    };
+                    tempActors.unshift(newActor);
+                    useActorStore.setState({ actors: tempActors });
                     toast.success("Thêm diễn viên thành công!");
                 } else {
                     toast.error("Thêm diễn viên thất bại!");
@@ -180,6 +204,19 @@ export function ActorDialog({
             } else if (actor) {
                 success = await updateActor(parseInt(actor.actorId), dto);
                 if (success) {
+                    const updateActor = {
+                        ...actor,
+                        actorName: dto.actorName,
+                        birthDate: dto.birthDate || '',
+                        genderCode: dto.genderCode || '',
+                        shortBio: dto.shortBio || '',
+                        avatarUrl: dto.avatarUrl || '',
+                        nationalityCode: dto.nationalityCode || '',
+
+                    }
+                    const filteredActors = tempActors.filter(a => a.actorId !== actor.actorId);
+                    filteredActors.unshift(updateActor);
+                    useActorStore.setState({ actors: filteredActors });
                     toast.success("Cập nhật diễn viên thành công!");
                 } else {
                     toast.error("Cập nhật diễn viên thất bại!");

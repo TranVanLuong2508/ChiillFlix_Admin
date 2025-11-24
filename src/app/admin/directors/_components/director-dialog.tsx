@@ -54,7 +54,7 @@ export function DirectorDialog({
     director,
     mode,
 }: DirectorDialogProps) {
-    const { createDirector, updateDirector } = useDirectorStore();
+    const { createDirector, updateDirector, fetchDirectors, directors, meta } = useDirectorStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [countries, setCountries] = useState<AllCodeRow[]>([]);
     const [genders, setGenders] = useState<AllCodeRow[]>([]);
@@ -136,9 +136,15 @@ export function DirectorDialog({
     }, [director, mode, reset]);
 
     const onSubmit = async (data: DirectorFormData) => {
-        // Validate ngày sinh nếu có nhập
-        if (data.birthDate && !/^\d{2}\/\d{2}\/\d{4}$/.test(data.birthDate)) {
+        if (data.birthDate === "") {
+            toast.error("Vui lòng nhập ngày sinh");
+            return;
+        } else if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data.birthDate)) {
             toast.error("Ngày sinh phải đúng định dạng dd/mm/yyyy");
+            return;
+        }
+        if (data.nationalityCode === "") {
+            toast.error("Vui lòng chọn quốc tịch");
             return;
         }
         if (data.avatarUrl?.trim()) {
@@ -171,9 +177,26 @@ export function DirectorDialog({
             };
 
             let success = false;
+            let tempDirectors = [...directors];
             if (mode === "create") {
                 success = await createDirector(dto);
                 if (success) {
+                    const gender = genders.find(g => g.keyMap === dto.genderCode);
+                    const nationality = countries.find(c => c.keyMap === dto.nationalityCode);
+                    const newDirector = {
+                        directorId: Date.now().toString(),
+                        directorName: dto.directorName,
+                        birthDate: dto.birthDate || '',
+                        genderCode: dto.genderCode || '',
+                        story: dto.story || '',
+                        avatarUrl: dto.avatarUrl || '',
+                        nationalityCode: dto.nationalityCode || '',
+                        gender: gender ? gender.valueVi : '',
+                        nationality: nationality ? nationality.valueVi : '',
+                        slug: '',
+                    };
+                    tempDirectors.unshift(newDirector);
+                    useDirectorStore.setState({ directors: tempDirectors });
                     toast.success("Thêm đạo diễn thành công!");
                 } else {
                     toast.error("Thêm đạo diễn thất bại!");
@@ -181,6 +204,17 @@ export function DirectorDialog({
             } else if (director) {
                 success = await updateDirector(parseInt(director.directorId), dto);
                 if (success) {
+                    const updatedDirector = {
+                        ...director,
+                        directorName: dto.directorName,
+                        birthDate: dto.birthDate || '',
+                        genderCode: dto.genderCode || '',
+                        story: dto.story || '',
+                        avatarUrl: dto.avatarUrl || '',
+                        nationalityCode: dto.nationalityCode || '',
+                    };
+                    const filtered = directors.filter(d => d.directorId !== director.directorId);
+                    useDirectorStore.setState({ directors: [updatedDirector, ...filtered] });
                     toast.success("Cập nhật đạo diễn thành công!");
                 } else {
                     toast.error("Cập nhật đạo diễn thất bại!");
