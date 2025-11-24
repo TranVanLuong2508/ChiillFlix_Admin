@@ -241,17 +241,20 @@ export const FormCreateNewFilm = () => {
             />
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex justify-between gap-4">
             <FormField
               control={form.control}
               name="typeCode"
               render={({ field }) => (
-                <SelectForm
-                  label="Phân loại"
-                  placeholder="Chọn loại hình phim"
-                  field={field}
-                  selectOption={filmType}
-                />
+                <div className="flex flex-col flex-1">
+                  <SelectForm
+                    label="Phân loại"
+                    placeholder="Chọn loại hình phim"
+                    field={field}
+                    selectOption={filmType}
+                  />
+                  <div className="invisible">&nbsp;</div>
+                </div>
               )}
             />
 
@@ -262,27 +265,28 @@ export const FormCreateNewFilm = () => {
                 <FormItem className="flex-1">
                   <FormLabel>Slug</FormLabel>
                   <FormControl>
-                    <Input {...field} readOnly />
+                    <Input {...field} placeholder="Nhập slug muốn tạo có dấu hoặc không dấu" />
                   </FormControl>
+                  <FormDescription>
+                    Ví dụ: "đây là slug" hoặc "day la slug"
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
-              name="slug"
+              name="publicStatusCode"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Trạng thái</FormLabel>
-                  <FormControl>
-                    <Input {...field} readOnly />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <SelectForm
+                  label="Trạng thái"
+                  placeholder="Chọn trạng thái"
+                  field={field}
+                  selectOption={filmStatus}
+                />
               )}
-            />
-
+            /> */}
 
           </div>
           <div className="flex items-center justify-between gap-4">
@@ -302,7 +306,7 @@ export const FormCreateNewFilm = () => {
 
             <FormField
               control={form.control}
-              name="genreCodes"
+              name="producers"
               render={({ field }) => (
                 <MultiSelectForm
                   label="Nhà sản xuất"
@@ -327,7 +331,7 @@ export const FormCreateNewFilm = () => {
             control={form.control}
             name="directors"
             render={({ field }) => (
-              <DirectorForm field={field} genre={genre} />
+              <DirectorForm field={field} />
             )}
           />
 

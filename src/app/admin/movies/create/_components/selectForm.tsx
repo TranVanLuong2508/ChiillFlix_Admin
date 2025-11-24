@@ -17,11 +17,12 @@ export const SelectForm = ({
   field,
   selectOption,
 }: SelectFormProps) => {
+
   return (
     <FormItem className="flex-1">
       <FormLabel>{label}</FormLabel>
       <FormControl>
-        <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <Select onValueChange={field.onChange}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
