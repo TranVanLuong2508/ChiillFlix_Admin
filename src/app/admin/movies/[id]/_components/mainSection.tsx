@@ -20,32 +20,34 @@ export const MainSection = ({ id }: { id: string }) => {
   useEffect(() => {
     if (!id) return;
 
-    console.log("Check film Id: ", id)
     handleFetchDetailFilm(id);
   }, [id]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // try {
-    //   const payload = {
-    //     ...values,
-    //     duration: Number(values.duration),
-    //   }
-
-    //   const res = await FilmService.createFilm(payload);
-    //   if (res.EC === 0 && res.data) {
-    //     toast.success("Thêm phim thành công")
-    //     setTimeout(() => {
-    //       router.push(`/admin/movies`);
-    //     }, 1000)
-    //   } else {
-    //     toast.error(res.EM);
-    //   }
-    // } catch (error) {
-    //   console.log("Error when create new film: ", error);
-    // }
-    console.log("Check data update: ", values);
     const changeField = getChangeField(values);
     console.log("Check change field: ", changeField);
+    if (changeField && changeField.length > 0) {
+      const dataUpdate = changeField.reduce((acc, key) => {
+        acc[key] = values[key as keyof z.infer<typeof formSchema>];
+        return acc;
+      }, {} as Record<string, any>);
+
+      let payload = {
+        ...dataUpdate,
+      }
+
+      if ("duration" in dataUpdate) {
+        payload.duration = Number(dataUpdate.duration);
+      }
+
+      const res = await FilmService.updateFilm(id, payload);
+      if (res.EC === 0 && res.data) {
+        toast.success(res.EM);
+        handleFetchDetailFilm(id);
+      } else {
+        toast.error(res.EM);
+      }
+    }
   }
 
   const getChangeField = (values: z.infer<typeof formSchema>) => {
@@ -60,8 +62,7 @@ export const MainSection = ({ id }: { id: string }) => {
         return true;
       }
       return false;
-    }
-    );
+    });
     return changeField;
   }
 

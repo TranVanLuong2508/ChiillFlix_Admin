@@ -30,6 +30,9 @@ const FilmService = {
   },
   deleteFilm: (filmId: string): Promise<IBackendRes<IFilmDeleteRes>> => {
     return privateAxios.delete(`/films/${filmId}`)
+  },
+  updateFilm: (filmId: string, payload: Partial<IFilmCreateReq>): Promise<IBackendRes<IFilmCreateRes>> => {
+    return privateAxios.patch(`/films/${filmId}`, payload)
   }
 }
 
