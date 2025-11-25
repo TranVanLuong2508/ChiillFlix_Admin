@@ -25,14 +25,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { filteType, IRole } from "@/types/role.type";
+import { filteType, IReturnRole, IRole } from "@/types/role.type";
 import { RoleService } from "@/services/roleService";
 import { roleColumns } from "./RoleColums";
 import { CreateRoleModal } from "../modals/CreateRoleModal";
 import { DataTablePagination } from "@/components/table/data-table-pagination";
 import { EditRoleModal } from "../modals/EditRoleModal";
 import { ConfirmDeleteRoleModal } from "../modals/ConfirmDeleteRoleModal";
-import { DropdownFilter } from "@/components/table/DropdownFilter";
+import { DropdownFilter } from "@/components/admin/roles/DropdownFilter";
 import { toast } from "sonner";
 
 export function RolesTable() {
@@ -46,9 +46,11 @@ export function RolesTable() {
 
   const [openAddRoleModal, setOpenAddRoleModal] = React.useState(false);
   const [openEditRoleModal, setOpenEditRoleModal] = React.useState(false);
+  const [openRestoreRoleModal, setOpenRestoreRoleModal] = React.useState(false);
 
   const [editingRoleId, setEditingRoleId] = React.useState<number | null>(null);
   const [deletingRole, setDeletingRole] = React.useState<IRole | null>(null);
+  const [restoringRole, setRestoringRole] = React.useState<IRole | null>(null);
 
   const [statusFilter, setStatusFilter] = React.useState<filteType>("all");
 
@@ -113,7 +115,7 @@ export function RolesTable() {
 
       if (res?.EC === 1) {
         toast.success("Xoá vai trò thành công");
-        await fetchRoleData();
+        fetchRoleData();
       } else {
         toast.error("Không thể xoá vai trò");
       }
@@ -123,9 +125,27 @@ export function RolesTable() {
     }
   };
 
+  const handleRestoreRole = async (roleId: number) => {
+    try {
+      const role = roleList.find((r) => r.roleId === roleId) || null;
+      setRestoringRole(role);
+      const res = await RoleService.CallRestoreRole(roleId);
+      console.log("Check res CallCheckRoleBeforeDelete: ", res);
+      if (res?.EC === 1 && res.data) {
+        toast.success(`khôi mục ROLE: ${res.data.roleName} `);
+        fetchRoleData();
+      } else {
+        toast.success(`khôi mục vai trò thất bại`);
+      }
+    } catch (error) {
+      console.error("Error restore role:", error);
+      toast.error("Lỗi khi khôi phục vai trò");
+    }
+  };
+
   const table = useReactTable({
     data: roleList,
-    columns: roleColumns(handleEditRole, handleDeleteRole),
+    columns: roleColumns(handleEditRole, handleDeleteRole, handleRestoreRole),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -146,12 +166,15 @@ export function RolesTable() {
     fetchRoleData();
   }, []);
 
+  React.useEffect(() => {
+    applyFilter(statusFilter);
+  }, [statusFilter, originalRoles]);
+
   const fetchRoleData = async () => {
     try {
       const res = await RoleService.CallFetchRolesList();
       if (res?.EC === 1 && res.data?.roles) {
         setOriginalRoles(res.data.roles);
-        setRoleList(res.data.roles);
       }
     } catch (error) {
       console.log("Error loading roles:", error);
@@ -257,7 +280,8 @@ export function RolesTable() {
                     roleName: "Tên Vai trò",
                     directorName: "Tên Đạo Diễn",
                     description: "Mô tả",
-                    isActive: "Trạng thái",
+                    isActive: "Hoạt động",
+                    isDeleted: "Trạng thái xóa",
                     createdAt: "Ngày tạo",
                     updatedAt: "Ngày chỉnh sửa",
                   };
@@ -292,13 +316,20 @@ export function RolesTable() {
 
             <TableBody>
               {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))}
-                  </TableRow>
-                ))
+                table.getRowModel().rows.map((row) => {
+                  const deleted = row.original.isDeleted;
+
+                  return (
+                    <TableRow
+                      key={row.id}
+                      className={row.original.isDeleted ? "bg-gray-200 opacity-50 hover:bg-gray-200" : "bg-white"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={roleColumns.length} className="h-24 text-center ">

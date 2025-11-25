@@ -1,6 +1,6 @@
 import privateAxios from "@/lib/axios/privateAxios";
 import { IBackendRes } from "@/types/backend.type";
-import { ModalRoleData, IRole, IRoleData } from "@/types/role.type";
+import { ModalRoleData, IRole, IRoleData, CheckRole, IAssignData, IReturnRole } from "@/types/role.type";
 
 export const RoleService = {
   CallFetchRolesList: (): Promise<IBackendRes<IRoleData>> => {
@@ -19,17 +19,21 @@ export const RoleService = {
     return privateAxios.patch(`/roles/${roleId}`, payload);
   },
 
-  CallCheckRoleBeforeDelete(roleId: number) {
+  CallCheckRoleBeforeDelete(roleId: number): Promise<IBackendRes<CheckRole>> {
     return privateAxios.get(`/roles/${roleId}/check-delete`);
   },
 
-  CallReassignAndDeleteRole(roleId: number, targetRoleId: number) {
+  CallReassignAndDeleteRole(roleId: number, targetRoleId: number): Promise<IBackendRes<IAssignData>> {
     return privateAxios.post(`/roles/${roleId}/reassign-and-delete`, {
       targetRoleId,
     });
   },
 
-  CallDeleteRole(roleId: number) {
+  CallDeleteRole(roleId: number): Promise<IBackendRes<null>> {
     return privateAxios.delete(`/roles/${roleId}`);
+  },
+
+  CallRestoreRole(roleId: number): Promise<IBackendRes<IReturnRole>> {
+    return privateAxios.patch(`/roles/${roleId}/restore`);
   },
 };

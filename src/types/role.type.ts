@@ -20,4 +20,19 @@ export interface ModalRoleData {
   permissionIds: number[];
 }
 
+export interface IReturnRole {
+  roleId: number;
+  roleName: string;
+}
+
+export interface CheckRole {
+  userCount: number;
+  alternativeRoles: IReturnRole[];
+}
+
+export interface IAssignData {
+  roleId: number;
+  targetRoleId: number;
+}
+
 export type filteType = "all" | "active" | "deleted";

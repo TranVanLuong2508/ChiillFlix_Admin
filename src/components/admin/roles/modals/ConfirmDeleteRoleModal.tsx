@@ -80,7 +80,7 @@ export function ConfirmDeleteRoleModal({
               </span>
             ) : (
               <span>
-                Bạn có chắc muốn xoá vai trò <b>{roleName}</b> không? Thao tác này là xoá mềm, có thể khôi phục lại.
+                Bạn có chắc muốn xoá vai trò <b>{roleName}</b> không? Thao tác này là Soft Delete, có thể khôi phục lại.
               </span>
             )}
           </DialogDescription>

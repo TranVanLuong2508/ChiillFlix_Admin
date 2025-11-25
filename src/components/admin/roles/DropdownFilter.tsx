@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { filteType } from "@/types/role.type";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 interface FilterProps {
   applyFilter: (value: filteType) => void;
@@ -31,9 +31,15 @@ export function DropdownFilter({ applyFilter, statusFilter }: FilterProps) {
           <DropdownMenuLabel>Lọc theo trạng thái</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuRadioGroup value={statusFilter} onValueChange={(value) => applyFilter(value as filteType)}>
-            <DropdownMenuRadioItem value="all">Tất cả</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="active">Khả dụng</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="deleted">Đã xóa</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem className="cursor-pointer" value="all">
+              Tất cả
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem className="cursor-pointer" value="active">
+              Khả dụng
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem className="cursor-pointer" value="deleted">
+              Đã xóa
+            </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>{" "}
         </DropdownMenuContent>
       </DropdownMenu>

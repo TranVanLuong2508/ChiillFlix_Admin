@@ -9,7 +9,7 @@ import { Loading } from "../shared/loading";
 export const RoleBaseRoute = ({ children }: { children: React.ReactNode }) => {
   const { authUser } = useAuthStore();
 
-  if (authUser.roleId !== 3) {
+  if (authUser.roleId !== 3 && authUser.roleName !== "NORMAL_USER") {
     return <>{children}</>;
   } else {
     return (

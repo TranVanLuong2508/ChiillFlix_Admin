@@ -15,7 +15,6 @@ import { roleMessage } from "@/constants/messages/roleMessage";
 import { PermissionModule } from "@/types/permission.type";
 import _ from "lodash";
 import { PermmissionService } from "@/services/permissionService";
-import PermissionSelector from "../PermissionSelector";
 import "../../../../styles/RoleModal.css";
 import PermissionSelectorEdit from "../PermissionSelectorEdit";
 
