@@ -7,11 +7,12 @@ import AdminHeader from "@/components/admin/layout/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { DirectorDialog } from "./_components/director-dialog";
+import { ActorDialog } from "./_components/actor-dialog";
 import { useDirectorStore } from "@/stores/directorStore";
+import { useActorStore } from "@/stores/actorStore";
 
-const DirectorsPage = () => {
-  const { directors, meta, loading, fetchDirectors, deleteDirector } = useDirectorStore();
+const ActorsPage = () => {
+  const { actors, meta, loading, fetchActors, deleteActor } = useActorStore();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -23,17 +24,16 @@ const DirectorsPage = () => {
   useEffect(() => {
     const page = pagination.pageIndex + 1;
     const limit = pagination.pageSize;
-    fetchDirectors(page, limit);
-  }, [pagination.pageIndex, pagination.pageSize, fetchDirectors]);
+    fetchActors(page, limit);
+  }, [pagination.pageIndex, pagination.pageSize, fetchActors]);
 
-  const handleAddDirector = () => {
+  const handleAddActor = () => {
     setAddDialogOpen(true);
   };
 
   const handleDeleteSelected = async (ids: string[]) => {
-    // Xóa từng đạo diễn theo danh sách ids
     for (const id of ids) {
-      await deleteDirector(Number(id));
+      await deleteActor(Number(id));
     }
   };
 
@@ -49,16 +49,16 @@ const DirectorsPage = () => {
           ) : (
             <DataTable
               columns={columns}
-              data={directors}
+              data={actors}
               pagination={pagination}
               pageCount={pageCount}
-              hiddenColumns={["directorId", "slug", "story"]}
+              hiddenColumns={["actorId", "slug", "shortBio"]}
               setPagination={setPagination}
-              searchPlaceholder="Tìm theo tên đạo diễn..."
+              searchPlaceholder="Tìm theo tên diễn viên..."
               addButton={
-                <Button onClick={handleAddDirector} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={handleAddActor} className="bg-blue-600 hover:bg-blue-700">
                   <Plus className="h-4 w-4" />
-                  Thêm đạo diễn
+                  Thêm diễn viên
                 </Button>
               }
               onDeleteSelected={handleDeleteSelected}
@@ -67,7 +67,7 @@ const DirectorsPage = () => {
         </div>
       </main>
 
-      <DirectorDialog
+      <ActorDialog
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
         mode="create"
@@ -76,4 +76,4 @@ const DirectorsPage = () => {
   );
 };
 
-export default DirectorsPage;
+export default ActorsPage;
