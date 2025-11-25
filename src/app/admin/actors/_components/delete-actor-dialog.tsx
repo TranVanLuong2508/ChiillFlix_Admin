@@ -13,6 +13,7 @@ import {
 import { useActorStore } from "@/stores/actorStore";
 import { useDirectorStore } from "@/stores/directorStore";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface DeleteActorDialogProps {
     open: boolean;
@@ -39,11 +40,15 @@ export function DeleteActorDialog({
         try {
             if (isBulk && onBulkDelete) {
                 await onBulkDelete();
+                toast.success("Xóa diễn viên thành công!");
                 onOpenChange(false);
             } else {
                 const success = await deleteActor(parseInt(actorId));
                 if (success) {
+                    toast.success("Xóa diễn viên thành công!");
                     onOpenChange(false);
+                } else {
+                    toast.error("Xóa diễn viên thất bại!");
                 }
             }
         } finally {

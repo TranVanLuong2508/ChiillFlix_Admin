@@ -32,7 +32,6 @@ export const useActorStore = create<ActorState & ActorActions>((set, get) => ({
     try {
       const res = await actorService.getAllActors(page, limit, sort, filter);
       if (res.EC === 1 && res.data) {
-        console.log("Actor data from API:", res.data.actors[0]); // Debug log
         const actors = res.data.actors.map((item) => ({
           actorId: item.actorId.toString(),
           actorName: item.actorName,
@@ -44,8 +43,9 @@ export const useActorStore = create<ActorState & ActorActions>((set, get) => ({
           avatarUrl: item.avatarUrl,
           gender: item.genderActor?.valueVi || "",
           nationality: item.nationalityActor?.valueVi || "",
+          createdAt: item.createdAt || new Date(),
+          updatedAt: item.updatedAt || new Date(),
         }));
-        console.log("Mapped actor:", actors[0]); // Debug log
 
         set({
           actors,
@@ -73,7 +73,6 @@ export const useActorStore = create<ActorState & ActorActions>((set, get) => ({
     try {
       const res = await actorService.createActor(dto);
       if (res.EC === 1) {
-        // Refresh the list
         await get().fetchActors(get().meta?.page || 1, get().meta?.limit || 10);
         set({ loading: false });
         return true;
@@ -95,7 +94,6 @@ export const useActorStore = create<ActorState & ActorActions>((set, get) => ({
     try {
       const res = await actorService.updateActor(actorId, dto);
       if (res.EC === 1) {
-        // Refresh the list
         await get().fetchActors(get().meta?.page || 1, get().meta?.limit || 10);
         set({ loading: false });
         return true;
@@ -117,7 +115,6 @@ export const useActorStore = create<ActorState & ActorActions>((set, get) => ({
     try {
       const res = await actorService.deleteActor(actorId);
       if (res.EC === 1) {
-        // Refresh the list
         await get().fetchActors(get().meta?.page || 1, get().meta?.limit || 10);
         set({ loading: false });
         return true;

@@ -13,8 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { parse, format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -27,7 +31,7 @@ import { CreateDirectorDto } from "@/types/director.type";
 import { DirectorColumn } from "@/types/director.type";
 import { allCodeService } from "@/services/allCodeService";
 import { AllCodeRow } from "@/types/backend.type";
-
+import "@/styles/hideScroll.css";
 interface DirectorDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -42,6 +46,8 @@ interface DirectorFormData {
     story: string;
     avatarUrl: string;
     nationalityCode: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export function DirectorDialog({
@@ -50,7 +56,7 @@ export function DirectorDialog({
     director,
     mode,
 }: DirectorDialogProps) {
-    const { createDirector, updateDirector } = useDirectorStore();
+    const { createDirector, updateDirector, fetchDirectors, directors, meta } = useDirectorStore();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [countries, setCountries] = useState<AllCodeRow[]>([]);
     const [genders, setGenders] = useState<AllCodeRow[]>([]);
@@ -70,6 +76,8 @@ export function DirectorDialog({
             story: "",
             avatarUrl: "",
             nationalityCode: "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
     });
 
@@ -99,13 +107,27 @@ export function DirectorDialog({
 
     useEffect(() => {
         if (director && mode === "edit") {
+            let formattedBirthDate = "";
+            if (director.birthDate) {
+                try {
+                    const [year, month, day] = director.birthDate.split("-");
+                    if (year && month && day) {
+                        formattedBirthDate = `${day}/${month}/${year}`;
+                    }
+                } catch (error) {
+                    console.error("Error parsing birthDate:", error);
+                }
+            }
+
             reset({
                 directorName: director.directorName,
-                birthDate: director.birthDate,
+                birthDate: formattedBirthDate,
                 genderCode: director.genderCode,
                 story: director.story,
                 avatarUrl: director.avatarUrl,
                 nationalityCode: director.nationalityCode,
+                createdAt: director.createdAt,
+                updatedAt: director.updatedAt,
             });
         } else {
             reset({
@@ -115,17 +137,47 @@ export function DirectorDialog({
                 story: "",
                 avatarUrl: "",
                 nationalityCode: "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
         }
     }, [director, mode, reset]);
 
     const onSubmit = async (data: DirectorFormData) => {
+        if (data.birthDate === "") {
+            toast.error("Vui lòng nhập ngày sinh");
+            return;
+        } else if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data.birthDate)) {
+            toast.error("Ngày sinh phải đúng định dạng dd/mm/yyyy");
+            return;
+        }
+        if (data.nationalityCode === "") {
+            toast.error("Vui lòng chọn quốc tịch");
+            return;
+        }
+        if (data.avatarUrl?.trim()) {
+            try {
+                new URL(data.avatarUrl);
+            } catch {
+                toast.error("URL Avatar không hợp lệ");
+                return;
+            }
+        }
+
         setIsSubmitting(true);
         try {
             const defaultAvatar = "https://ui-avatars.com/api/?name=Director&background=random";
+            let backendBirthDate = "";
+            if (data.birthDate) {
+                const [day, month, year] = data.birthDate.split("/");
+                if (day && month && year) {
+                    backendBirthDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+                }
+            }
+
             const dto: CreateDirectorDto = {
                 directorName: data.directorName,
-                birthDate: data.birthDate || undefined,
+                birthDate: backendBirthDate || undefined,
                 genderCode: data.genderCode || undefined,
                 story: data.story || undefined,
                 avatarUrl: data.avatarUrl?.trim() ? data.avatarUrl : defaultAvatar,
@@ -136,6 +188,12 @@ export function DirectorDialog({
             if (mode === "create") {
                 success = await createDirector(dto);
                 if (success) {
+                    await fetchDirectors(1, 1000); 
+                    const allDirectors = useDirectorStore.getState().directors;
+                    if (allDirectors.length > 0) {
+                        const latest = allDirectors.reduce((max, curr) => Number(curr.directorId) > Number(max.directorId) ? curr : max, allDirectors[0]);
+                        useDirectorStore.setState({ directors: [latest, ...allDirectors.filter(d => d.directorId !== latest.directorId)] });
+                    }
                     toast.success("Thêm đạo diễn thành công!");
                 } else {
                     toast.error("Thêm đạo diễn thất bại!");
@@ -143,6 +201,11 @@ export function DirectorDialog({
             } else if (director) {
                 success = await updateDirector(parseInt(director.directorId), dto);
                 if (success) {
+                    const allDirectors = useDirectorStore.getState().directors;
+                    const updated = allDirectors.find(d => d.directorId === director.directorId);
+                    if (updated) {
+                        useDirectorStore.setState({ directors: [updated, ...allDirectors.filter(d => d.directorId !== updated.directorId)] });
+                    }
                     toast.success("Cập nhật đạo diễn thành công!");
                 } else {
                     toast.error("Cập nhật đạo diễn thất bại!");
@@ -162,7 +225,7 @@ export function DirectorDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto hide-scrollbar">
                 <DialogHeader>
                     <DialogTitle>
                         {mode === "create" ? "Thêm Đạo Diễn Mới" : "Chỉnh Sửa Đạo Diễn"}
@@ -196,11 +259,28 @@ export function DirectorDialog({
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="birthDate">Ngày Sinh</Label>
-                            <Input
-                                id="birthDate"
-                                type="date"
-                                {...register("birthDate")}
-                            />
+                            <div className="relative">
+                                <DatePicker
+                                    id="birthDate"
+                                    selected={
+                                        !!watch('birthDate') && /^\d{2}\/\d{2}\/\d{4}$/.test(watch('birthDate'))
+                                            ? parse(watch('birthDate'), 'dd/MM/yyyy', new Date())
+                                            : null
+                                    }
+                                    onChange={(date: Date | null) => setValue('birthDate', date ? format(date, 'dd/MM/yyyy') : '')}
+                                    dateFormat="dd/MM/yyyy"
+                                    placeholderText="dd/mm/yyyy"
+                                    className="w-full border rounded px-3 py-2 pr-10"
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
+                                    maxDate={new Date()}
+                                />
+                                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            </div>
+                            {errors.birthDate && (
+                                <p className="text-sm text-red-500">{errors.birthDate.message}</p>
+                            )}
                         </div>
 
                         <div className="space-y-2">
