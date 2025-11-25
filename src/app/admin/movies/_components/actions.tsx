@@ -12,14 +12,15 @@ import { Button } from "@/components/ui/button"
 import { Copy, MoreHorizontal, SquarePen, Trash2 } from "lucide-react"
 import { FilmColumn } from "@/types/film.type"
 import { toast } from "sonner";
-import FilmService from "@/services/film.service";
 import { useFilmStore } from "@/stores/film.store";
+import { useRouter } from "next/navigation";
 
 interface ActionsProps {
   row: FilmColumn
 }
 
 export const Actions = ({ row }: ActionsProps) => {
+  const router = useRouter();
   const { handleDeletedFilm } = useFilmStore();
 
   return (
@@ -46,7 +47,7 @@ export const Actions = ({ row }: ActionsProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer text-blue-600 focus:text-blue-600"
-          onClick={() => { console.log("OK") }}
+          onClick={() => { router.push(`/admin/movies/${row.filmId}`) }}
         >
           <SquarePen size={4} className="text-blue-600" />
           Xem chi tiết

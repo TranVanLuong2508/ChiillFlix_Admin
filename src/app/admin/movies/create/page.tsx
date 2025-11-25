@@ -41,6 +41,7 @@ const CreatePage = () => {
         <ChevronLeft size={25} />
         <h1 className="text-lg font-semibold">Quay về</h1>
       </button>
+      <h1 className="text-2xl font-bold text-center">Tạo Phim Mới</h1>
       <FormCreateNewFilm onSubmit={onSubmit} />
     </div>
   )

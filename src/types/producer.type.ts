@@ -9,3 +9,10 @@ export interface IProducer {
   updatedBy: number,
   deletedBy: number
 }
+
+export interface Producer_FilmDetail {
+  producerId: number,
+  producerName: string,
+  slug: string,
+  isMain: boolean,
+}

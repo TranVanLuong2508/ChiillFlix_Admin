@@ -1,3 +1,8 @@
+import { AllCodeRow } from "./backend.type"
+import { Actor_FilmDetail } from "./actor.type"
+import { Director_FilmDetail } from "./director.type"
+import { Producer_FilmDetail } from "./producer.type"
+
 export interface FilmColumn {
   filmId: string
   title: string
@@ -103,3 +108,48 @@ export interface IFilmDeleteRes {
   deleted: boolean;
 }
 // Delete Film 
+
+// Get Detail Film
+export interface Film {
+  filmId: string;
+  originalTitle: string;
+  title: string;
+  duration: number;
+  description: string;
+  releaseDate: string;
+  year: string;
+  thumbUrl: string;
+  slug: string;
+  view: number;
+  filmImages: FilmImage[];
+  age: AllCodeRow;
+  type: AllCodeRow;
+  genres: AllCodeRow[];
+  country: AllCodeRow;
+  language: AllCodeRow;
+  publicStatus: AllCodeRow;
+}
+
+export interface IFilmDetailRes {
+  film: Film;
+  directors: Director_FilmDetail[];
+  actors: Actor_FilmDetail[];
+  producers: Producer_FilmDetail[];
+}
+
+export interface FilmImagesRemake {
+  backdrop: string;
+  horizontal: string;
+  poster: string;
+}
+
+export interface FilmDetail extends IFilmDetailRes {
+  filmImages: FilmImagesRemake;
+}
+
+export interface FilmDataStream {
+  film: Film;
+  filmImages: FilmImagesRemake;
+}
+
+// Get Detail Film

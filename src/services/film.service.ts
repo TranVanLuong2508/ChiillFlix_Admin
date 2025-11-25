@@ -5,6 +5,7 @@ import {
   IFilmCreateReq,
   IFilmCreateRes,
   IFilmDeleteRes,
+  IFilmDetailRes,
   IFilmPagination,
 } from "@/types/film.type";
 
@@ -20,6 +21,9 @@ const FilmService = {
         pageSize,
       }
     })
+  },
+  getFilmDetail: (filmId: string): Promise<IBackendRes<IFilmDetailRes>> => {
+    return publicAxios.get(`/films/${filmId}`)
   },
   createFilm: (payload: IFilmCreateReq): Promise<IBackendRes<IFilmCreateRes>> => {
     return privateAxios.post(`/films`, payload)
