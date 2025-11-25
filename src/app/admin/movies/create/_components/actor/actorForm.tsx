@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { ChevronsUpDown, ListChecks } from "lucide-react";
+import { ChevronsUpDown, CircleMinus, ListChecks } from "lucide-react";
 import { IActorSearch } from "@/types/search.type";
 
 import {
@@ -72,6 +72,15 @@ export const ActorForm = ({
     [field]
   );
 
+  const handleRemoveActor = useCallback(
+    (actorId: number) => {
+      const newValue = field.value.filter((v: any) => v.actorId !== actorId);
+      field.onChange(newValue);
+      setSelectedActor(selectedActor.filter((v: any) => v.actorId !== actorId));
+    },
+    [field, selectedActor]
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
@@ -119,11 +128,22 @@ export const ActorForm = ({
           {selectedActor.map((item: IActorSearch) => (
             <div
               key={item.actorId}
-              className="rounded-md border px-4 py-2 font-mono text-sm flex flex-col gap-2 w-[280px]"
+              className="rounded-md border px-4 py-2 font-mono text-sm flex flex-col gap-2 min-w-[300px]"
             >
-              <span className="text-sm font-semibold">
-                {item.actorName}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold">
+                  {item.actorName}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="cursor-pointer"
+                  onClick={() => handleRemoveActor(item.actorId)}
+                  type="button"
+                >
+                  <CircleMinus />
+                </Button>
+              </div>
               <Input
                 value={field.value.find((v: any) => v.actorId === item.actorId)?.characterName || ""}
                 onChange={(e) => {

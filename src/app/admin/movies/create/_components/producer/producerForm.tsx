@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ChevronsUpDown, ListChecks } from "lucide-react"
+import { ChevronsUpDown, CircleMinus, ListChecks } from "lucide-react"
 import { IProducerSearch } from "@/types/search.type";
 
 import {
@@ -77,6 +77,15 @@ export const ProducerForm = ({
     [field]
   );
 
+  const handleRemoveProducer = useCallback(
+    (producerId: number) => {
+      const newValue = field.value.filter((v: any) => v.producerId !== producerId);
+      field.onChange(newValue);
+      setSelectedProducer(selectedProducer.filter((v: any) => v.producerId !== producerId));
+    },
+    [field, selectedProducer]
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
@@ -126,19 +135,28 @@ export const ProducerForm = ({
           {selectedProducer.map((item: IProducerSearch) => (
             <Label
               key={item.producerId}
-              className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-amber-400 has-[[aria-checked=true]]:bg-amber-50 dark:has-[[aria-checked=true]]:border-amber-900 dark:has-[[aria-checked=true]]:bg-amber-950"
+              className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 has-[[aria-checked=true]]:border-amber-400 has-[[aria-checked=true]]:bg-amber-50 dark:has-[[aria-checked=true]]:border-amber-900 dark:has-[[aria-checked=true]]:bg-amber-950 relative"
             >
-              <Checkbox
-                id="toggle-2"
-                defaultChecked={field.value.find((v: any) => v.producerId === item.producerId)?.isMain}
-                className="data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600 data-[state=checked]:text-white dark:data-[state=checked]:border-amber-400 dark:data-[state=checked]:bg-amber-400"
-                onCheckedChange={(checked) => handleMainProducerChange(item.producerId, checked === true)}
-              />
-              <div className="grid gap-1.5 font-normal">
-                <p className="text-sm leading-none font-medium">
-                  {item.producerName}
-                </p>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="toggle-2"
+                  defaultChecked={field.value.find((v: any) => v.producerId === item.producerId)?.isMain}
+                  className="data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600 data-[state=checked]:text-white dark:data-[state=checked]:border-amber-400 dark:data-[state=checked]:bg-amber-400"
+                  onCheckedChange={(checked) => handleMainProducerChange(item.producerId, checked === true)}
+                />
+                <div className="grid gap-1.5 font-normal">
+                  <p className="text-sm leading-none font-medium">
+                    {item.producerName}
+                  </p>
+                </div>
               </div>
+              <button
+                className="absolute top-1 right-2 cursor-pointer hover:bg-zinc-300/30 p-2 rounded-lg"
+                onClick={() => handleRemoveProducer(item.producerId)}
+                type="button"
+              >
+                <CircleMinus size={16} />
+              </button>
             </Label>
           ))}
         </CollapsibleContent>

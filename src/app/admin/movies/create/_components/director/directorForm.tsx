@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronsUpDown, ListChecks } from "lucide-react"
+import { ChevronsUpDown, CircleMinus, ListChecks } from "lucide-react"
 import { IDirectorSearch } from "@/types/search.type";
 
 import {
@@ -39,6 +39,7 @@ export const DirectorForm = ({
   const handleDataUpdate = () => {
     if (!filmDetailRaw) return;
     const directors = filmDetailRaw.directors;
+
     const dataDirectorSelected = directors.map((director: any): IDirectorSearch => ({
       directorId: director.directorId,
       directorName: director.directorName,
@@ -77,6 +78,17 @@ export const DirectorForm = ({
     },
     [field]
   );
+
+  const handleRemoveDirector = useCallback(
+    (directorId: number) => {
+      const newValue = field.value.filter((v: any) => v.directorId !== directorId);
+      field.onChange(newValue);
+      setSelectedDirector(selectedDirector.filter((v: any) => v.directorId !== directorId));
+    },
+    [field, selectedDirector]
+  );
+
+  console.log("Check data: ", selectedDirector)
 
   return (
     <div className="flex flex-col gap-2">
@@ -127,19 +139,28 @@ export const DirectorForm = ({
           {selectedDirector.map((item: IDirectorSearch) => (
             <Label
               key={item.directorId}
-              className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-amber-400 has-[[aria-checked=true]]:bg-amber-50 dark:has-[[aria-checked=true]]:border-amber-900 dark:has-[[aria-checked=true]]:bg-amber-950"
+              className="hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 has-[[aria-checked=true]]:border-amber-400 has-[[aria-checked=true]]:bg-amber-50 dark:has-[[aria-checked=true]]:border-amber-900 dark:has-[[aria-checked=true]]:bg-amber-950 relative"
             >
-              <Checkbox
-                id="toggle-2"
-                defaultChecked={field.value.find((v: any) => v.directorId === item.directorId)?.isMain}
-                className="data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600 data-[state=checked]:text-white dark:data-[state=checked]:border-amber-400 dark:data-[state=checked]:bg-amber-400"
-                onCheckedChange={(checked) => handleMainDirectorChange(item.directorId, checked === true)}
-              />
-              <div className="grid gap-1.5 font-normal">
-                <p className="text-sm leading-none font-medium">
-                  {item.directorName}
-                </p>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="toggle-2"
+                  defaultChecked={field.value.find((v: any) => v.directorId === item.directorId)?.isMain}
+                  className="data-[state=checked]:border-amber-600 data-[state=checked]:bg-amber-600 data-[state=checked]:text-white dark:data-[state=checked]:border-amber-400 dark:data-[state=checked]:bg-amber-400"
+                  onCheckedChange={(checked) => handleMainDirectorChange(item.directorId, checked === true)}
+                />
+                <div className="grid gap-1.5 font-normal">
+                  <p className="text-sm leading-none font-medium">
+                    {item.directorName}
+                  </p>
+                </div>
               </div>
+              <button
+                className="absolute top-1 right-2 cursor-pointer hover:bg-zinc-300/30 p-2 rounded-lg"
+                onClick={() => handleRemoveDirector(item.directorId)}
+                type="button"
+              >
+                <CircleMinus size={16} />
+              </button>
             </Label>
           ))}
         </CollapsibleContent>
