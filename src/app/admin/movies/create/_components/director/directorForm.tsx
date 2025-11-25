@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronsUpDown, ListChecks } from "lucide-react"
 import { IDirectorSearch } from "@/types/search.type";
 
@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "./search";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useFilmStore } from "@/stores/film.store";
 
 interface DirectorFormProps {
   field: any;
@@ -32,6 +33,23 @@ export const DirectorForm = ({
 }: DirectorFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDirector, setSelectedDirector] = useState<IDirectorSearch[]>([]);
+  const { filmDetailRaw } = useFilmStore();
+
+
+  const handleDataUpdate = () => {
+    if (!filmDetailRaw) return;
+    const directors = filmDetailRaw.directors;
+    const dataDirectorSelected = directors.map((director: any): IDirectorSearch => ({
+      directorId: director.directorId,
+      directorName: director.directorName,
+    }));
+    setSelectedDirector(dataDirectorSelected);
+  }
+
+  useEffect(() => {
+    if (!filmDetailRaw) return;
+    handleDataUpdate();
+  }, [filmDetailRaw]);
 
   const handleSelectDirector = (director: IDirectorSearch) => {
     const exists = field.value.some((item: any) => item.directorId === director.directorId);
@@ -59,8 +77,6 @@ export const DirectorForm = ({
     },
     [field]
   );
-
-  console.log(">>> check data director: ", field.value);
 
   return (
     <div className="flex flex-col gap-2">

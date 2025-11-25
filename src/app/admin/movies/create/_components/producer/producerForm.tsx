@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChevronsUpDown, ListChecks } from "lucide-react"
 import { IProducerSearch } from "@/types/search.type";
 
@@ -21,6 +21,7 @@ import {
 import { Search } from "./search";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useFilmStore } from "@/stores/film.store";
 
 interface ProducerFormProps {
   field: any;
@@ -31,6 +32,23 @@ export const ProducerForm = ({
 }: ProducerFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProducer, setSelectedProducer] = useState<IProducerSearch[]>([]);
+  const { filmDetailRaw } = useFilmStore();
+
+  useEffect(() => {
+    if (!filmDetailRaw) return;
+    handleDataUpdate();
+  }, [filmDetailRaw]);
+
+
+  const handleDataUpdate = () => {
+    if (!filmDetailRaw) return;
+    const producers = filmDetailRaw.producers;
+    const dataProducerSelected = producers.map((producer: any): IProducerSearch => ({
+      producerId: producer.producerId,
+      producerName: producer.producerName,
+    }));
+    setSelectedProducer(dataProducerSelected);
+  }
 
   const handleSelectProducer = (producer: IProducerSearch) => {
     const exists = field.value.some((item: any) => item.producerId === producer.producerId);
@@ -58,8 +76,6 @@ export const ProducerForm = ({
     },
     [field]
   );
-
-  console.log(">>> check data producer: ", field.value);
 
   return (
     <div className="flex flex-col gap-2">

@@ -22,7 +22,7 @@ export const SelectForm = ({
     <FormItem className="flex-1">
       <FormLabel>{label}</FormLabel>
       <FormControl>
-        <Select onValueChange={field.onChange}>
+        <Select value={field.value} onValueChange={field.onChange}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>

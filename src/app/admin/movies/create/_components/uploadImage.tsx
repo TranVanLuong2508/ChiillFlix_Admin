@@ -55,8 +55,8 @@ export const UploadImage = ({
   }
 
   // Check data image
-  const values = form.watch("filmImages");
-  console.log("Check data image: ", values);
+  // const values = form.watch("filmImages");
+  // console.log("Check data image: ", values);
   // Check data image
 
   return (

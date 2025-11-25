@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ChevronsUpDown, ListChecks } from "lucide-react";
 import { IActorSearch } from "@/types/search.type";
@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Search } from "./search";
+import { useFilmStore } from "@/stores/film.store";
 
 interface ActorFormProps {
   field: any;
@@ -31,6 +32,22 @@ export const ActorForm = ({
 }: ActorFormProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedActor, setSelectedActor] = useState<IActorSearch[]>([]);
+  const { filmDetailRaw } = useFilmStore();
+
+  useEffect(() => {
+    if (!filmDetailRaw) return;
+    handleDataUpdate();
+  }, [filmDetailRaw]);
+
+  const handleDataUpdate = () => {
+    if (!filmDetailRaw) return;
+    const actors = filmDetailRaw.actors;
+    const dataActorSelected = actors.map((actor: any): IActorSearch => ({
+      actorId: actor.actorId,
+      actorName: actor.actorName,
+    }));
+    setSelectedActor(dataActorSelected);
+  }
 
   const handleSelectActor = (actor: IActorSearch) => {
     const exists = field.value.some((item: any) => item.actorId === actor.actorId);

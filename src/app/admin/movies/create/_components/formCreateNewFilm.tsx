@@ -33,12 +33,13 @@ import { UploadThumb } from "./uploadThumb";
 
 interface FormCreateNewFilmProps {
   onSubmit: (values: z.infer<typeof formSchema>) => void;
+  initialData?: z.infer<typeof formSchema>
 }
 
-export const FormCreateNewFilm = ({ onSubmit }: FormCreateNewFilmProps) => {
+export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       originalTitle: "",
       title: "",
       description: "",
@@ -106,7 +107,6 @@ export const FormCreateNewFilm = ({ onSubmit }: FormCreateNewFilmProps) => {
 
   return (
     <div className="mx-[200px]">
-      <h1 className="text-2xl font-semibold text-center">Form Tạo Film</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log(errors))} className="space-y-8">
           <div className="space-y-4">

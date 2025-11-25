@@ -49,7 +49,7 @@ export const MultiSelectForm = ({
       <FormControl>
         <div className="flex flex-col gap-2">
           <ScrollArea className="max-h-[100px] border border-gray-200 p-2 rounded-lg">
-            {field.value.length > 0 ? (
+            {field.value && field.value.length > 0 ? (
               <div className="flex items-center gap-2 flex-wrap">
                 {
                   options.map((item) => field.value.includes(item.keyMap) && (
@@ -69,7 +69,7 @@ export const MultiSelectForm = ({
                 aria-expanded={open}
                 className="w-full justify-between"
               >
-                {field.value.length > 0
+                {field.value && field.value.length > 0
                   ? `${field.value.length} mục đã chọn`
                   : placeholder}
                 <ChevronsUpDown className="h-4 w-4 opacity-50" />
