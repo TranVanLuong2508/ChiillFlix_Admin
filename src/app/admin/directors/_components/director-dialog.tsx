@@ -46,6 +46,8 @@ interface DirectorFormData {
     story: string;
     avatarUrl: string;
     nationalityCode: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export function DirectorDialog({
@@ -74,6 +76,8 @@ export function DirectorDialog({
             story: "",
             avatarUrl: "",
             nationalityCode: "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
     });
 
@@ -122,6 +126,8 @@ export function DirectorDialog({
                 story: director.story,
                 avatarUrl: director.avatarUrl,
                 nationalityCode: director.nationalityCode,
+                createdAt: director.createdAt,
+                updatedAt: director.updatedAt,
             });
         } else {
             reset({
@@ -131,6 +137,8 @@ export function DirectorDialog({
                 story: "",
                 avatarUrl: "",
                 nationalityCode: "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
         }
     }, [director, mode, reset]);
@@ -177,26 +185,15 @@ export function DirectorDialog({
             };
 
             let success = false;
-            let tempDirectors = [...directors];
             if (mode === "create") {
                 success = await createDirector(dto);
                 if (success) {
-                    const gender = genders.find(g => g.keyMap === dto.genderCode);
-                    const nationality = countries.find(c => c.keyMap === dto.nationalityCode);
-                    const newDirector = {
-                        directorId: Date.now().toString(),
-                        directorName: dto.directorName,
-                        birthDate: dto.birthDate || '',
-                        genderCode: dto.genderCode || '',
-                        story: dto.story || '',
-                        avatarUrl: dto.avatarUrl || '',
-                        nationalityCode: dto.nationalityCode || '',
-                        gender: gender ? gender.valueVi : '',
-                        nationality: nationality ? nationality.valueVi : '',
-                        slug: '',
-                    };
-                    tempDirectors.unshift(newDirector);
-                    useDirectorStore.setState({ directors: tempDirectors });
+                    await fetchDirectors(1, 1000); 
+                    const allDirectors = useDirectorStore.getState().directors;
+                    if (allDirectors.length > 0) {
+                        const latest = allDirectors.reduce((max, curr) => Number(curr.directorId) > Number(max.directorId) ? curr : max, allDirectors[0]);
+                        useDirectorStore.setState({ directors: [latest, ...allDirectors.filter(d => d.directorId !== latest.directorId)] });
+                    }
                     toast.success("Thêm đạo diễn thành công!");
                 } else {
                     toast.error("Thêm đạo diễn thất bại!");
@@ -204,17 +201,11 @@ export function DirectorDialog({
             } else if (director) {
                 success = await updateDirector(parseInt(director.directorId), dto);
                 if (success) {
-                    const updatedDirector = {
-                        ...director,
-                        directorName: dto.directorName,
-                        birthDate: dto.birthDate || '',
-                        genderCode: dto.genderCode || '',
-                        story: dto.story || '',
-                        avatarUrl: dto.avatarUrl || '',
-                        nationalityCode: dto.nationalityCode || '',
-                    };
-                    const filtered = directors.filter(d => d.directorId !== director.directorId);
-                    useDirectorStore.setState({ directors: [updatedDirector, ...filtered] });
+                    const allDirectors = useDirectorStore.getState().directors;
+                    const updated = allDirectors.find(d => d.directorId === director.directorId);
+                    if (updated) {
+                        useDirectorStore.setState({ directors: [updated, ...allDirectors.filter(d => d.directorId !== updated.directorId)] });
+                    }
                     toast.success("Cập nhật đạo diễn thành công!");
                 } else {
                     toast.error("Cập nhật đạo diễn thất bại!");

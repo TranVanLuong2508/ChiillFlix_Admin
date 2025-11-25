@@ -51,6 +51,8 @@ export function DataTableViewOptions<TData>({
                             gender: "Giới Tính",
                             nationality: "Quốc Tịch",
                             shortBio: "Tiểu Sử",
+                            createdAt: "Ngày Tạo",
+                            updatedAt: "Ngày Chỉnh Sửa",
                         };
                         return (
                             <DropdownMenuCheckboxItem

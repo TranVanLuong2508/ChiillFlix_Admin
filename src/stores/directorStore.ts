@@ -45,10 +45,12 @@ export const useDirectorStore = create<DirectorState & DirectorActions>((set, ge
           avatarUrl: item.avatarUrl,
           gender: item.genderCodeRL?.valueVi || "",
           nationality: item.nationalityCodeRL?.valueVi || "",
+          createdAt: item.createdAt || new Date(),
+          updatedAt: item.updatedAt || new Date(),
         }));
 
         set({
-          directors,
+          directors: directors,
           meta: res.data.meta,
           loading: false,
         });
@@ -73,7 +75,6 @@ export const useDirectorStore = create<DirectorState & DirectorActions>((set, ge
     try {
       const res = await directorService.createDirector(dto);
       if (res.EC === 1) {
-        // Refresh the list
         await get().fetchDirectors(get().meta?.page || 1, get().meta?.limit || 10);
         set({ loading: false });
         return true;
@@ -95,7 +96,6 @@ export const useDirectorStore = create<DirectorState & DirectorActions>((set, ge
     try {
       const res = await directorService.updateDirector(directorId, dto);
       if (res.EC === 1) {
-        // Refresh the list
         await get().fetchDirectors(get().meta?.page || 1, get().meta?.limit || 10);
         set({ loading: false });
         return true;
@@ -117,7 +117,6 @@ export const useDirectorStore = create<DirectorState & DirectorActions>((set, ge
     try {
       const res = await directorService.deleteDirector(directorId);
       if (res.EC === 1) {
-        // Refresh the list
         await get().fetchDirectors(get().meta?.page || 1, get().meta?.limit || 10);
         set({ loading: false });
         return true;

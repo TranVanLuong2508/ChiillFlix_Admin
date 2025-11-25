@@ -16,6 +16,8 @@ export interface Actor {
   nationalityCode: string;
   avatarUrl: string;
   updatedBy?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   genderActor?: IAllCodeRes;
   nationalityActor?: IAllCodeRes;
@@ -32,6 +34,8 @@ export interface ActorColumn {
   avatarUrl: string;
   gender: string;
   nationality: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ActorMeta {
@@ -56,6 +60,8 @@ export interface IActorRes {
   nationalityCode: string;
   avatarUrl: string;
   updatedBy?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   genderActor?: IAllCodeRes;
   nationalityActor?: IAllCodeRes;
@@ -78,6 +84,8 @@ export interface CreateActorDto {
   shortBio?: string;
   avatarUrl?: string;
   nationalityCode?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UpdateActorDto {
@@ -87,4 +95,5 @@ export interface UpdateActorDto {
   shortBio?: string;
   avatarUrl?: string;
   nationalityCode?: string;
+  updatedAt?: Date;
 }

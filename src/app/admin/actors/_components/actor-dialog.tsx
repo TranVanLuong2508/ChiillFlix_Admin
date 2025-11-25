@@ -46,6 +46,8 @@ interface ActorFormData {
     shortBio: string;
     avatarUrl: string;
     nationalityCode: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export function ActorDialog({
@@ -74,6 +76,8 @@ export function ActorDialog({
             shortBio: "",
             avatarUrl: "",
             nationalityCode: "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
     });
 
@@ -122,6 +126,9 @@ export function ActorDialog({
                 shortBio: actor.shortBio,
                 avatarUrl: actor.avatarUrl,
                 nationalityCode: actor.nationalityCode,
+                createdAt: actor.createdAt,
+                updatedAt: actor.updatedAt,
+
             });
         } else {
             reset({
@@ -131,6 +138,8 @@ export function ActorDialog({
                 shortBio: "",
                 avatarUrl: "",
                 nationalityCode: "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
         }
     }, [actor, mode, reset]);
@@ -177,26 +186,15 @@ export function ActorDialog({
             };
 
             let success = false;
-            let tempActors = [...actors];
             if (mode === "create") {
                 success = await createActor(dto);
                 if (success) {
-                    const gender = genders.find(g => g.keyMap === dto.genderCode);
-                    const nationality = countries.find(c => c.keyMap === dto.nationalityCode);
-                    const newActor = {
-                        actorId: Date.now().toString(),
-                        actorName: dto.actorName,
-                        birthDate: dto.birthDate || '',
-                        genderCode: dto.genderCode || '',
-                        shortBio: dto.shortBio || '',
-                        avatarUrl: dto.avatarUrl || '',
-                        nationalityCode: dto.nationalityCode || '',
-                        gender: gender ? gender.valueVi : '',
-                        nationality: nationality ? nationality.valueVi : '',
-                        slug: '',
-                    };
-                    tempActors.unshift(newActor);
-                    useActorStore.setState({ actors: tempActors });
+                    await fetchActors(1, 1000);
+                    const allActors = useActorStore.getState().actors;
+                    if (allActors.length > 0) {
+                        const latest = allActors.reduce((max, curr) => Number(curr.actorId) > Number(max.actorId) ? curr : max, allActors[0]);
+                        useActorStore.setState({ actors: [latest, ...allActors.filter(a => a.actorId !== latest.actorId)] });
+                    }
                     toast.success("Thêm diễn viên thành công!");
                 } else {
                     toast.error("Thêm diễn viên thất bại!");
@@ -204,19 +202,11 @@ export function ActorDialog({
             } else if (actor) {
                 success = await updateActor(parseInt(actor.actorId), dto);
                 if (success) {
-                    const updateActor = {
-                        ...actor,
-                        actorName: dto.actorName,
-                        birthDate: dto.birthDate || '',
-                        genderCode: dto.genderCode || '',
-                        shortBio: dto.shortBio || '',
-                        avatarUrl: dto.avatarUrl || '',
-                        nationalityCode: dto.nationalityCode || '',
-
+                    const allActors = useActorStore.getState().actors;
+                    const updated = allActors.find(a => a.actorId === actor.actorId);
+                    if (updated) {
+                        useActorStore.setState({ actors: [updated, ...allActors.filter(a => a.actorId !== updated.actorId)] });
                     }
-                    const filteredActors = tempActors.filter(a => a.actorId !== actor.actorId);
-                    filteredActors.unshift(updateActor);
-                    useActorStore.setState({ actors: filteredActors });
                     toast.success("Cập nhật diễn viên thành công!");
                 } else {
                     toast.error("Cập nhật diễn viên thất bại!");

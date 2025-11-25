@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../../../../components/table-director/data-table-column-header";
 import { Actions } from "./actions";
 import { DirectorColumn } from "@/types/director.type";
-import { formatDate } from "@/utils/formateDate";
+import { formatDate, formatDateTime } from "@/utils/formateDate";
 
 export const columns: ColumnDef<DirectorColumn>[] = [
   {
@@ -122,6 +122,22 @@ export const columns: ColumnDef<DirectorColumn>[] = [
       );
     },
     enableSorting: false,
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Ngày Tạo" />
+    ),
+    cell: ({ row }) => <div>{formatDateTime(row.getValue("createdAt"))}</div>,
+    enableSorting: true,
+  },
+  {
+    accessorKey: "updatedAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Ngày Chỉnh Sửa" />
+    ),
+    cell: ({ row }) => <div>{formatDateTime(row.getValue("updatedAt"))}</div>,
+    enableSorting: true,
   },
   {
     id: "actions",

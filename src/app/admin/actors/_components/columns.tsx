@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../../../../components/table-director/data-table-column-header";
 import { Actions } from "./actions";
-import { formatDate } from "@/utils/formateDate";
+import { formatDate, formatDateTime } from "@/utils/formateDate";
 import { ActorColumn } from "@/types/actor.type";
 
 export const columns: ColumnDef<ActorColumn>[] = [
@@ -122,6 +122,22 @@ export const columns: ColumnDef<ActorColumn>[] = [
       );
     },
     enableSorting: false,
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Ngày Tạo" />
+    ),
+    cell: ({ row }) => <div>{formatDateTime(row.getValue("createdAt"))}</div>,
+    enableSorting: true,
+  },
+  {
+    accessorKey: "updatedAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Ngày Chỉnh Sửa" />
+    ),
+    cell: ({ row }) => <div>{formatDateTime(row.getValue("updatedAt"))}</div>,
+    enableSorting: true,
   },
   {
     id: "actions",

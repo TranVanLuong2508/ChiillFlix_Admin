@@ -8,7 +8,8 @@ export interface Director {
   story: string;
   avatarUrl: string;
   updatedBy?: number;
-
+  createdAt?: Date;
+  updatedAt?: Date;
   genderCodeRL?: {
     keyMap: string;
     type: string;
@@ -37,6 +38,8 @@ export interface DirectorColumn {
   avatarUrl: string;
   gender: string;
   nationality: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface DirectorMeta {
@@ -71,6 +74,8 @@ interface IDirectorRes {
   updatedBy?: number;
   genderCodeRL?: IAllCodeRes;
   nationalityCodeRL?: IAllCodeRes;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IDirectorPagination {
@@ -90,6 +95,8 @@ export interface CreateDirectorDto {
   story?: string;
   avatarUrl?: string;
   nationalityCode?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UpdateDirectorDto {
@@ -99,4 +106,5 @@ export interface UpdateDirectorDto {
   story?: string;
   avatarUrl?: string;
   nationalityCode?: string;
+  updatedAt?: Date;
 }
