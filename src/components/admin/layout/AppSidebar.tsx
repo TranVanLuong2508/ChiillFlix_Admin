@@ -25,12 +25,12 @@ export function AppSidebar() {
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
     { title: "Phim", icon: Film, href: adminPath.MOVIES },
+    { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
+    { title: "Diễn Viên", icon: UserRound, href: adminPath.ACTORS },
     { title: "Gói VIP", icon: Gem, href: adminPath.VIP_PLANS },
     { title: "Người dùng", icon: Users, href: adminPath.USERS },
     { title: "Quyền hạn", icon: ShieldCheck, href: adminPath.PERMISSIONS },
     { title: "Vai trò", icon: UserCheck, href: adminPath.ROLES },
-    { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
-    { title: "Diễn Viên", icon: UserRound, href: adminPath.ACTORS },
   ];
 
   return (
