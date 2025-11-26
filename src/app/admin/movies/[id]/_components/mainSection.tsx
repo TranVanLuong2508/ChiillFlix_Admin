@@ -12,6 +12,7 @@ import FilmService from "@/services/film.service";
 import { toast } from "sonner";
 import { FormCreateNewFilm } from "../../create/_components/formCreateNewFilm";
 import { useFilmStore } from "@/stores/film.store";
+import { PartSection } from "./partSection";
 
 export const MainSection = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -93,7 +94,9 @@ export const MainSection = ({ id }: { id: string }) => {
           <TabsContent value="main">
             <FormCreateNewFilm onSubmit={onSubmit} initialData={filmDataUpdate} />
           </TabsContent>
-          <TabsContent value="part">Quản lý tập phim</TabsContent>
+          <TabsContent value="part">
+            <PartSection id={id} />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
