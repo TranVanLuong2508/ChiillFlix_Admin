@@ -31,6 +31,7 @@ export function AppSidebar() {
     { title: "Vai trò", icon: UserCheck, href: adminPath.ROLES },
     { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
     { title: "Diễn Viên", icon: UserRound, href: adminPath.ACTORS },
+    { title: "Nhà Sản Xuất", icon: Star, href: adminPath.PRODUCERS },
   ];
 
   return (

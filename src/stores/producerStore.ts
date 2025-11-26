@@ -19,7 +19,7 @@ interface ProducerActions {
     fetchProducers: (page?: number, limit?: number, sort?: string, filter?: Record<string, any>) => Promise<void>
     createProducer: (dto: CreateProducerDto) => Promise<boolean>
     updateProducer: (producerId: number, dto: UpdateProducerDto) => Promise<boolean>
-    deleteProducer: (producerId: number) => Promise<boolean>
+    deleteProducer: (producerId: number, newProducerId?: number) => Promise<boolean>
     clearError: () => void
 }
 
@@ -103,10 +103,10 @@ export const useProducerStore = create<ProducerState & ProducerActions>((set, ge
         }
     },
 
-    deleteProducer: async (producerId: number) => {
+    deleteProducer: async (producerId: number, newProducerId?: number) => {
         set({ loading: true, error: null })
         try {
-            const res = await producerService.deleteProducer(producerId)
+            const res = await producerService.deleteProducer(producerId, newProducerId)
             if (res.EC === 1) {
                 await get().fetchProducers(get().meta?.page || 1, get().meta?.limit || 10)
                 set({ loading: false })

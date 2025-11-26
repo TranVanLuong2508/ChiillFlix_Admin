@@ -43,7 +43,11 @@ export const producerService = {
         return privateAxios.patch(`/producer/edit-producer/${producerId}`, dto)
     },
 
-    deleteProducer: (producerId: number): Promise<IBackendRes<any>> => {
-        return privateAxios.delete(`/producer/delete-producer-by-id/${producerId}`)
+    deleteProducer: (producerId: number, newProducerId?: number): Promise<IBackendRes<any>> => {
+        let url = `/producer/delete-producer-by-id/${producerId}`
+        if (newProducerId) {
+            url += `?newProducerId=${newProducerId}`
+        }
+        return privateAxios.delete(url)
     },
 }
