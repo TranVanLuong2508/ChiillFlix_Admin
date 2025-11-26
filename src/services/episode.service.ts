@@ -1,6 +1,6 @@
 import privateAxios from "@/lib/axios/privateAxios"
 import { IBackendRes } from "@/types/backend.type"
-import { ICreateEpisodeReq, IEpisodePagination, IUpdateEpisodeRes } from "@/types/episode.type"
+import { ICreateEpisodeReq, ICreateEpisodeRes, IEpisodePagination, IUpdateEpisodeRes } from "@/types/episode.type"
 
 const EpisodeService = {
   getAll: (
@@ -18,9 +18,15 @@ const EpisodeService = {
       }
     })
   },
-  createEpisode: (payload: ICreateEpisodeReq): Promise<IBackendRes<IUpdateEpisodeRes>> => {
+  createEpisode: (payload: ICreateEpisodeReq): Promise<IBackendRes<ICreateEpisodeRes>> => {
     return privateAxios.post('/episodes', payload)
   },
+  updateEpisode: (episodeId: string, payload: ICreateEpisodeReq): Promise<IBackendRes<IUpdateEpisodeRes>> => {
+    return privateAxios.patch(`/episodes/${episodeId}`, payload)
+  },
+  deleteEpisode: (episodeId: string): Promise<IBackendRes<any>> => {
+    return privateAxios.delete(`/episodes/${episodeId}`)
+  }
 }
 
 export default EpisodeService

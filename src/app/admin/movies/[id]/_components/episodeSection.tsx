@@ -25,8 +25,11 @@ import { columns } from "./episode/columns";
 import { formatDate } from "@/utils/formateDate";
 import { formEpisodeSchema } from "@/lib/validators/episode";
 import { generateSlug } from "@/utils/generateSlug";
+import { usePartStore } from "@/stores/part.store";
 
 export const EpisodeSection = ({ id }: { id: string }) => {
+  const { hasUpdateEpisode, resetHasUpdateEpisode } = usePartStore();
+
   const [parts, setParts] = useState<IPartDetail[]>([]);
   const [selectedPart, setSelectedPart] = useState<string>("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -46,7 +49,13 @@ export const EpisodeSection = ({ id }: { id: string }) => {
   }, [id])
 
   useEffect(() => {
-    // if (isLoadingDelete) return;
+    if (hasUpdateEpisode) {
+      getEpisodePagination();
+      resetHasUpdateEpisode();
+    }
+  }, [hasUpdateEpisode])
+
+  useEffect(() => {
     if (selectedPart === "") return;
     getEpisodePagination()
   }, [pagination.pageIndex, pagination.pageSize, selectedPart]);

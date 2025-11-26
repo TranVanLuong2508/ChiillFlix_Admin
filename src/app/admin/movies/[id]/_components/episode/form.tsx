@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CirclePlus, SquarePen } from "lucide-react";
 
-import { formPartSchema } from "@/lib/validators/part";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button"
@@ -22,7 +21,6 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { formEpisodeSchema } from "@/lib/validators/episode";
-import { Textarea } from "@/components/ui/textarea";
 import { UploadThumb } from "./uploadThumb";
 
 interface FormEpisodeProps {
@@ -65,11 +63,11 @@ export const FormEpisode = ({
         {isUpdate ? (
           <Button
             variant={"ghost"}
-            className="cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
+            className="w-full flex justify-start cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
             size={"sm"}
           >
             <SquarePen />
-            Thông tin phần
+            Xem chi tiết
           </Button>
         ) : (
           <Button

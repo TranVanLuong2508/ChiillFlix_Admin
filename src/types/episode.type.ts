@@ -40,7 +40,16 @@ export interface ICreateEpisodeReq {
   partId: string;
 }
 
-export interface IUpdateEpisodeRes {
+export interface ICreateEpisodeRes {
   id: string;
   createdAt: string;
 }
+// create episode
+// update episode
+
+export interface IUpdateEpisodeRes {
+  message: string;
+  affectedRows: number;
+}
+
+// update episode

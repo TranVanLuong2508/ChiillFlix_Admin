@@ -61,11 +61,11 @@ export const FormPart = ({
         {isUpdate ? (
           <Button
             variant={"ghost"}
-            className="cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
+            className="w-full flex justify-start cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
             size={"sm"}
           >
             <SquarePen />
-            Thông tin phần
+            Xem chi tiết
           </Button>
         ) : (
           <Button
