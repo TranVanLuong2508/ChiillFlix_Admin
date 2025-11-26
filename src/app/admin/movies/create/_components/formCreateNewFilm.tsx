@@ -167,7 +167,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="duration"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Thời lượng phim</FormLabel>
+                  <FormLabel>Thời lượng phim (phút)</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
