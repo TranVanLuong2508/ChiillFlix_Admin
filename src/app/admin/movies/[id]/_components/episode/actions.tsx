@@ -17,6 +17,7 @@ import { formPartSchema } from "@/lib/validators/part";
 import { formEpisodeSchema } from "@/lib/validators/episode";
 import { usePartStore } from "@/stores/part.store";
 import { FormEpisode } from "./form";
+import { DeleteForm } from "./deleteForm";
 
 interface ActionsProps {
   row: IEpisodeColumn
@@ -87,9 +88,13 @@ export const Actions = ({ row }: ActionsProps) => {
         )}
         <DropdownMenuItem
           className="cursor-pointer text-red-600 focus:text-red-600"
+          asChild
         >
-          <Trash2 size={4} className="text-red-600" />
-          Xóa
+          <DeleteForm
+            open={isDeleteOpen}
+            onOpenChange={setIsDeleteOpen}
+            handleDelete={handleDelete}
+          />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
