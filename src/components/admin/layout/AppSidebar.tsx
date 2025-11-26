@@ -27,6 +27,7 @@ export function AppSidebar() {
     { title: "Phim", icon: Film, href: adminPath.MOVIES },
     { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
     { title: "Diễn Viên", icon: UserRound, href: adminPath.ACTORS },
+    { title: "Nhà Sản Xuất", icon: Star, href: adminPath.PRODUCERS },
     { title: "Gói VIP", icon: Gem, href: adminPath.VIP_PLANS },
     { title: "Người dùng", icon: Users, href: adminPath.USERS },
     { title: "Quyền hạn", icon: ShieldCheck, href: adminPath.PERMISSIONS },
