@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import UploadService from "@/services/upload.service";
 import { Copy, ImageUp, Loader } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface UploadThumbProps {
@@ -10,17 +10,12 @@ interface UploadThumbProps {
 }
 
 export const UploadThumb = ({ field }: UploadThumbProps) => {
+  const inputUploadRef = useRef<HTMLInputElement>(null);
 
-  const [files, setFiles] = useState<Record<string, File>>({});
   const [loading, setLoading] = useState(false);
   const [id, setId] = useState<string>("");
 
-  const handleFileChange = (id: string, file: File) => {
-    setFiles((prev) => ({ ...prev, [id]: file }));
-  };
-
-  const handleUpload = async (id: string) => {
-    const file = files[id];
+  const handleFileChange = async (id: string, file: File) => {
     if (!file) {
       toast.error("Vui lòng chọn ảnh trước khi upload");
       return;
@@ -45,12 +40,13 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 pl-6 w-full">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 pl-6 w-full">
+      <div>
         <Input
           type="file"
           accept="image/*"
-          className="cursor-pointer"
+          className="cursor-pointer hidden"
+          ref={inputUploadRef}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
@@ -62,7 +58,7 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
           type="button"
           className="cursor-pointer"
           variant={"outline"}
-          onClick={() => handleUpload(field.id)}
+          onClick={() => inputUploadRef.current?.click()}
         >
           {
             loading && id === field.id ?
@@ -76,7 +72,7 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
           Upload
         </Button>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-1">
         <Input {...field} placeholder="URL ảnh" readOnly />
         <Button
           type="button"

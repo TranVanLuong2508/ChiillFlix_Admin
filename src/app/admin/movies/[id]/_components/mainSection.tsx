@@ -27,7 +27,7 @@ export const MainSection = ({ id }: { id: string }) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const changeField = getChangeField(values);
-    console.log("Check change field: ", changeField);
+
     if (changeField && changeField.length > 0) {
       const dataUpdate = changeField.reduce((acc, key) => {
         acc[key] = values[key as keyof z.infer<typeof formSchema>];
@@ -40,6 +40,14 @@ export const MainSection = ({ id }: { id: string }) => {
 
       if ("duration" in dataUpdate) {
         payload.duration = Number(dataUpdate.duration);
+      }
+
+      if ("actors" in dataUpdate) {
+        const checkNull = dataUpdate.actors.some((actor: any) => actor.characterName === "");
+        if (checkNull) {
+          toast.error("Vui lòng nhập tên nhân vật");
+          return;
+        }
       }
 
       const res = await FilmService.updateFilm(id, payload);

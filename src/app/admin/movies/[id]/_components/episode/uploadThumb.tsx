@@ -13,7 +13,6 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
 
   const inputUploadRef = useRef<HTMLInputElement>(null);
 
-  const [files, setFiles] = useState<Record<string, File>>({});
   const [loading, setLoading] = useState(false);
   const [id, setId] = useState<string>("");
 
@@ -40,31 +39,6 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
       toast.error("Upload ảnh thất bại");
     }
   };
-
-  // const handleUpload = async (id: string) => {
-  //   const file = files[id];
-  //   if (!file) {
-  //     toast.error("Vui lòng chọn ảnh trước khi upload");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-  //     setId(id);
-  //     const res = await UploadService.uploadFile(file);
-  //     if (res.data) {
-  //       field.onChange(res.data.url);
-  //       setLoading(false);
-  //       toast.success("Upload ảnh thành công");
-  //       setId("");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setLoading(false);
-  //     setId("");
-  //     toast.error("Upload ảnh thất bại");
-  //   }
-  // };
 
   return (
     <div className="flex items-center gap-2 w-full">
