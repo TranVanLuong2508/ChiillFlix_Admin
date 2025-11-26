@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../../../../components/table-director/data-table-column-header";
 import { Actions } from "./actions";
 import { DirectorColumn } from "@/types/director.type";
-import { formatDate, formatDateTime } from "@/utils/formateDate";
+import { formatbirthDate, formatDate, formatDateTime } from "@/utils/formateDate";
 
 export const columns: ColumnDef<DirectorColumn>[] = [
   {
@@ -91,7 +91,7 @@ export const columns: ColumnDef<DirectorColumn>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ngày Sinh" />
     ),
-    cell: ({ row }) => <div>{formatDate(row.getValue("birthDate"))}</div>,
+    cell: ({ row }) => <div>{formatbirthDate(row.getValue("birthDate"))}</div>,
     enableSorting: true,
   },
   {

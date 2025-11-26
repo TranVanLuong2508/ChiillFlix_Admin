@@ -1,5 +1,5 @@
 "use client";
-
+import { UploadThumb } from "./UploadThumb";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -189,12 +189,7 @@ export function ActorDialog({
             if (mode === "create") {
                 success = await createActor(dto);
                 if (success) {
-                    await fetchActors(1, 1000);
-                    const allActors = useActorStore.getState().actors;
-                    if (allActors.length > 0) {
-                        const latest = allActors.reduce((max, curr) => Number(curr.actorId) > Number(max.actorId) ? curr : max, allActors[0]);
-                        useActorStore.setState({ actors: [latest, ...allActors.filter(a => a.actorId !== latest.actorId)] });
-                    }
+                    await fetchActors(meta?.page || 1, meta?.limit || 10);
                     toast.success("Thêm diễn viên thành công!");
                 } else {
                     toast.error("Thêm diễn viên thất bại!");
@@ -202,11 +197,7 @@ export function ActorDialog({
             } else if (actor) {
                 success = await updateActor(parseInt(actor.actorId), dto);
                 if (success) {
-                    const allActors = useActorStore.getState().actors;
-                    const updated = allActors.find(a => a.actorId === actor.actorId);
-                    if (updated) {
-                        useActorStore.setState({ actors: [updated, ...allActors.filter(a => a.actorId !== updated.actorId)] });
-                    }
+                    await fetchActors(meta?.page || 1, meta?.limit || 10);
                     toast.success("Cập nhật diễn viên thành công!");
                 } else {
                     toast.error("Cập nhật diễn viên thất bại!");
@@ -323,13 +314,13 @@ export function ActorDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="avatarUrl">URL Avatar</Label>
-
-                        <Input
-                            id="avatarUrl"
-                            {...register("avatarUrl")}
-                            placeholder="https://example.com/avatar.jpg"
-                        />
+                        <Label htmlFor="avatarUrl">Ảnh đại diện</Label>
+                        <UploadThumb field={{
+                            ...register("avatarUrl"),
+                            value: watch("avatarUrl"),
+                            id: "avatarUrl",
+                            onChange: (url: string) => setValue("avatarUrl", url)
+                        }} />
                     </div>
 
                     <div className="space-y-2">
