@@ -48,7 +48,7 @@ export const DirectorForm = ({
   }
 
   useEffect(() => {
-    if (!filmDetailRaw) return;
+    if (!filmDetailRaw || field.value.length === 0) return;
     handleDataUpdate();
   }, [filmDetailRaw]);
 
@@ -88,7 +88,6 @@ export const DirectorForm = ({
     [field, selectedDirector]
   );
 
-  console.log("Check data: ", selectedDirector)
 
   return (
     <div className="flex flex-col gap-2">
@@ -101,7 +100,7 @@ export const DirectorForm = ({
           />
         </FormControl>
         <FormDescription>
-          *Vui lòng kiểm tra và chọn đạo diễn chính
+          *Vui lòng kiểm tra và tích chọn đạo diễn chính
         </FormDescription>
         <FormMessage />
       </FormItem>

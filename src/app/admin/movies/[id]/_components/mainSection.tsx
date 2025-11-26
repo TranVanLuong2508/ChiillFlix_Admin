@@ -84,7 +84,7 @@ export const MainSection = ({ id }: { id: string }) => {
         <h1 className="text-lg font-semibold">Quay về</h1>
       </button>
 
-      <h1 className="text-2xl font-bold text-center">Thông Tin Chi Tiết Phim</h1>
+      <h1 className="text-2xl font-bold text-center">Thông Tin Chi Tiết</h1>
 
       <div>
         <Tabs defaultValue="main" className="w-full space-y-6">

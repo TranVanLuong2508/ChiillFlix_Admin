@@ -33,9 +33,6 @@ export const EpisodeSection = ({ id }: { id: string }) => {
   const [parts, setParts] = useState<IPartDetail[]>([]);
   const [selectedPart, setSelectedPart] = useState<string>("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [isDeleteOpen, setIsDeletOpen] = useState(false);
-  const [dataUpdatePart, setDataUpdatePart] = useState<z.infer<typeof formPartSchema> | null>(null);
 
   const [episodeData, setEpisodeData] = useState<IEpisodeColumn[]>([]);
   const [pageCount, setPageCount] = useState<number>(1);
@@ -115,6 +112,16 @@ export const EpisodeSection = ({ id }: { id: string }) => {
     }
   };
 
+
+  if (!parts || parts.length === 0) {
+    return (
+      <div className="py-[50px]">
+        <h2 className="text-center text-lg font-semibold text-amber-500">
+          Vui lòng tạo phần phim mới và quay lại !
+        </h2>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-[100px]">

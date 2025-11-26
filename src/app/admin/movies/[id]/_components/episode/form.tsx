@@ -22,6 +22,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { formEpisodeSchema } from "@/lib/validators/episode";
 import { UploadThumb } from "./uploadThumb";
+import { cn } from "@/lib/utils";
 
 interface FormEpisodeProps {
   open: boolean;
@@ -72,7 +73,7 @@ export const FormEpisode = ({
         ) : (
           <Button
             variant={"outline"}
-            className="cursor-pointer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer"
             size={"sm"}
           >
             <CirclePlus />
@@ -167,12 +168,17 @@ export const FormEpisode = ({
               <DialogClose asChild>
                 <Button
                   variant="outline"
+                  className="cursor-pointer"
                 >
                   Hủy
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
+                className={cn(
+                  "cursor-pointer",
+                  initialData ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
+                )}
               >
                 {initialData ? "Cập nhật" : "Thêm"}
               </Button>

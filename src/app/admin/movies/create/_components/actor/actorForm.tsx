@@ -35,7 +35,7 @@ export const ActorForm = ({
   const { filmDetailRaw } = useFilmStore();
 
   useEffect(() => {
-    if (!filmDetailRaw) return;
+    if (!filmDetailRaw || field.value.length === 0) return;
     handleDataUpdate();
   }, [filmDetailRaw]);
 

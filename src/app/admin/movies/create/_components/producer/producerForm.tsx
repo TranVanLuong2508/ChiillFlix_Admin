@@ -35,7 +35,7 @@ export const ProducerForm = ({
   const { filmDetailRaw } = useFilmStore();
 
   useEffect(() => {
-    if (!filmDetailRaw) return;
+    if (!filmDetailRaw || field.value.length === 0) return;
     handleDataUpdate();
   }, [filmDetailRaw]);
 
@@ -97,7 +97,7 @@ export const ProducerForm = ({
           />
         </FormControl>
         <FormDescription>
-          *Vui lòng kiểm tra và chọn nhà sản xuất chính
+          *Vui lòng kiểm tra và tích chọn nhà sản xuất chính
         </FormDescription>
         <FormMessage />
       </FormItem>
