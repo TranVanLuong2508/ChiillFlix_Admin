@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { FormCreateNewFilm } from "../../create/_components/formCreateNewFilm";
 import { useFilmStore } from "@/stores/film.store";
 import { PartSection } from "./partSection";
+import { EpisodeSection } from "./episodeSection";
 
 export const MainSection = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -89,13 +90,17 @@ export const MainSection = ({ id }: { id: string }) => {
         <Tabs defaultValue="main" className="w-full space-y-6">
           <TabsList>
             <TabsTrigger value="main">Quản lý phim</TabsTrigger>
-            <TabsTrigger value="part">Quản lý tập phim</TabsTrigger>
+            <TabsTrigger value="part">Quản lý phần</TabsTrigger>
+            <TabsTrigger value="episode">Quản lý tập</TabsTrigger>
           </TabsList>
           <TabsContent value="main">
             <FormCreateNewFilm onSubmit={onSubmit} initialData={filmDataUpdate} />
           </TabsContent>
           <TabsContent value="part">
             <PartSection id={id} />
+          </TabsContent>
+          <TabsContent value="episode">
+            <EpisodeSection id={id} />
           </TabsContent>
         </Tabs>
       </div>

@@ -30,9 +30,9 @@ export const DeleteForm = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button
-          variant={"outline"}
+          variant={"ghost"}
           size={"sm"}
-          className="cursor-pointer"
+          className="cursor-pointer text-red-600 hover:text-red-600/80 focus:text-red-600 w-full flex justify-start"
         >
           <Trash2 />
           Xóa phần

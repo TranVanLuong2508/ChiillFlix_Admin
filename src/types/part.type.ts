@@ -5,13 +5,22 @@ export interface IPartDetail {
   title: string;
   partNumber: number;
   description: string;
+  createdAt: string;
+  updatedAt: string;
   filmId: string;
-  episodes: IEpisodeDetail[];
 }
 
+interface IPartDetailEpisode extends IPartDetail {
+  episodes: IEpisodeDetail[];
+
+}
 
 export interface IPartGetAll {
   partData: IPartDetail[];
+}
+
+export interface IPartGetAllEpisode {
+  partData: IPartDetailEpisode[];
 }
 
 // create part
@@ -37,3 +46,17 @@ export interface IPartDeleteRes {
   deleted: boolean;
 }
 // delete part
+
+// table
+
+export interface IPartColumn {
+  id: string;
+  title: string;
+  partNumber: number;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  filmId: string;
+}
+
+// table

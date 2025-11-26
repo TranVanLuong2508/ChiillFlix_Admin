@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 interface FormPartProps {
   open: boolean;
   initialData?: z.infer<typeof formPartSchema>;
-
+  isUpdate?: boolean;
   onSubmit: (values: z.infer<typeof formPartSchema>) => void;
   onOpenChange: (open: boolean) => void;
 }
@@ -34,6 +34,7 @@ interface FormPartProps {
 export const FormPart = ({
   open,
   initialData,
+  isUpdate,
   onSubmit,
   onOpenChange,
 }: FormPartProps) => {
@@ -57,11 +58,11 @@ export const FormPart = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        {initialData ? (
+        {isUpdate ? (
           <Button
-            variant={"outline"}
+            variant={"ghost"}
+            className="cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
             size={"sm"}
-            className="cursor-pointer"
           >
             <SquarePen />
             Thông tin phần
@@ -70,9 +71,10 @@ export const FormPart = ({
           <Button
             variant={"outline"}
             className="cursor-pointer"
+            size={"sm"}
           >
             <CirclePlus />
-            Thêm phần
+            Thêm mới
           </Button>
         )}
       </DialogTrigger>
