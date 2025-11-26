@@ -1,5 +1,6 @@
 "use client";
 
+import z from "zod";
 import { useState } from "react"
 
 import {
@@ -25,44 +26,52 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
+import { DataTablePagination } from "@/components/table/data-table-pagination"
 import { DataTableViewOptions } from "@/components/table/data-table-view-option"
-import { FormPart } from "./form";
-import z from "zod";
-import { formPartSchema } from "@/lib/validators/part";
+import { FormEpisode } from "./form";
+import { formEpisodeSchema } from "@/lib/validators/episode";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   hiddenColumns: string[];
+  pagination: PaginationState;
+  pageCount: number;
 
   isOpenCreate: boolean;
   onOpenCreateChange: (open: boolean) => void;
-
-  handleCreatePart: (values: z.infer<typeof formPartSchema>) => void;
+  handleCreateEpisode: (values: z.infer<typeof formEpisodeSchema>) => void;
+  setPagination: OnChangeFn<PaginationState>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   hiddenColumns,
+  pagination,
+  pageCount,
+
   isOpenCreate,
   onOpenCreateChange,
-  handleCreatePart,
-}: DataTableProps<TData, TValue>) {
+  handleCreateEpisode,
 
+  setPagination,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     ...hiddenColumns.reduce((acc, column) => {
       acc[column] = false;
       return acc;
     }, {} as VisibilityState),
   });
+  const [rowSelection, setRowSelection] = useState({})
 
   const table = useReactTable({
     data,
     columns,
+    pageCount: pageCount,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -70,11 +79,13 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       rowSelection,
       columnVisibility,
+      pagination,
     },
   });
 
@@ -101,9 +112,9 @@ export function DataTable<TData, TValue>({
               <CirclePlus />
               <span>Tạo mới</span>
             </Button> */}
-            <FormPart
-              onSubmit={handleCreatePart}
+            <FormEpisode
               open={isOpenCreate}
+              onSubmit={handleCreateEpisode}
               onOpenChange={onOpenCreateChange}
             />
           </div>
@@ -153,6 +164,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+      <DataTablePagination table={table} />
     </div>
   )
 }
