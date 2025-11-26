@@ -22,6 +22,8 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { formEpisodeSchema } from "@/lib/validators/episode";
+import { Textarea } from "@/components/ui/textarea";
+import { UploadThumb } from "./uploadThumb";
 
 interface FormEpisodeProps {
   open: boolean;
@@ -43,7 +45,6 @@ export const FormEpisode = ({
     defaultValues: initialData || {
       title: "",
       episodeNumber: "",
-      slug: "",
       duration: "",
       videoUrl: "",
       thumbUrl: "",
@@ -81,7 +82,7 @@ export const FormEpisode = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}</DialogTitle>
           <DialogDescription>
@@ -105,12 +106,12 @@ export const FormEpisode = ({
                   )}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="flex items-center gap-2">
                 <FormField
                   control={form.control}
                   name="episodeNumber"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Số thứ tự tập</FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -119,15 +120,12 @@ export const FormEpisode = ({
                     </FormItem>
                   )}
                 />
-
-              </div>
-              <div className="grid gap-3">
                 <FormField
                   control={form.control}
                   name="duration"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thời lượng</FormLabel>
+                    <FormItem className="flex-1">
+                      <FormLabel>Thời lượng (phút)</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -159,7 +157,7 @@ export const FormEpisode = ({
                     <FormItem>
                       <FormLabel>Thumbnail URL</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <UploadThumb field={field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

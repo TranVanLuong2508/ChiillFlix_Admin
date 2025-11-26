@@ -78,6 +78,9 @@ export const columns: ColumnDef<FilmColumn>[] = [
     meta: {
       label: "Thời gian",
     },
+    cell: ({ row }) => {
+      return <div>{row.getValue("duration")} phút</div>;
+    },
   },
   {
     accessorKey: "country",

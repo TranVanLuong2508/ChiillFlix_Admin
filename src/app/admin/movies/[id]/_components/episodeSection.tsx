@@ -24,6 +24,7 @@ import { DataTable } from "./episode/data-table";
 import { columns } from "./episode/columns";
 import { formatDate } from "@/utils/formateDate";
 import { formEpisodeSchema } from "@/lib/validators/episode";
+import { generateSlug } from "@/utils/generateSlug";
 
 export const EpisodeSection = ({ id }: { id: string }) => {
   const [parts, setParts] = useState<IPartDetail[]>([]);
@@ -80,7 +81,7 @@ export const EpisodeSection = ({ id }: { id: string }) => {
       }
     } else {
       if (res.data && res.data.result.length === 0) {
-        toast.info("No data");
+        toast.info("Không có dữ liệu");
       } else {
         toast.error(res.EM);
       }
@@ -90,6 +91,7 @@ export const EpisodeSection = ({ id }: { id: string }) => {
   const handleCreateEpisode = async (values: z.infer<typeof formEpisodeSchema>) => {
     const payload = {
       ...values,
+      slug: generateSlug(values.title),
       episodeNumber: Number(values.episodeNumber),
       duration: Number(values.duration),
       partId: selectedPart,

@@ -59,7 +59,7 @@ export const columns: ColumnDef<IEpisodeColumn>[] = [
   },
   {
     accessorKey: "duration",
-    header: "Thời lượng",
+    header: "Thời lượng (phút)",
     meta: {
       label: "Thời lượng",
     },
