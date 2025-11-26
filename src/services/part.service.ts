@@ -1,7 +1,7 @@
 import privateAxios from "@/lib/axios/privateAxios"
 import { formPartSchema } from "@/lib/validators/part"
 import { IBackendRes } from "@/types/backend.type"
-import { IPartCreateReq, IPartCreateRes, IPartGetAll } from "@/types/part.type"
+import { IPartCreateReq, IPartCreateRes, IPartGetAll, IPartUpdateRes } from "@/types/part.type"
 import z from "zod"
 
 const PartService = {
@@ -13,7 +13,7 @@ const PartService = {
     return privateAxios.post("/parts", part)
 
   },
-  updatePart: (partId: string, part: z.infer<typeof formPartSchema>): Promise<IBackendRes<IPartCreateRes>> => {
+  updatePart: (partId: string, part: IPartCreateReq): Promise<IBackendRes<IPartUpdateRes>> => {
     return privateAxios.patch(`/parts/${partId}`, part)
   }
 }

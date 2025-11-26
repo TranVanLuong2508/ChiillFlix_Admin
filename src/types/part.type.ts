@@ -27,3 +27,8 @@ export interface IPartCreateRes {
   createdAt: string;
 }
 // create part
+// update part
+export interface IPartUpdateRes {
+  affectedRows: number;
+}
+// update part

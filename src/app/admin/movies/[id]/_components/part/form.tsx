@@ -1,5 +1,13 @@
 "use client";
 
+import z from "zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { CirclePlus, SquarePen } from "lucide-react";
+
+import { formPartSchema } from "@/lib/validators/part";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -13,25 +21,25 @@ import {
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea";
-import { formPartSchema } from "@/lib/validators/part";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CirclePlus } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod";
 
 interface FormPartProps {
-  onSubmit: (values: z.infer<typeof formPartSchema>) => void;
   open: boolean;
+  initialData?: z.infer<typeof formPartSchema>;
+
+  onSubmit: (values: z.infer<typeof formPartSchema>) => void;
   onOpenChange: (open: boolean) => void;
 }
 
-export const FormPart = ({ onSubmit, open, onOpenChange }: FormPartProps) => {
+export const FormPart = ({
+  open,
+  initialData,
+  onSubmit,
+  onOpenChange,
+}: FormPartProps) => {
   const form = useForm<z.infer<typeof formPartSchema>>({
     resolver: zodResolver(formPartSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       title: "",
       partNumber: "",
       description: "",
@@ -39,23 +47,38 @@ export const FormPart = ({ onSubmit, open, onOpenChange }: FormPartProps) => {
   });
 
   useEffect(() => {
-    if (open) form.reset();
-  }, [open])
+    if (initialData) {
+      form.reset(initialData);
+    } else {
+      form.reset();
+    }
+  }, [initialData, form, open])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button
-          variant={"outline"}
-          className="cursor-pointer"
-        >
-          <CirclePlus />
-          Thêm phần
-        </Button>
+        {initialData ? (
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            className="cursor-pointer"
+          >
+            <SquarePen />
+            Thông tin phần
+          </Button>
+        ) : (
+          <Button
+            variant={"outline"}
+            className="cursor-pointer"
+          >
+            <CirclePlus />
+            Thêm phần
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Thêm phần mới</DialogTitle>
+          <DialogTitle>{initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}</DialogTitle>
           <DialogDescription>
           </DialogDescription>
         </DialogHeader>
@@ -123,7 +146,7 @@ export const FormPart = ({ onSubmit, open, onOpenChange }: FormPartProps) => {
               <Button
                 type="submit"
               >
-                Thêm
+                {initialData ? "Cập nhật" : "Thêm"}
               </Button>
             </DialogFooter>
           </form>
