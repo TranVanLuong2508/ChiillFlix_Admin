@@ -32,3 +32,8 @@ export interface IPartUpdateRes {
   affectedRows: number;
 }
 // update part
+// delete part
+export interface IPartDeleteRes {
+  deleted: boolean;
+}
+// delete part

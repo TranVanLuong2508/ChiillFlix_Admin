@@ -1,8 +1,12 @@
 import privateAxios from "@/lib/axios/privateAxios"
-import { formPartSchema } from "@/lib/validators/part"
 import { IBackendRes } from "@/types/backend.type"
-import { IPartCreateReq, IPartCreateRes, IPartGetAll, IPartUpdateRes } from "@/types/part.type"
-import z from "zod"
+import {
+  IPartCreateReq,
+  IPartCreateRes,
+  IPartDeleteRes,
+  IPartGetAll,
+  IPartUpdateRes
+} from "@/types/part.type"
 
 const PartService = {
 
@@ -15,6 +19,9 @@ const PartService = {
   },
   updatePart: (partId: string, part: IPartCreateReq): Promise<IBackendRes<IPartUpdateRes>> => {
     return privateAxios.patch(`/parts/${partId}`, part)
+  },
+  deletePart: (partId: string): Promise<IBackendRes<IPartDeleteRes>> => {
+    return privateAxios.delete(`/parts/${partId}`)
   }
 }
 
