@@ -17,6 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parse, format } from "date-fns";
 import { Label } from "@/components/ui/label";
+import { UploadThumb } from "../../actors/_components/UploadThumb";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "lucide-react";
 import {
@@ -188,12 +189,7 @@ export function DirectorDialog({
             if (mode === "create") {
                 success = await createDirector(dto);
                 if (success) {
-                    await fetchDirectors(1, 1000); 
-                    const allDirectors = useDirectorStore.getState().directors;
-                    if (allDirectors.length > 0) {
-                        const latest = allDirectors.reduce((max, curr) => Number(curr.directorId) > Number(max.directorId) ? curr : max, allDirectors[0]);
-                        useDirectorStore.setState({ directors: [latest, ...allDirectors.filter(d => d.directorId !== latest.directorId)] });
-                    }
+                    await fetchDirectors(meta?.page || 1, meta?.limit || 10);
                     toast.success("Thêm đạo diễn thành công!");
                 } else {
                     toast.error("Thêm đạo diễn thất bại!");
@@ -201,11 +197,7 @@ export function DirectorDialog({
             } else if (director) {
                 success = await updateDirector(parseInt(director.directorId), dto);
                 if (success) {
-                    const allDirectors = useDirectorStore.getState().directors;
-                    const updated = allDirectors.find(d => d.directorId === director.directorId);
-                    if (updated) {
-                        useDirectorStore.setState({ directors: [updated, ...allDirectors.filter(d => d.directorId !== updated.directorId)] });
-                    }
+                    await fetchDirectors(meta?.page || 1, meta?.limit || 10);
                     toast.success("Cập nhật đạo diễn thành công!");
                 } else {
                     toast.error("Cập nhật đạo diễn thất bại!");
@@ -323,13 +315,13 @@ export function DirectorDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="avatarUrl">URL Avatar</Label>
-
-                        <Input
-                            id="avatarUrl"
-                            {...register("avatarUrl")}
-                            placeholder="https://example.com/avatar.jpg"
-                        />
+                        <Label htmlFor="avatarUrl">Ảnh đại diện</Label>
+                        <UploadThumb field={{
+                            ...register("avatarUrl"),
+                            value: watch("avatarUrl"),
+                            id: "avatarUrl",
+                            onChange: (url: string) => setValue("avatarUrl", url)
+                        }} />
                     </div>
 
                     <div className="space-y-2">

@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../../../../components/table-director/data-table-column-header";
 import { Actions } from "./actions";
-import { formatDate, formatDateTime } from "@/utils/formateDate";
+import { formatbirthDate, formatDateTime } from "@/utils/formateDate";
 import { ActorColumn } from "@/types/actor.type";
 
 export const columns: ColumnDef<ActorColumn>[] = [
@@ -91,7 +91,7 @@ export const columns: ColumnDef<ActorColumn>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ngày Sinh" />
     ),
-    cell: ({ row }) => <div>{formatDate(row.getValue("birthDate"))}</div>,
+    cell: ({ row }) => <div>{formatbirthDate(row.getValue("birthDate"))}</div>,
     enableSorting: true,
   },
   {

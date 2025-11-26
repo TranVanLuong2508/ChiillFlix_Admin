@@ -19,3 +19,13 @@ export function formatDateTime(isoString?: string | null) {
     return "";
   }
 }
+
+export function formatbirthDate(isoString?: string | null) {
+  if (!isoString) return "";
+
+  try {
+    return format(new Date(isoString), "dd/MM/yyyy");
+  } catch {
+    return "";
+  }
+}
