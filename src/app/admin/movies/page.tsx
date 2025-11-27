@@ -15,7 +15,6 @@ import { useFilmStore } from "@/stores/film.store";
 const MoviesPage = () => {
   const { isLoadingDelete } = useFilmStore();
 
-
   const [filmData, setFilmData] = useState<FilmColumn[]>([]);
   const [pageCount, setPageCount] = useState<number>(1);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -57,7 +56,7 @@ const MoviesPage = () => {
   useEffect(() => {
     if (isLoadingDelete) return;
 
-    getFilmPagination()
+    getFilmPagination();
   }, [pagination.pageIndex, pagination.pageSize, isLoadingDelete]);
 
   return (
@@ -67,7 +66,7 @@ const MoviesPage = () => {
         data={filmData}
         pagination={pagination}
         pageCount={pageCount}
-        hiddenColumns={["filmId", "slug", "country", "language"]}
+        hiddenColumns={["filmId", "slug", "country", "language", "view"]}
         setPagination={setPagination}
       />
     </div>

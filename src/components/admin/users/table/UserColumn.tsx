@@ -1,4 +1,3 @@
-import { IRole } from "@/types/role.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, SquarePen, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,12 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDateTime } from "@/utils/formateDate";
+import { IUser, IUserBasic } from "@/types/user.type";
 
-export const roleColumns = (
-  onEdit: (id: number) => void,
-  onDelete: (id: number) => void,
-  onRestore: (id: number) => void,
-): ColumnDef<IRole>[] => [
+const valueGender: Record<string, string> = {
+  O: "Khác",
+  F: "Nữ",
+  M: "Nam",
+};
+
+export const UserColumns = (onEdit: (id: number) => void, onDelete: (id: number) => void): ColumnDef<IUserBasic>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -41,7 +43,7 @@ export const roleColumns = (
     size: 10,
   },
   {
-    accessorKey: "roleId",
+    accessorKey: "userId",
     header: ({ column }) => (
       <Button
         className="cursor-pointer"
@@ -53,39 +55,63 @@ export const roleColumns = (
     ),
   },
   {
-    accessorKey: "roleName",
+    accessorKey: "fullName",
     header: ({ column }) => (
       <Button
         className="cursor-pointer"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Tên vai trò <ArrowUpDown className="ml-2 h-4 w-4" />
+        Tên <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
   },
   {
-    accessorKey: "description",
+    accessorKey: "email",
     header: ({ column }) => (
       <Button
         className="cursor-pointer"
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Mô tả <ArrowUpDown className="ml-2 h-4 w-4" />
+        email <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="line-clamp-2 max-w-[300px]">{row.getValue("description")}</div>,
+    cell: ({ row }) => <div className="line-clamp-2 max-w-[300px]">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "isActive",
+    accessorKey: "genderCode",
+    header: ({ column }) => (
+      <Button
+        className="cursor-pointer"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Giới tính <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const gender = row.original;
+      const value = String(row.getValue("genderCode"));
+      let genderValue = "";
+      if (value) {
+        genderValue = valueGender[value];
+      } else {
+        genderValue = "Chưa thêm";
+      }
+      return <div className="line-clamp-2 max-w-[300px]">{genderValue}</div>;
+    },
+  },
+
+  {
+    accessorKey: "isVip",
     header: ({ column }) => (
       <div className="w-full flex justify-center ">
-        <Button variant="ghost">Hoạt động</Button>
+        <Button variant="ghost">VIP ?</Button>
       </div>
     ),
     cell: ({ row }) => {
-      const active = Boolean(row.getValue("isActive"));
+      const isVip = Boolean(row.getValue("isVip"));
 
       return (
         <div className="flex justify-center">
@@ -93,40 +119,14 @@ export const roleColumns = (
             className={`
             inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium
             border
-            ${active ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-800 border-red-300"}
+            ${isVip ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-800 border-red-300"}
           `}
           >
-            {active ? "Active" : "Inactive"}
+            {isVip ? "VIP" : "Free member"}
           </span>
         </div>
       );
     },
-  },
-
-  {
-    accessorKey: "isDeleted",
-    header: ({ column }) => (
-      <div className="w-full flex justify-center">
-        <Button variant="ghost">Trạng thái xóa</Button>
-      </div>
-    ),
-    cell: ({ row }) => {
-      const deleted = Boolean(row.getValue("isDeleted"));
-
-      return (
-        <div className="flex justify-center">
-          <span
-            className={`
-            inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium border
-            ${deleted ? "bg-red-300 text-red-800 border-red-600" : "bg-green-100 text-green-800 border-green-300"}
-          `}
-          >
-            {deleted ? "Đã xoá" : "Khả dụng"}
-          </span>
-        </div>
-      );
-    },
-    enableHiding: true,
   },
 
   {
@@ -144,6 +144,7 @@ export const roleColumns = (
       return <div>{formatDateTime(row.getValue("createdAt"))}</div>;
     },
   },
+
   {
     accessorKey: "updatedAt",
     header: ({ column }) => (
@@ -163,7 +164,7 @@ export const roleColumns = (
     id: "menu",
     enableHiding: false,
     cell: ({ row }) => {
-      const role = row.original;
+      const user = row.original;
 
       return (
         <DropdownMenu modal={false}>
@@ -177,37 +178,18 @@ export const roleColumns = (
             <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
             <DropdownMenuItem
               className="cursor-pointer"
-              onClick={() => navigator.clipboard.writeText(role.roleName.toString())}
+              onClick={() => navigator.clipboard.writeText(user.email.toString())}
             >
-              Copy Tên vai trò
+              Copy Email
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {!role.isDeleted ? (
-              <>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(role.roleId)}>
-                  Chỉnh sửa
-                </DropdownMenuItem>
 
-                <DropdownMenuItem className="cursor-pointer text-red-600" onClick={() => onDelete(role.roleId)}>
-                  Xóa
-                </DropdownMenuItem>
-              </>
-            ) : (
-              <>
-                <DropdownMenuItem disabled className="opacity-50 cursor-pointer">
-                  Đã xoá
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onRestore(role.roleId)} className=" text-red-600 cursor-pointer">
-                  Khôi phục
-                </DropdownMenuItem>
-              </>
-            )}
-            {/* <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(role.roleId)}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(user.userId)}>
               Chỉnh sửa
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(role.roleId)}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => onDelete(user.userId)}>
               Xóa
-            </DropdownMenuItem> */}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
