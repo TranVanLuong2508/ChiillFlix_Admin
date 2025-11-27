@@ -24,14 +24,15 @@ import { DataTable } from "./episode/data-table";
 import { columns } from "./episode/columns";
 import { formatDate } from "@/utils/formateDate";
 import { formEpisodeSchema } from "@/lib/validators/episode";
+import { generateSlug } from "@/utils/generateSlug";
+import { usePartStore } from "@/stores/part.store";
 
 export const EpisodeSection = ({ id }: { id: string }) => {
+  const { hasUpdateEpisode, resetHasUpdateEpisode } = usePartStore();
+
   const [parts, setParts] = useState<IPartDetail[]>([]);
   const [selectedPart, setSelectedPart] = useState<string>("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
-  const [isDeleteOpen, setIsDeletOpen] = useState(false);
-  const [dataUpdatePart, setDataUpdatePart] = useState<z.infer<typeof formPartSchema> | null>(null);
 
   const [episodeData, setEpisodeData] = useState<IEpisodeColumn[]>([]);
   const [pageCount, setPageCount] = useState<number>(1);
@@ -45,7 +46,13 @@ export const EpisodeSection = ({ id }: { id: string }) => {
   }, [id])
 
   useEffect(() => {
-    // if (isLoadingDelete) return;
+    if (hasUpdateEpisode) {
+      getEpisodePagination();
+      resetHasUpdateEpisode();
+    }
+  }, [hasUpdateEpisode])
+
+  useEffect(() => {
     if (selectedPart === "") return;
     getEpisodePagination()
   }, [pagination.pageIndex, pagination.pageSize, selectedPart]);
@@ -80,7 +87,7 @@ export const EpisodeSection = ({ id }: { id: string }) => {
       }
     } else {
       if (res.data && res.data.result.length === 0) {
-        toast.info("No data");
+        toast.info("Không có dữ liệu");
       } else {
         toast.error(res.EM);
       }
@@ -90,6 +97,7 @@ export const EpisodeSection = ({ id }: { id: string }) => {
   const handleCreateEpisode = async (values: z.infer<typeof formEpisodeSchema>) => {
     const payload = {
       ...values,
+      slug: generateSlug(values.title),
       episodeNumber: Number(values.episodeNumber),
       duration: Number(values.duration),
       partId: selectedPart,
@@ -104,6 +112,16 @@ export const EpisodeSection = ({ id }: { id: string }) => {
     }
   };
 
+
+  if (!parts || parts.length === 0) {
+    return (
+      <div className="py-[50px]">
+        <h2 className="text-center text-lg font-semibold text-amber-500">
+          Vui lòng tạo phần phim mới và quay lại !
+        </h2>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-[100px]">

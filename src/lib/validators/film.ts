@@ -9,7 +9,7 @@ const filmImageSchema = z.object({
 
 const actorSchema = z.object({
   actorId: z.number(),
-  characterName: z.string(),
+  characterName: z.string().min(1, { message: 'Vui lòng nhập tên nhân vật' }),
 });
 
 const directorSchema = z.object({

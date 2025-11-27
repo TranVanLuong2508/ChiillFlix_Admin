@@ -11,17 +11,48 @@ import {
 import { Button } from "@/components/ui/button"
 import { Copy, MoreHorizontal, SquarePen, Trash2 } from "lucide-react"
 import { IEpisodeColumn } from "@/types/episode.type"
-import { toast } from "sonner";
-import { useFilmStore } from "@/stores/film.store";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import z from "zod";
+import { formPartSchema } from "@/lib/validators/part";
+import { formEpisodeSchema } from "@/lib/validators/episode";
+import { usePartStore } from "@/stores/part.store";
+import { FormEpisode } from "./form";
+import { DeleteForm } from "./deleteForm";
 
 interface ActionsProps {
   row: IEpisodeColumn
 }
 
 export const Actions = ({ row }: ActionsProps) => {
-  const router = useRouter();
-  const { handleDeletedFilm } = useFilmStore();
+  const { handleUpdateEpisode, handleDeleteEpisode } = usePartStore();
+
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [initDataUpdate, setInitDataUpdate] = useState<z.infer<typeof formEpisodeSchema> | null>(null);
+
+  useEffect(() => {
+    if (row) {
+      const data: z.infer<typeof formEpisodeSchema> = {
+        title: row.title,
+        episodeNumber: row.episodeNumber.toString(),
+        duration: row.duration.toString(),
+        videoUrl: row.videoUrl,
+        thumbUrl: row.thumbUrl,
+      }
+      setInitDataUpdate(data);
+    }
+  }, [row]);
+
+
+  const handleUpdate = async (values: z.infer<typeof formEpisodeSchema>) => {
+    await handleUpdateEpisode(row.partId, row.id, values);
+    setIsUpdateOpen(false);
+  }
+
+  const handleDelete = async () => {
+    await handleDeleteEpisode(row.id);
+    setIsDeleteOpen(false);
+  }
 
   return (
     <DropdownMenu>
@@ -34,31 +65,37 @@ export const Actions = ({ row }: ActionsProps) => {
       <DropdownMenuContent align="end" className="w-[150px]">
         <DropdownMenuLabel className="text-center">Thao tác</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* <DropdownMenuItem
+        <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => {
-            navigator.clipboard.writeText(row.filmId);
-            toast.success("Đã sao chép ID phim")
-          }}
         >
           <Copy size={4} className="text-amber-500" />
           <strong>ID Phim</strong>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer text-blue-600 focus:text-blue-600"
-          onClick={() => { router.push(`/admin/movies/${row.filmId}`) }}
-        >
-          <SquarePen size={4} className="text-blue-600" />
-          Xem chi tiết
-        </DropdownMenuItem>
+        {initDataUpdate && (
+          <DropdownMenuItem
+            className="cursor-pointer text-blue-600 focus:text-blue-600"
+            asChild
+          >
+            <FormEpisode
+              open={isUpdateOpen}
+              initialData={initDataUpdate}
+              isUpdate={true}
+              onSubmit={handleUpdate}
+              onOpenChange={setIsUpdateOpen}
+            />
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           className="cursor-pointer text-red-600 focus:text-red-600"
-          onClick={() => handleDeletedFilm(row.filmId)}
+          asChild
         >
-          <Trash2 size={4} className="text-red-600" />
-          Xóa
-        </DropdownMenuItem> */}
+          <DeleteForm
+            open={isDeleteOpen}
+            onOpenChange={setIsDeleteOpen}
+            handleDelete={handleDelete}
+          />
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

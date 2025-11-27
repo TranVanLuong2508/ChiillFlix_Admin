@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CirclePlus, SquarePen } from "lucide-react";
 
-import { formPartSchema } from "@/lib/validators/part";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button"
@@ -22,6 +21,8 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { formEpisodeSchema } from "@/lib/validators/episode";
+import { UploadThumb } from "./uploadThumb";
+import { cn } from "@/lib/utils";
 
 interface FormEpisodeProps {
   open: boolean;
@@ -43,7 +44,6 @@ export const FormEpisode = ({
     defaultValues: initialData || {
       title: "",
       episodeNumber: "",
-      slug: "",
       duration: "",
       videoUrl: "",
       thumbUrl: "",
@@ -64,16 +64,16 @@ export const FormEpisode = ({
         {isUpdate ? (
           <Button
             variant={"ghost"}
-            className="cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
+            className="w-full flex justify-start cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
             size={"sm"}
           >
             <SquarePen />
-            Thông tin phần
+            Xem chi tiết
           </Button>
         ) : (
           <Button
             variant={"outline"}
-            className="cursor-pointer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer"
             size={"sm"}
           >
             <CirclePlus />
@@ -81,7 +81,7 @@ export const FormEpisode = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}</DialogTitle>
           <DialogDescription>
@@ -105,12 +105,12 @@ export const FormEpisode = ({
                   )}
                 />
               </div>
-              <div className="grid gap-3">
+              <div className="flex items-center gap-2">
                 <FormField
                   control={form.control}
                   name="episodeNumber"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel>Số thứ tự tập</FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -119,15 +119,12 @@ export const FormEpisode = ({
                     </FormItem>
                   )}
                 />
-
-              </div>
-              <div className="grid gap-3">
                 <FormField
                   control={form.control}
                   name="duration"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thời lượng</FormLabel>
+                    <FormItem className="flex-1">
+                      <FormLabel>Thời lượng (phút)</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -159,7 +156,7 @@ export const FormEpisode = ({
                     <FormItem>
                       <FormLabel>Thumbnail URL</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <UploadThumb field={field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -171,12 +168,17 @@ export const FormEpisode = ({
               <DialogClose asChild>
                 <Button
                   variant="outline"
+                  className="cursor-pointer"
                 >
                   Hủy
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
+                className={cn(
+                  "cursor-pointer",
+                  initialData ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
+                )}
               >
                 {initialData ? "Cập nhật" : "Thêm"}
               </Button>

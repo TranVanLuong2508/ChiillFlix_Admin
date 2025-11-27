@@ -10,6 +10,7 @@ interface UploadThumbProps {
 }
 
 export const UploadThumb = ({ field }: UploadThumbProps) => {
+
   const inputUploadRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
   };
 
   return (
-    <div className="flex items-center gap-2 pl-6 w-full">
+    <div className="flex items-center gap-2 w-full">
       <div>
         <Input
           type="file"
@@ -63,10 +64,10 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
           {
             loading && id === field.id ?
               (
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className=" h-4 w-4 animate-spin" />
               ) :
               (
-                <ImageUp className="mr-2 h-4 w-4" />
+                <ImageUp className=" h-4 w-4" />
               )
           }
           Upload

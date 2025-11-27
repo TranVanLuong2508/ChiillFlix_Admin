@@ -30,6 +30,7 @@ import { ActorForm } from "./actor/actorForm";
 import { DirectorForm } from "./director/directorForm";
 import { ProducerForm } from "./producer/producerForm";
 import { UploadThumb } from "./uploadThumb";
+import { cn } from "@/lib/utils";
 
 interface FormCreateNewFilmProps {
   onSubmit: (values: z.infer<typeof formSchema>) => void;
@@ -166,7 +167,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="duration"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Thời lượng phim</FormLabel>
+                  <FormLabel>Thời lượng phim (phút)</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -356,7 +357,12 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
             <FormMessage />
           </FormItem>
 
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className={cn(
+            "cursor-pointer w-full",
+            initialData ? "bg-yellow-500 hover:bg-yellow-500/90" : "bg-blue-500 hover:bg-blue-500/90"
+          )}>
+            {initialData ? "Cập nhật" : "Tạo mới"}
+          </Button>
         </form>
       </Form>
     </div>

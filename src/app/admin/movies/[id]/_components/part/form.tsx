@@ -22,6 +22,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 interface FormPartProps {
   open: boolean;
@@ -61,16 +62,16 @@ export const FormPart = ({
         {isUpdate ? (
           <Button
             variant={"ghost"}
-            className="cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
+            className="w-full flex justify-start cursor-pointer text-blue-600 focus:text-blue-600 hover:text-blue-600/80 bg-transparent"
             size={"sm"}
           >
             <SquarePen />
-            Thông tin phần
+            Xem chi tiết
           </Button>
         ) : (
           <Button
             variant={"outline"}
-            className="cursor-pointer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer"
             size={"sm"}
           >
             <CirclePlus />
@@ -141,12 +142,17 @@ export const FormPart = ({
               <DialogClose asChild>
                 <Button
                   variant="outline"
+                  className="cursor-pointer"
                 >
                   Hủy
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
+                className={cn(
+                  "cursor-pointer",
+                  initialData ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
+                )}
               >
                 {initialData ? "Cập nhật" : "Thêm"}
               </Button>

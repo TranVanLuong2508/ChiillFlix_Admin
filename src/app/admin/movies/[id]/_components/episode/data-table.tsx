@@ -93,7 +93,7 @@ export function DataTable<TData, TValue>({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Filter title..."
+          placeholder="Nhập tên tập phim..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
@@ -103,15 +103,6 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-2">
           <DataTableViewOptions table={table} />
           <div>
-            {/* <Button
-              size={"sm"}
-              variant={"outline"}
-              className="flex items-center gap-2 bg-white hover:bg-white text-black cursor-pointer"
-              onClick={() => alert("Tạo mới")}
-            >
-              <CirclePlus />
-              <span>Tạo mới</span>
-            </Button> */}
             <FormEpisode
               open={isOpenCreate}
               onSubmit={handleCreateEpisode}

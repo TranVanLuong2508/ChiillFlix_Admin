@@ -5,24 +5,23 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Trash2, TriangleAlert } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 interface DeleteFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  handleDeletePart: () => void;
+  handleDelete: () => void;
 }
 
 export const DeleteForm = ({
   open,
   onOpenChange,
-  handleDeletePart
+  handleDelete
 }: DeleteFormProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,17 +32,13 @@ export const DeleteForm = ({
           className="cursor-pointer text-red-600 hover:text-red-600/80 focus:text-red-600 w-full flex justify-start"
         >
           <Trash2 />
-          Xóa phần
+          Xóa Tập Phim
         </Button>
 
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-bold">Xác nhận xóa phần</DialogTitle>
-          <DialogDescription className="flex items-center gap-2 text-amber-600/80">
-            <TriangleAlert />
-            Xóa phần sẽ xóa tất cả tập phim trong phần này
-          </DialogDescription>
+          <DialogTitle className="font-semibold">Xác nhận xóa tập phim</DialogTitle>
         </DialogHeader>
         <DialogFooter className="flex">
           <DialogClose asChild>
@@ -53,7 +48,7 @@ export const DeleteForm = ({
           </DialogClose>
           <Button
             className="hover:bg-red-600 cursor-pointer"
-            onClick={handleDeletePart}
+            onClick={handleDelete}
           >
             Xác nhận
           </Button>
