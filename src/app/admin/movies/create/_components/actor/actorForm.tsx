@@ -84,7 +84,7 @@ export const ActorForm = ({
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
-        <FormLabel>Diễn viên</FormLabel>
+        <FormLabel>Diễn viên<span className="text-red-500">*</span></FormLabel>
         <FormControl>
           <Search
             selectedActor={selectedActor}
@@ -92,7 +92,11 @@ export const ActorForm = ({
           />
         </FormControl>
         <FormDescription>
-          *Vui lòng kiểm tra và nhập tên nhân vật mà diễn viên đóng
+          <p className="text-sm italic font-semibold">Lưu ý: </p>
+          <ul className="list-decimal pl-8">
+            <li>Chỉ được chọn tối đa 5 diễn viên chính.</li>
+            <li>Vui lòng kiểm tra và nhập tên nhân vật mà diễn viên đóng.</li>
+          </ul>
         </FormDescription>
         <FormMessage />
       </FormItem>

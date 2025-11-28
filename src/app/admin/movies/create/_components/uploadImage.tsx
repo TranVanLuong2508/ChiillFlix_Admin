@@ -42,31 +42,6 @@ export const UploadImage = ({
     }
   };
 
-  // const handleUpload = async (id: string, index: number) => {
-  //   const file = files[id];
-  //   if (!file) {
-  //     toast.error("Vui lòng chọn ảnh trước khi upload");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-  //     setId(id);
-  //     const res = await UploadService.uploadFile(file);
-  //     if (res.data) {
-  //       form.setValue(`filmImages.${index}.url`, res.data.url);
-  //       setLoading(false);
-  //       toast.success("Upload ảnh thành công");
-  //       setId("");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setLoading(false);
-  //     setId("");
-  //     toast.error("Upload ảnh thất bại");
-  //   }
-  // };
-
   const capitalize = (str?: string) => {
     if (!str) return "";
     const s = str.trim();
@@ -91,7 +66,7 @@ export const UploadImage = ({
             render={({ field: fieldProps }) => (
               <FormItem>
                 <FormLabel className="capitalize">
-                  <CornerDownRight size={20} /> {capitalize(field.type)}
+                  <CornerDownRight size={20} /> {capitalize(field.type)} <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <div className="flex items-center gap-2 pl-6 w-full">

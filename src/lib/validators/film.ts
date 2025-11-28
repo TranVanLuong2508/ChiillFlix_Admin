@@ -31,6 +31,8 @@ export const formSchema = z.object({
   }),
   description: z.string().min(1, {
     message: "Mô tả không được bỏ trống",
+  }).max(1200, {
+    message: "Mô tả không được vượt quá 1200 ký tự",
   }),
   releaseDate: z.string().min(1, {
     message: "Ngày phát hành không được bỏ trống",
@@ -64,12 +66,18 @@ export const formSchema = z.object({
   }),
   directors: z.array(directorSchema).min(1, {
     message: "Vui lòng chọn đạo diễn",
+  }).max(2, {
+    message: "Chỉ được chọn tối đa 2 đạo diễn chính",
   }),
   actors: z.array(actorSchema).min(1, {
     message: "Vui lòng chọn diễn viên",
+  }).max(5, {
+    message: "Chỉ được chọn tối đa 5 diễn viên chính",
   }),
   producers: z.array(producerSchema).min(1, {
     message: "Vui lòng chọn nhà sản xuất",
+  }).max(2, {
+    message: "Chỉ được chọn tối đa 2 nhà sản xuất",
   }),
   genreCodes: z.array(z.string()).min(1, {
     message: "Thể loại không được bỏ trống",

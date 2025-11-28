@@ -92,7 +92,7 @@ export const DirectorForm = ({
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
-        <FormLabel>Đạo diễn</FormLabel>
+        <FormLabel>Đạo diễn<span className="text-red-500">*</span></FormLabel>
         <FormControl>
           <Search
             selectedDirector={selectedDirector}
@@ -100,7 +100,11 @@ export const DirectorForm = ({
           />
         </FormControl>
         <FormDescription>
-          *Vui lòng kiểm tra và tích chọn đạo diễn chính
+          <p className="text-sm italic font-semibold">Lưu ý: </p>
+          <ul className="list-decimal pl-8">
+            <li>Chỉ được chọn tối đa 2 đạo diễn.</li>
+            <li>Vui lòng kiểm tra và tích chọn 1 đạo diễn chính.</li>
+          </ul>
         </FormDescription>
         <FormMessage />
       </FormItem>
