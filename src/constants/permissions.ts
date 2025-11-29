@@ -7,16 +7,25 @@ export const ALL_MODULES = {
 };
 
 export const ALL_PERMISSIONS = {
-  USERS: {
-    GET_PAGINATE: { method: "GET", apiPath: "/api/v1/users", module: "USERS" },
-  },
   FILMS: {
-    GET_PAGINATE: { method: "GET", apiPath: "/api/v1/users", module: "FILMS" },
+    GET_All: { method: "GET", apiPath: "/api/v1/films", module: "FILMS" },
   },
-  ROLES: {
-    GET_PAGINATE: { method: "GET", apiPath: "/api/v1/users", module: "ROLES" },
+  DIRECTORS: {
+    GET_All: { method: "GET", apiPath: "/api/v1/director/get-all-directors", module: "DIRECTORS" },
+  },
+  ACTORS: {
+    GET_All: { method: "GET", apiPath: "/api/v1/actor/all-actors", module: "ACTORS" },
+  },
+  PRODUCERS: {
+    GET_All: { method: "GET", apiPath: "/api/v1/producer/get-all-producers", module: "PRODUCERS" },
+  },
+  USERS: {
+    GET_All: { method: "GET", apiPath: "/api/v1/users", module: "USERS" },
   },
   PERMISSIONS: {
-    GET_PAGINATE: { method: "GET", apiPath: "/api/v1/users", module: "PERMISSIONS" },
+    GET_All: { method: "GET", apiPath: "/api/v1/permissions", module: "PERMISSIONS" },
+  },
+  ROLES: {
+    GET_All: { method: "GET", apiPath: "/api/v1/roles", module: "ROLES" },
   },
 };

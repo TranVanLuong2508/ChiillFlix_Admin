@@ -17,23 +17,132 @@ import {
 import { LayoutDashboard, Film, Users, Clapperboard, ShieldCheck, UserCheck, Gem, Star, UserRound } from "lucide-react";
 import { adminPath } from "@/constants/path";
 import { useAuthStore } from "@/stores/authStore";
+import { useEffect, useState } from "react";
+import { ALL_PERMISSIONS } from "@/constants/permissions";
+
+interface ISidebarItem {
+  title: string;
+  icon: React.ComponentType<any>;
+  href: string;
+}
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { isAuthenticated, authUser } = useAuthStore();
+  const [SidebarMenuItems, setSidebarMenuItems] = useState<ISidebarItem[]>([]);
 
-  const menuItems = [
-    { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
-    { title: "Phim", icon: Film, href: adminPath.MOVIES },
-    { title: "Đạo Diễn", icon: Clapperboard, href: adminPath.DIRECTORS },
-    { title: "Diễn Viên", icon: UserRound, href: adminPath.ACTORS },
-    { title: "Nhà Sản Xuất", icon: Star, href: adminPath.PRODUCERS },
-    { title: "Gói VIP", icon: Gem, href: adminPath.VIP_PLANS },
-    { title: "Người dùng", icon: Users, href: adminPath.USERS },
-    { title: "Quyền hạn", icon: ShieldCheck, href: adminPath.PERMISSIONS },
-    { title: "Vai trò", icon: UserCheck, href: adminPath.ROLES },
-  ];
+  const permissions = authUser?.permissions ?? [];
 
+  useEffect(() => {
+    if (permissions && permissions.length > 0) {
+      const viewUsers = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.USERS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.USERS.GET_All.method,
+      );
+      const viewRoles = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.ROLES.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.ROLES.GET_All.method,
+      );
+      const viewPermissions = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.PERMISSIONS.GET_All.method,
+      );
+      const viewFilms = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.FILMS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.FILMS.GET_All.method,
+      );
+      const viewDirectors = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.DIRECTORS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.DIRECTORS.GET_All.method,
+      );
+      const viewActors = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.ACTORS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.ACTORS.GET_All.method,
+      );
+      const viewProducers = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.PRODUCERS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.PRODUCERS.GET_All.method,
+      );
+
+      const full = [
+        { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
+        ...(viewFilms
+          ? [
+              {
+                title: "Phim",
+                icon: Film,
+                href: adminPath.MOVIES,
+              },
+            ]
+          : []),
+        ...(viewDirectors
+          ? [
+              {
+                title: "Đạo Diễn",
+                icon: Clapperboard,
+                href: adminPath.DIRECTORS,
+              },
+            ]
+          : []),
+        ...(viewActors
+          ? [
+              {
+                title: "Diễn Viên",
+                icon: UserRound,
+                href: adminPath.ACTORS,
+              },
+            ]
+          : []),
+        ...(viewProducers
+          ? [
+              {
+                title: "Nhà Sản Xuất",
+                icon: Star,
+                href: adminPath.PRODUCERS,
+              },
+            ]
+          : []),
+        ...(viewUsers
+          ? [
+              {
+                title: "Người dùng",
+                icon: Users,
+                href: adminPath.USERS,
+              },
+            ]
+          : []),
+        ...(viewPermissions
+          ? [
+              {
+                title: "Quyền hạn",
+                icon: ShieldCheck,
+                href: adminPath.PERMISSIONS,
+              },
+            ]
+          : []),
+        ...(viewRoles
+          ? [
+              {
+                title: "Vai trò",
+                icon: UserCheck,
+                href: adminPath.ROLES,
+              },
+            ]
+          : []),
+      ];
+
+      setSidebarMenuItems(full);
+    }
+  }, [permissions]);
+
+  console.log("Check sidebar menu: ", SidebarMenuItems);
   return (
     <Sidebar className="border-r bg-white">
       <SidebarHeader className="border-b bg-gradient-to-b from-slate-900 to-black">
@@ -77,7 +186,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {SidebarMenuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname === item.href}>
                     <Link href={item.href}>
