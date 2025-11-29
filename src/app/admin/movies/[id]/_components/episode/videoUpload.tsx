@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { MutableRefObject } from "react";
 
 import * as UpChunk from '@mux/upchunk';
 import VideoService from "@/services/video.service";
@@ -12,22 +12,55 @@ interface UploadProgress {
   totalBytes: number;
 }
 
-export const VideoUpload = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState<UploadProgress>({
-    percentage: 0,
-    uploadedBytes: 0,
-    totalBytes: 0,
-  });
-  const [assetId, setAssetId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
+interface VideoUploadProps {
+  file: File | null;
+  setFile: (file: File | null) => void;
+  uploading: boolean;
+  setUploading: (uploading: boolean) => void;
+  progress: UploadProgress;
+  setProgress: (progress: UploadProgress) => void;
+  assetId: string | null;
+  setAssetId: (assetId: string | null) => void;
+  error: string | null;
+  setError: (error: string | null) => void;
+  playbackUrl: string | null;
+  setPlaybackUrl: (playbackUrl: string | null) => void;
+  uploadRef: MutableRefObject<any>;
+  onPlaybackUrlChange: (url: string) => void;
+}
 
-  const uploadRef = useRef<any>(null);
+export const VideoUpload = ({
+  file,
+  setFile,
+  uploading,
+  setUploading,
+  progress,
+  setProgress,
+  assetId,
+  setAssetId,
+  error,
+  setError,
+  playbackUrl,
+  setPlaybackUrl,
+  uploadRef,
+  onPlaybackUrlChange
+}: VideoUploadProps) => {
+
+  const checkFileSize = (file: File, maxGB = 10) => {
+    const sizeInGB = file.size / 1024 / 1024 / 1024;
+    return sizeInGB > maxGB;
+  };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+
+      const isFileTooLarge = checkFileSize(e.target.files[0]);
+      if (isFileTooLarge) {
+        toast.error("Hệ thống chỉ hỗ trợ upload video nhỏ hơn 10GB");
+        return;
+      }
+
       setFile(e.target.files[0]);
       setError(null);
       setAssetId(null);
@@ -60,7 +93,7 @@ export const VideoUpload = () => {
       const uploadId = res.data?.uploadId;
 
       if (!url || !uploadId) {
-        toast.error("Failed to create upload URL");
+        toast.error("Lỗi không thể tạo video URL");
         setUploading(false);
         return;
       }
@@ -82,7 +115,6 @@ export const VideoUpload = () => {
 
       upload.on('success', () => {
         console.log('Upload successful!');
-        setUploading(false);
 
         setTimeout(() => {
           checkVideoStatus(uploadId);
@@ -91,12 +123,12 @@ export const VideoUpload = () => {
 
       upload.on('error', (err) => {
         console.error('Upload error:', err);
-        setError('Upload failed. Please try again.');
+        setError('Upload video thất bại. Vui lòng thử lại.');
         setUploading(false);
       });
     } catch (error: any) {
       console.error('Error creating upload URL:', error);
-      setError(error.response?.data?.message || 'Failed to initialize upload');
+      setError(error.response?.data?.message || 'Lỗi không thể khởi tạo video upload');
       setUploading(false);
     }
   }
@@ -116,6 +148,7 @@ export const VideoUpload = () => {
 
         if (res.data.status === 'ready') {
           setPlaybackUrl(res.data.playbackUrl);
+          onPlaybackUrlChange(res.data.playbackUrl);
         } else {
           setTimeout(() => checkVideoStatus(uploadId), 3000);
         }
@@ -133,35 +166,73 @@ export const VideoUpload = () => {
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6">Upload Video to Mux</h2>
+  console.log("my check: ", file);
 
+  return (
+    <div className="w-full border border-gray-200 rounded-lg p-4 mt-2">
+      <div className="bg-white rounded-lg ">
         {/* File Input */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Video File
-          </label>
           <input
             type="file"
             accept="video/*"
             onChange={handleFileChange}
             disabled={uploading}
             className="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-md file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100
-              disabled:opacity-50"
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-md file:border-0
+            file:text-sm file:font-semibold
+            file:bg-blue-50 file:text-blue-700
+            hover:file:bg-blue-100
+            disabled:opacity-50"
           />
           {file && (
-            <p className="mt-2 text-sm text-gray-600">
-              Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-            </p>
+            <div className="mt-1">
+              <p className="font-bold italic">Thông tin video:</p>
+              <div className="space-y-1 mt-1">
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold pr-1">
+                    - Tên video:
+                  </span>
+                  {file.name}
+                </p>
+                <div className="flex items-center gap-2">
+                  <p className="flex-1 text-sm text-gray-600">
+                    <span className="font-semibold pr-1">
+                      - Dung lượng:
+                    </span>
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                  <p className="flex-1 text-sm text-gray-600">
+                    <span className="font-semibold pr-1">
+                      - Định dạng:
+                    </span>
+                    {file.type}
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
+
+        {assetId && (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-md mb-4">
+            <h3 className="text-sm font-semibold text-green-800 mb-2">
+              Upload video thành công!
+            </h3>
+            <p className="text-sm text-green-700">Asset ID: {assetId}</p>
+            {playbackUrl && (
+              <a
+                href={playbackUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-blue-600 hover:underline mt-2 inline-block"
+              >
+                View Video
+              </a>
+            )}
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -170,7 +241,6 @@ export const VideoUpload = () => {
           </div>
         )}
 
-        {/* Progress Bar */}
         {uploading && (
           <div className="mb-4">
             <div className="flex justify-between mb-1">
@@ -188,7 +258,6 @@ export const VideoUpload = () => {
           </div>
         )}
 
-        {/* Upload Button */}
         <div className="flex gap-3">
           <button
             onClick={handleUpload}
@@ -210,26 +279,6 @@ export const VideoUpload = () => {
             </button>
           )}
         </div>
-
-        {/* Asset Info */}
-        {assetId && (
-          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
-            <h3 className="text-sm font-semibold text-green-800 mb-2">
-              Upload Successful!
-            </h3>
-            <p className="text-sm text-green-700">Asset ID: {assetId}</p>
-            {playbackUrl && (
-              <a
-                href={playbackUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:underline mt-2 inline-block"
-              >
-                View Video
-              </a>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

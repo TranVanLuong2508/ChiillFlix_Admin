@@ -4,8 +4,13 @@ import z from "zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CirclePlus, SquarePen } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formEpisodeSchema } from "@/lib/validators/episode";
+
+import { UploadThumb } from "./uploadThumb";
+import { FormUploadVideo } from "./formUploadVideo";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,11 +23,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
-import { formEpisodeSchema } from "@/lib/validators/episode";
-import { UploadThumb } from "./uploadThumb";
-import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface FormEpisodeProps {
   open: boolean;
@@ -82,149 +92,109 @@ export const FormEpisode = ({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}</DialogTitle>
-          <DialogDescription>
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log(errors))}>
-            <div className="grid gap-4 pb-4">
-              <div className="grid gap-3">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tiêu đề</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        <ScrollArea className="max-h-[calc(100vh-5rem)] rounded-md px-4 py-5">
+          <DialogHeader className="pb-2">
+            <DialogTitle>
+              {initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}
+            </DialogTitle>
+            <DialogDescription>
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log(errors))}
+              className="px-1"
+            >
+              <div className="grid gap-4 pb-4">
+                <div className="grid gap-3">
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiêu đề</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <FormField
+                    control={form.control}
+                    name="episodeNumber"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Số thứ tự tập</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel>Thời lượng (phút)</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-3">
+                  <FormField
+                    control={form.control}
+                    name="thumbUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Thumbnail URL</FormLabel>
+                        <FormControl>
+                          <UploadThumb field={field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-3">
+                  <FormField
+                    control={form.control}
+                    name="videoUrl"
+                    render={({ field }) => (
+                      <FormUploadVideo field={field} />
+                    )}
+                  />
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <FormField
-                  control={form.control}
-                  name="episodeNumber"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Số thứ tự tập</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="duration"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Thời lượng (phút)</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid gap-3">
-                <FormField
-                  control={form.control}
-                  name="thumbUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Thumbnail URL</FormLabel>
-                      <FormControl>
-                        <UploadThumb field={field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid gap-3">
-                <FormField
-                  control={form.control}
-                  name="videoUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Video</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center gap-2">
-                          <Input {...field} placeholder="URL video" />
-
-
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="cursor-pointer"
-                              >
-                                Chọn video
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Upload Video</DialogTitle>
-                                <DialogDescription>
-                                  Chọn video từ trong máy để upload
-                                </DialogDescription>
-                              </DialogHeader>
-                              <DialogFooter>
-                                <DialogClose asChild>
-                                  <Button
-                                    variant="outline"
-                                    className="cursor-pointer"
-                                  >
-                                    Đóng
-                                  </Button>
-                                </DialogClose>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      </FormControl>
-                      <div className="text-muted-foreground text-xs space-y-2">
-                        <span>Lưu ý:</span>
-                        <ul className="list-decimal pl-6">
-                          <li>Nhập video URL hoặc chọn upload video từ máy</li>
-                          <li>Video upload phải có định dạng .mp4</li>
-                          <li>Video upload phải có kích thước <strong>nhỏ hơn 10GB</strong></li>
-                        </ul>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer"
+                  >
+                    Hủy
+                  </Button>
+                </DialogClose>
                 <Button
-                  variant="outline"
-                  className="cursor-pointer"
+                  type="submit"
+                  className={cn(
+                    "cursor-pointer",
+                    initialData ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
+                  )}
                 >
-                  Hủy
+                  {initialData ? "Cập nhật" : "Thêm"}
                 </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                className={cn(
-                  "cursor-pointer",
-                  initialData ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
-                )}
-              >
-                {initialData ? "Cập nhật" : "Thêm"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              </DialogFooter>
+            </form>
+          </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog >
   )
