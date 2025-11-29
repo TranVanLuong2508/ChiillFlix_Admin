@@ -25,10 +25,10 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { DataTablePagination } from "../../../../components/table-director/data-table-pagination";
-import { DataTableViewOptions } from "../../../../components/table-director/data-table-view-option";
-import { DirectorColumn } from "@/types/director.type";
-import { DeleteDirectorDialog } from "./delete-director-dialog";
+import { DataTablePagination } from "../../../../components/table-comment/data-table-pagination";
+import { DataTableViewOptions } from "../../../../components/table-comment/data-table-view-option";
+import { DeleteCommentDialog } from "./delete-comment-dialog";
+import { CommentColumn } from "@/types/comment.type";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -65,6 +65,7 @@ export function DataTable<TData, TValue>({
         );
     const [rowSelection, setRowSelection] = React.useState({});
 
+    // Không lọc dữ liệu, luôn truyền toàn bộ data để hiển thị cả hai trạng thái
     const table = useReactTable({
         data,
         columns,
@@ -91,20 +92,21 @@ export function DataTable<TData, TValue>({
 
     const selectedRows = React.useMemo(
         () => {
-            return table.getSelectedRowModel().rows.map((row) => row.original as DirectorColumn);
+            return table.getSelectedRowModel().rows.map((row) => row.original as CommentColumn);
         },
         [rowSelection, table]
     );
-    const selectedRowIds = selectedRows.map((d) => d.directorId);
+    const selectedRowIds = selectedRows.map((d) => d.commentId);
     const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
 
     return (
         <div className="space-y-4">
-            <DeleteDirectorDialog
+            <DeleteCommentDialog
                 open={bulkDeleteOpen}
                 onOpenChange={setBulkDeleteOpen}
-                directorId={selectedRowIds.join(",")}
-                directorName={selectedRows.map((d) => d.directorName).join(", ")} isBulk
+                commentId={selectedRowIds.join(",")}
+                commentContent={selectedRows.map((d) => d.content.substring(0, 50)).join(", ")}
+                isBulk
                 onBulkDelete={async () => {
                     if (onDeleteSelected) await onDeleteSelected(selectedRowIds);
                     setBulkDeleteOpen(false);
@@ -115,9 +117,9 @@ export function DataTable<TData, TValue>({
                     <input
                         type="text"
                         placeholder={searchPlaceholder || "Tìm kiếm..."}
-                        value={(table.getColumn("directorName")?.getFilterValue() as string) ?? ""}
+                        value={(table.getColumn("userName")?.getFilterValue() as string) ?? ""}
                         onChange={(e) =>
-                            table.getColumn("directorName")?.setFilterValue(e.target.value)
+                            table.getColumn("userName")?.setFilterValue(e.target.value)
                         }
                         className="w-60 text-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />

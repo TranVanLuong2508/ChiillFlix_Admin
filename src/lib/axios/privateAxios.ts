@@ -14,9 +14,7 @@ const privateAxios = axios.create({
 
 const handleRefreshToken = async (): Promise<string | null> => {
   return await mutex.runExclusive(async () => {
-    const res = (await privateAxios.get(
-      "/auth/refreshToken"
-    )) as IBackendRes<IAccount>;
+    const res = (await privateAxios.get("/auth/refreshToken")) as IBackendRes<IAccount>;
     if (res && res.EC === 1 && res.data) {
       return res.data?.access_token;
     } else return null;
@@ -54,19 +52,12 @@ privateAxios.interceptors.response.use(
       }
     }
 
-    if (
-      error.config &&
-      error.response &&
-      +error.response.status === 400 &&
-      error.config.url === "/auth/refreshToken"
-    ) {
-      const message =
-        error?.error?.response?.data?.message ??
-        "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập.";
+    if (error.config && error.response && +error.response.status === 400 && error.config.url === "/auth/refreshToken") {
+      const message = error?.error?.response?.data?.message ?? "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập.";
       useAuthStore.getState().setRefreshTokenAction(true, message);
     }
     return error?.response?.data ?? Promise.reject(error);
-  }
+  },
 );
 
 export default privateAxios;
