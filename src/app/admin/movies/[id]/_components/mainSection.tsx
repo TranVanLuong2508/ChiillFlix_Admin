@@ -14,16 +14,37 @@ import { FormCreateNewFilm } from "../../create/_components/formCreateNewFilm";
 import { useFilmStore } from "@/stores/film.store";
 import { PartSection } from "./partSection";
 import { EpisodeSection } from "./episodeSection";
+import PartService from "@/services/part.service";
+import { formatDate } from "@/utils/formateDate";
+import { IPartDetail } from "@/types/part.type";
 
 export const MainSection = ({ id }: { id: string }) => {
   const router = useRouter();
   const { isLoadingDetail, filmDataUpdate, handleFetchDetailFilm } = useFilmStore();
+  const [parts, setParts] = useState<IPartDetail[]>([]);
+  const [selectedPart, setSelectedPart] = useState<string>("");
 
   useEffect(() => {
     if (!id) return;
 
     handleFetchDetailFilm(id);
+    handleFetchParts();
   }, [id]);
+
+
+  const handleFetchParts = async () => {
+    const res = await PartService.getAllParts(id);
+    if (res.EC === 0 && res.data) {
+      const data = res.data.partData.map((part) => ({
+        ...part,
+        createdAt: formatDate(part.createdAt),
+        updatedAt: formatDate(part.updatedAt),
+      }));
+      setParts(data);
+    } else {
+      toast.error(res.EM);
+    }
+  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const changeField = getChangeField(values);
@@ -105,10 +126,10 @@ export const MainSection = ({ id }: { id: string }) => {
             <FormCreateNewFilm onSubmit={onSubmit} initialData={filmDataUpdate} />
           </TabsContent>
           <TabsContent value="part">
-            <PartSection id={id} />
+            <PartSection id={id} parts={parts} handleFetchParts={handleFetchParts} />
           </TabsContent>
           <TabsContent value="episode">
-            <EpisodeSection id={id} />
+            <EpisodeSection id={id} parts={parts} selectedPart={selectedPart} setSelectedPart={setSelectedPart} />
           </TabsContent>
         </Tabs>
       </div>

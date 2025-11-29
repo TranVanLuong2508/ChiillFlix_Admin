@@ -14,15 +14,22 @@ import { columns } from "./part/columns";
 import { formatDate } from "@/utils/formateDate";
 import { usePartStore } from "@/stores/part.store";
 
-export const PartSection = ({ id }: { id: string }) => {
+interface PartSectionProps {
+  id: string;
+  parts: IPartDetail[];
+
+  handleFetchParts: () => void;
+}
+
+export const PartSection = ({
+  id,
+  parts,
+
+  handleFetchParts
+}: PartSectionProps) => {
   const { hasUpdateData, resetHasUpdateData } = usePartStore();
 
-  const [parts, setParts] = useState<IPartDetail[]>([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-
-  useEffect(() => {
-    handleFetchParts();
-  }, [id])
 
   useEffect(() => {
     if (hasUpdateData) {
@@ -30,20 +37,6 @@ export const PartSection = ({ id }: { id: string }) => {
       resetHasUpdateData();
     }
   }, [hasUpdateData])
-
-  const handleFetchParts = async () => {
-    const res = await PartService.getAllParts(id);
-    if (res.EC === 0 && res.data) {
-      const data = res.data.partData.map((part) => ({
-        ...part,
-        createdAt: formatDate(part.createdAt),
-        updatedAt: formatDate(part.updatedAt),
-      }));
-      setParts(data);
-    } else {
-      toast.error(res.EM);
-    }
-  }
 
   const handleCreatePart = async (values: z.infer<typeof formPartSchema>) => {
     const payload = {

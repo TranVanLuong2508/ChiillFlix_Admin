@@ -26,11 +26,20 @@ import { formEpisodeSchema } from "@/lib/validators/episode";
 import { generateSlug } from "@/utils/generateSlug";
 import { usePartStore } from "@/stores/part.store";
 
-export const EpisodeSection = ({ id }: { id: string }) => {
-  const { hasUpdateEpisode, resetHasUpdateEpisode } = usePartStore();
+interface EpisodeSectionProps {
+  id: string;
+  parts: IPartDetail[];
+  selectedPart: string;
+  setSelectedPart: (part: string) => void;
+}
 
-  const [parts, setParts] = useState<IPartDetail[]>([]);
-  const [selectedPart, setSelectedPart] = useState<string>("");
+export const EpisodeSection = ({
+  id,
+  parts,
+  selectedPart,
+  setSelectedPart,
+}: EpisodeSectionProps) => {
+  const { hasUpdateEpisode, resetHasUpdateEpisode } = usePartStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const [episodeData, setEpisodeData] = useState<IEpisodeColumn[]>([]);
@@ -39,10 +48,6 @@ export const EpisodeSection = ({ id }: { id: string }) => {
     pageIndex: 0,
     pageSize: 10,
   });
-
-  useEffect(() => {
-    handleFetchParts();
-  }, [id])
 
   useEffect(() => {
     if (hasUpdateEpisode) {
@@ -55,20 +60,6 @@ export const EpisodeSection = ({ id }: { id: string }) => {
     if (selectedPart === "") return;
     getEpisodePagination()
   }, [pagination.pageIndex, pagination.pageSize, selectedPart]);
-
-  const handleFetchParts = async () => {
-    const res = await PartService.getAllParts(id);
-    if (res.EC === 0 && res.data) {
-      const data = res.data.partData.map((part) => ({
-        ...part,
-        createdAt: formatDate(part.createdAt),
-        updatedAt: formatDate(part.updatedAt),
-      }));
-      setParts(data);
-    } else {
-      toast.error(res.EM);
-    }
-  }
 
   const getEpisodePagination = async () => {
     const res = await EpisodeService.getAll(pagination.pageIndex + 1, pagination.pageSize, selectedPart);
@@ -86,7 +77,7 @@ export const EpisodeSection = ({ id }: { id: string }) => {
       }
     } else {
       if (res.data && res.data.result.length === 0) {
-        toast.info("Không có dữ liệu");
+        toast.info("Không có dữ liệu tập phim");
       } else {
         toast.error(res.EM);
       }
