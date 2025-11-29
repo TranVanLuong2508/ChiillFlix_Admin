@@ -33,9 +33,7 @@ export const formSchema = z.object({
   }).max(1200, {
     message: "Mô tả không được vượt quá 1200 ký tự",
   }),
-  releaseDate: z.string().min(1, {
-    message: "Ngày phát hành không được bỏ trống",
-  }),
+  releaseDate: z.string(),
   year: z.string().min(1, {
     message: "Năm không được bỏ trống",
   }),

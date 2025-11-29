@@ -204,7 +204,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
                 <FormItem className="flex-1">
                   <FormLabel>Ngày công chiếu</FormLabel>
                   <FormControl>
-                    <DatePicker field={field} />
+                    <DatePicker field={field} year={form.watch("year")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
