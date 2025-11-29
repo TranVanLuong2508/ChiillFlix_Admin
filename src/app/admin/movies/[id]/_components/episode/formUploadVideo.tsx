@@ -47,7 +47,7 @@ export const FormUploadVideo = ({ field }: FormUploadVideoProps) => {
 
   return (
     <FormItem>
-      <FormLabel>Video</FormLabel>
+      <FormLabel>Video<span className="text-red-500">*</span></FormLabel>
       <FormControl>
         <div className="flex flex-col gap-2">
           <Input
@@ -82,15 +82,15 @@ export const FormUploadVideo = ({ field }: FormUploadVideoProps) => {
           </Accordion>
         </div>
       </FormControl>
+      <FormMessage />
       <div className="text-muted-foreground text-xs space-y-2">
         <span>Lưu ý:</span>
         <ul className="list-decimal pl-6">
           <li>Nhập video URL hoặc chọn upload video từ máy tính</li>
           <li>Video upload phải có định dạng .mp4</li>
-          <li>Video upload phải có kích thước <strong>nhỏ hơn 10GB</strong></li>
+          <li>Video upload phải có kích thước <strong>nhỏ hơn 5GB</strong></li>
         </ul>
       </div>
-      <FormMessage />
     </FormItem>
   )
 }

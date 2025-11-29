@@ -53,8 +53,7 @@ export const FormEpisode = ({
     resolver: zodResolver(formEpisodeSchema),
     defaultValues: initialData || {
       title: "",
-      episodeNumber: "",
-      duration: "",
+      duration: 0,
       videoUrl: "",
       thumbUrl: "",
     },
@@ -95,7 +94,7 @@ export const FormEpisode = ({
         <ScrollArea className="max-h-[calc(100vh-5rem)] rounded-md px-4 py-5">
           <DialogHeader className="pb-2">
             <DialogTitle>
-              {initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}
+              {initialData ? "Cập Nhật Thông Tin Tập" : "Thêm Tập Mới"}
             </DialogTitle>
             <DialogDescription>
             </DialogDescription>
@@ -111,7 +110,7 @@ export const FormEpisode = ({
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Tiêu đề</FormLabel>
+                        <FormLabel>Tiêu đề<span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -123,25 +122,12 @@ export const FormEpisode = ({
                 <div className="flex items-center gap-2">
                   <FormField
                     control={form.control}
-                    name="episodeNumber"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>Số thứ tự tập</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
                     name="duration"
                     render={({ field }) => (
                       <FormItem className="flex-1">
-                        <FormLabel>Thời lượng (phút)</FormLabel>
+                        <FormLabel>Thời lượng (phút)<span className="text-red-500">*</span></FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input value={field.value} onChange={(e) => field.onChange(Number(e.target.value))} type="number" min={0} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -154,11 +140,18 @@ export const FormEpisode = ({
                     name="thumbUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Thumbnail URL</FormLabel>
+                        <FormLabel>Thumbnail URL<span className="text-red-500">*</span></FormLabel>
                         <FormControl>
                           <UploadThumb field={field} />
                         </FormControl>
                         <FormMessage />
+                        <div className="text-muted-foreground text-xs space-y-2">
+                          <span>Lưu ý:</span>
+                          <ul className="list-decimal pl-6">
+                            <li>Thumbnail URL phải có định dạng .png, .jpg, .jpeg</li>
+                            <li>Thumbnail URL phải có kích thước <strong>nhỏ hơn 1MB</strong></li>
+                          </ul>
+                        </div>
                       </FormItem>
                     )}
                   />

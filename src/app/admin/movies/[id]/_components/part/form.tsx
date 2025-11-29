@@ -94,7 +94,7 @@ export const FormPart = ({
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tiêu đề</FormLabel>
+                      <FormLabel>Tiêu đề<span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -109,7 +109,7 @@ export const FormPart = ({
                   name="partNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số thứ tự phần</FormLabel>
+                      <FormLabel>Số thứ tự phần<span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -125,7 +125,7 @@ export const FormPart = ({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mô tả</FormLabel>
+                      <FormLabel>Mô tả<span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Textarea
                           className="min-h-[100px]"

@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { ListOrdered } from "lucide-react";
 
 import { IPartDetail } from "@/types/part.type";
-import { formPartSchema } from "@/lib/validators/part";
 
 import PartService from "@/services/part.service";
 
@@ -95,10 +94,10 @@ export const EpisodeSection = ({ id }: { id: string }) => {
   };
 
   const handleCreateEpisode = async (values: z.infer<typeof formEpisodeSchema>) => {
+    console.log("Check values: ", values);
     const payload = {
       ...values,
       slug: generateSlug(values.title),
-      episodeNumber: Number(values.episodeNumber),
       duration: Number(values.duration),
       partId: selectedPart,
     }

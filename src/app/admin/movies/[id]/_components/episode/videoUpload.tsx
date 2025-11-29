@@ -46,7 +46,7 @@ export const VideoUpload = ({
   onPlaybackUrlChange
 }: VideoUploadProps) => {
 
-  const checkFileSize = (file: File, maxGB = 10) => {
+  const checkFileSize = (file: File, maxGB = 5) => {
     const sizeInGB = file.size / 1024 / 1024 / 1024;
     return sizeInGB > maxGB;
   };
@@ -57,7 +57,7 @@ export const VideoUpload = ({
 
       const isFileTooLarge = checkFileSize(e.target.files[0]);
       if (isFileTooLarge) {
-        toast.error("Hệ thống chỉ hỗ trợ upload video nhỏ hơn 10GB");
+        toast.error("Hệ thống chỉ hỗ trợ upload video nhỏ hơn 5GB");
         return;
       }
 
