@@ -26,7 +26,6 @@ export interface IPartGetAllEpisode {
 // create part
 export interface IPartCreateReq {
   title: string;
-  partNumber: number;
   description: string;
   filmId: string;
 }

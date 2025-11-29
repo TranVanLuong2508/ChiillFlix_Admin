@@ -48,7 +48,6 @@ export const PartSection = ({ id }: { id: string }) => {
   const handleCreatePart = async (values: z.infer<typeof formPartSchema>) => {
     const payload = {
       ...values,
-      partNumber: Number(values.partNumber),
       filmId: id
     }
     const res = await PartService.createPart(payload);

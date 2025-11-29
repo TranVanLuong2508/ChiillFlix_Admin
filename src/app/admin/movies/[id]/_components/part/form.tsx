@@ -43,7 +43,6 @@ export const FormPart = ({
     resolver: zodResolver(formPartSchema),
     defaultValues: initialData || {
       title: "",
-      partNumber: "",
       description: "",
     },
   });
@@ -103,40 +102,30 @@ export const FormPart = ({
                   )}
                 />
               </div>
-              <div className="grid gap-3">
-                <FormField
-                  control={form.control}
-                  name="partNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Số thứ tự phần<span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-              </div>
-              <div className="grid gap-3">
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mô tả<span className="text-red-500">*</span></FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="min-h-[100px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            </div>
+            <div className="grid gap-3 mb-4">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Mô tả</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <div className="text-muted-foreground text-sm space-y-2">
+                      <span className="font-semibold text-sm italic">Lưu ý:</span>
+                      <ul className="list-decimal pl-8">
+                        <li>Mô tả không được vượt quá 1200 ký tự.</li>
+                      </ul>
+                    </div>
+                  </FormItem>
+                )}
+              />
             </div>
             <DialogFooter>
               <DialogClose asChild>

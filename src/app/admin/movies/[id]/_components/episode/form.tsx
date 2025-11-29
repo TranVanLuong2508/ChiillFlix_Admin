@@ -149,7 +149,7 @@ export const FormEpisode = ({
                           <span>Lưu ý:</span>
                           <ul className="list-decimal pl-6">
                             <li>Thumbnail URL phải có định dạng .png, .jpg, .jpeg</li>
-                            <li>Thumbnail URL phải có kích thước <strong>nhỏ hơn 1MB</strong></li>
+                            <li>Thumbnail URL phải có kích thước <strong>nhỏ hơn 2MB</strong></li>
                           </ul>
                         </div>
                       </FormItem>
