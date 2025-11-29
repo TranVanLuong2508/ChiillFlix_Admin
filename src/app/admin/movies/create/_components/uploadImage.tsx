@@ -24,6 +24,11 @@ export const UploadImage = ({
       return;
     }
 
+    if (file.size > 1024 * 1024 * 10) {
+      toast.error("Kích thước ảnh không được vượt quá 10MB");
+      return;
+    }
+
     setLoading(true);
     try {
       setId(index);

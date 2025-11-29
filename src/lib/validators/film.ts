@@ -1,10 +1,9 @@
 import { ImageType } from "@/types/film.type";
 import { z } from "zod"
 
-
 const filmImageSchema = z.object({
   type: z.nativeEnum(ImageType),
-  url: z.string(),
+  url: z.string().min(1, { message: 'Vui lòng upload ảnh' }),
 });
 
 const actorSchema = z.object({
@@ -49,9 +48,10 @@ export const formSchema = z.object({
   ageCode: z.string().min(1, {
     message: "Khối độ không được bỏ trống",
   }),
-  duration: z.string().min(1, {
-    message: "Thời lượng không được bỏ trống",
-  }),
+  duration: z
+    .number()
+    .positive({ message: "Thời lượng phải lớn hơn 0" })
+    .min(1, { message: "Thời lượng tối thiểu là 1 phút" }),
   typeCode: z.string().min(1, {
     message: "Loại không được bỏ trống",
   }),
