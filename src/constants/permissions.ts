@@ -19,6 +19,10 @@ export const ALL_PERMISSIONS = {
   PRODUCERS: {
     GET_All: { method: "GET", apiPath: "/api/v1/producer/get-all-producers", module: "PRODUCERS" },
   },
+
+  PAYMENTS: {
+    GET_All: { method: "GET", apiPath: "/api/v1/payments", module: "PAYMENTS" },
+  },
   USERS: {
     GET_All: { method: "GET", apiPath: "/api/v1/users", module: "USERS" },
   },

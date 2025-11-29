@@ -14,7 +14,18 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, Film, Users, Clapperboard, ShieldCheck, UserCheck, Gem, Star, UserRound } from "lucide-react";
+import {
+  LayoutDashboard,
+  Film,
+  Users,
+  Clapperboard,
+  ShieldCheck,
+  UserCheck,
+  Gem,
+  Star,
+  UserRound,
+  CircleDollarSign,
+} from "lucide-react";
 import { adminPath } from "@/constants/path";
 import { useAuthStore } from "@/stores/authStore";
 import { useEffect, useState } from "react";
@@ -70,6 +81,11 @@ export function AppSidebar() {
           item.apiPath === ALL_PERMISSIONS.PRODUCERS.GET_All.apiPath &&
           item.method === ALL_PERMISSIONS.PRODUCERS.GET_All.method,
       );
+      const viewPayments = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.PAYMENTS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.PAYMENTS.GET_All.method,
+      );
 
       const full = [
         { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
@@ -106,6 +122,15 @@ export function AppSidebar() {
                 title: "Nhà Sản Xuất",
                 icon: Star,
                 href: adminPath.PRODUCERS,
+              },
+            ]
+          : []),
+        ...(viewPayments
+          ? [
+              {
+                title: "Thanh toán",
+                icon: CircleDollarSign,
+                href: adminPath.PAYMENTS,
               },
             ]
           : []),
