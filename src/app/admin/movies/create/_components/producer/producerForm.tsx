@@ -96,13 +96,13 @@ export const ProducerForm = ({
             handleSelectProducer={handleSelectProducer}
           />
         </FormControl>
-        <FormDescription>
+        <div className="text-muted-foreground text-sm space-y-2">
           <p className="text-sm italic font-semibold">Lưu ý: </p>
           <ul className="list-decimal pl-8">
             <li>Chỉ được chọn tối đa 2 nhà sản xuất.</li>
             <li>Vui lòng kiểm tra và tích chọn 1 nhà sản xuất chính.</li>
           </ul>
-        </FormDescription>
+        </div>
         <FormMessage />
       </FormItem>
       <Collapsible

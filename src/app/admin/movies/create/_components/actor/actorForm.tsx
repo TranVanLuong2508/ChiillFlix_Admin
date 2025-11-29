@@ -91,13 +91,13 @@ export const ActorForm = ({
             handleSelectActor={handleSelectActor}
           />
         </FormControl>
-        <FormDescription>
+        <div className="text-muted-foreground text-sm space-y-2">
           <p className="text-sm italic font-semibold">Lưu ý: </p>
           <ul className="list-decimal pl-8">
             <li>Chỉ được chọn tối đa 5 diễn viên chính.</li>
             <li>Vui lòng kiểm tra và nhập tên nhân vật mà diễn viên đóng.</li>
           </ul>
-        </FormDescription>
+        </div>
         <FormMessage />
       </FormItem>
       <Collapsible

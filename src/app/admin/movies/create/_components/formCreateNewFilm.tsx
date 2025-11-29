@@ -120,12 +120,12 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormDescription>
+                  <div className="text-muted-foreground text-sm space-y-2">
                     <span className="font-semibold text-sm italic">Lưu ý:</span>
-                    <ul className="list-decimal pl-8">
+                    <ul className="pl-8 list-decimal">
                       <li>Tên nước ngoài của phim nếu có không thì điền tên phim vào trường này.</li>
                     </ul>
-                  </FormDescription>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -157,12 +157,12 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
+                  <div className="text-muted-foreground text-sm space-y-2">
                     <span className="font-semibold text-sm italic">Lưu ý:</span>
                     <ul className="list-decimal pl-8">
                       <li>Mô tả phim không được vượt quá 1200 ký tự.</li>
                     </ul>
-                  </FormDescription>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -278,10 +278,10 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
                   <FormControl>
                     <Input {...field} placeholder="Nhập slug muốn tạo có dấu hoặc không dấu" />
                   </FormControl>
-                  <FormDescription>
+                  <div className="text-muted-foreground text-sm space-y-2">
                     <span className="font-semibold text-sm italic">Ví dụ:</span>
                     <span className="font-normal text-sm pl-1">"đây là slug" hoặc "day la slug"</span>
-                  </FormDescription>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
