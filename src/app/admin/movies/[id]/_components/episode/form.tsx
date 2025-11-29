@@ -81,7 +81,7 @@ export const FormEpisode = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{initialData ? "Cập nhật thông tin phần" : "Thêm phần mới"}</DialogTitle>
           <DialogDescription>
@@ -136,12 +136,12 @@ export const FormEpisode = ({
               <div className="grid gap-3">
                 <FormField
                   control={form.control}
-                  name="videoUrl"
+                  name="thumbUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Video URL</FormLabel>
+                      <FormLabel>Thumbnail URL</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <UploadThumb field={field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -151,13 +151,53 @@ export const FormEpisode = ({
               <div className="grid gap-3">
                 <FormField
                   control={form.control}
-                  name="thumbUrl"
+                  name="videoUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Thumbnail URL</FormLabel>
+                      <FormLabel>Video</FormLabel>
                       <FormControl>
-                        <UploadThumb field={field} />
+                        <div className="flex items-center gap-2">
+                          <Input {...field} placeholder="URL video" />
+
+
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="cursor-pointer"
+                              >
+                                Chọn video
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Upload Video</DialogTitle>
+                                <DialogDescription>
+                                  Chọn video từ trong máy để upload
+                                </DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <DialogClose asChild>
+                                  <Button
+                                    variant="outline"
+                                    className="cursor-pointer"
+                                  >
+                                    Đóng
+                                  </Button>
+                                </DialogClose>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       </FormControl>
+                      <div className="text-muted-foreground text-xs space-y-2">
+                        <span>Lưu ý:</span>
+                        <ul className="list-decimal pl-6">
+                          <li>Nhập video URL hoặc chọn upload video từ máy</li>
+                          <li>Video upload phải có định dạng .mp4</li>
+                          <li>Video upload phải có kích thước <strong>nhỏ hơn 10GB</strong></li>
+                        </ul>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
