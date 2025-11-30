@@ -120,3 +120,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+.pdf-mode {
+  --background: #ffffff !important;
+  --foreground: #000000 !important;
+  --card: #ffffff !important;
+  --muted: #dddddd !important;
+  --border: #cccccc !important;
+  --primary: #000000 !important;
+  --secondary: #000000 !important;
+  --accent: #000000 !important;
+}
+
+.pdf-mode * {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #cccccc !important;
+}
