@@ -8,10 +8,7 @@ import { useEffect, useState } from "react";
 import PaymentService from "@/services/paymentService";
 import { IPayment } from "@/types/payment.type";
 
-
-
 export default function AdminDashboard() {
-
   const [totalUsers, setTotalUser] = useState(0);
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -85,9 +82,7 @@ export default function AdminDashboard() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Tổng quan thống kê hệ thống
-        </p>
+        <p className="text-sm text-muted-foreground">Tổng quan thống kê hệ thống</p>
       </div>
 
       {/* Stats Cards */}
@@ -101,16 +96,14 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Doanh thu"
-          value={formatCurrency(totalRevenue)}
+          value={totalRevenue}
           icon={DollarSign}
           description="Tổng doanh thu từ gói đăng ký"
           trend={{ value: 8.2, isPositive: true }}
         />
         <StatCard
           title="Tổng số phim"
-          value={stats.filmsByGenre
-            .reduce((sum, item) => sum + item.value, 0)
-            .toLocaleString()}
+          value={stats.filmsByGenre.reduce((sum, item) => sum + item.value, 0).toLocaleString()}
           icon={Film}
           description="Phim có sẵn trên nền tảng"
         />
@@ -118,11 +111,7 @@ export default function AdminDashboard() {
 
       {/* Pie Charts */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <FilmPieChart
-          title="Phim theo thể loại"
-          description="Phân bổ phim theo thể loại"
-          data={stats.filmsByGenre}
-        />
+        <FilmPieChart title="Phim theo thể loại" description="Phân bổ phim theo thể loại" data={stats.filmsByGenre} />
         <FilmPieChart
           title="Phim theo độ tuổi"
           description="Phân loại phim theo độ tuổi"
