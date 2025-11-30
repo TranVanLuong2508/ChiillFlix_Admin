@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { User, LogOut, Bell, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { TabHeaderName } from "@/constants/path";
 import { authService } from "@/services/authService";
 import { AuthMessage } from "@/constants/messages/authMessage";
@@ -24,6 +24,7 @@ import { socket } from "@/lib/socket";
 export default function AdminHeader() {
   const { authUser, logOutAction } = useAuthStore();
   const { goLogin } = useAppRouter();
+  const router = useRouter();
   const pathName = usePathname();
   const tabHeaderName = TabHeaderName[pathName];
 
@@ -154,9 +155,12 @@ export default function AdminHeader() {
                     onClick={async () => {
                       if (!notif.isRead) {
                         await markAsRead(notif.notificationId);
+                        fetchUnreadCount();
                       }
-                      // You can navigate to report detail page here
-                      console.log('View report:', notif);
+
+                      if (notif.type === 'report') {
+                        router.push('/admin/comments?tab=reports');
+                      }
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -170,6 +174,11 @@ export default function AdminHeader() {
                         {notif.result?.reason && (
                           <p className="text-xs text-red-600 mt-1">
                             Lý do: {notif.result.reason}
+                          </p>
+                        )}
+                        {notif.result?.description && (
+                          <p className="text-xs text-orange-600 mt-1 italic">
+                            Mô tả: {notif.result.description}
                           </p>
                         )}
                         {notif.result?.commentContent && (

@@ -43,4 +43,21 @@ export const commentService = {
   toggleHideComment: (commentId: string): Promise<IBackendRes<any>> => {
     return privateAxios.patch(`/comment/toggle-hide/${commentId}`);
   },
+
+  // Reports endpoints
+  getReports: (query: { status?: string; page?: number; limit?: number }): Promise<IBackendRes<any>> => {
+    const params = new URLSearchParams();
+    if (query.status) params.append("status", query.status);
+    if (query.page) params.append("page", query.page.toString());
+    if (query.limit) params.append("limit", query.limit.toString());
+    return privateAxios.get(`/comment/reports?${params.toString()}`);
+  },
+
+  dismissReport: (reportId: string, note?: string): Promise<IBackendRes<any>> => {
+    return privateAxios.post(`/comment/reports/${reportId}/dismiss`, { note });
+  },
+
+  hideFromReport: (reportId: string, reason: string, note?: string): Promise<IBackendRes<any>> => {
+    return privateAxios.post(`/comment/reports/${reportId}/hide`, { reason, note });
+  },
 };
