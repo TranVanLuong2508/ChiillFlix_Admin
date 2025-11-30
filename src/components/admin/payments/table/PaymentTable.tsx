@@ -87,22 +87,23 @@ export const PaymentTable = () => {
     fetchPaymentData();
   }, []);
 
-  const exportPDF = async () => {
-    document.body.classList.add("pdf-mode");
+  const handleExportPDF = async () => {
+    const res = await fetch("http://localhost:8080/api/v1/payments/export-pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ payments }),
+    });
+    console.log("Data gửi qua PDF:", payments);
 
-    const element = document.getElementById("payment-report");
-    if (!element) return;
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
 
-    const canvas = await html2canvas(element, { scale: 2 });
-    document.body.classList.remove("pdf-mode");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "payment-report.pdf";
+    a.click();
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("payment-report.pdf");
+    window.URL.revokeObjectURL(url);
   };
   console.log("Check payment data: ", payments);
   return (
@@ -117,7 +118,7 @@ export const PaymentTable = () => {
               className="max-w-sm"
             />
 
-            <Button onClick={exportPDF} className="bg-red-600 text-white">
+            <Button onClick={handleExportPDF} className="bg-red-600 text-white">
               Xuất PDF Báo Cáo
             </Button>
 
@@ -158,46 +159,42 @@ export const PaymentTable = () => {
             </DropdownMenu>
           </div>
 
-          <div id="payment-report" className="pdf-area">
-            <div className="overflow-hidden rounded-md border ">
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
+          <div className="overflow-hidden rounded-md border ">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
 
-                <TableBody>
-                  {table.getRowModel().rows.length ? (
-                    table.getRowModel().rows.map((row) => {
-                      return (
-                        <TableRow key={row.id} className={"bg-white"}>
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      );
-                    })
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={PaymentColumns.length} className="h-24 text-center ">
-                        Không có dữ liệu
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+              <TableBody>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row) => {
+                    return (
+                      <TableRow key={row.id} className={"bg-white"}>
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={PaymentColumns.length} className="h-24 text-center ">
+                      Không có dữ liệu
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </div>
 
           <DataTablePagination table={table} />
