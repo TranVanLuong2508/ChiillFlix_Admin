@@ -58,12 +58,17 @@ export const FormEpisode = ({
       thumbUrl: "",
     },
   });
-
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
     } else {
-      form.reset();
+      console.log("Check initdata: ", initialData)
+      form.reset({
+        title: "",
+        duration: 0,
+        videoUrl: "",
+        thumbUrl: "",
+      });
     }
   }, [initialData, form, open])
 
@@ -182,10 +187,10 @@ export const FormEpisode = ({
                   type="submit"
                   className={cn(
                     "cursor-pointer",
-                    initialData ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
+                    isUpdate ? "bg-yellow-500 hover:bg-yellow-500/80" : "bg-blue-500 hover:bg-blue-500/90"
                   )}
                 >
-                  {initialData ? "Cập nhật" : "Thêm"}
+                  {isUpdate ? "Cập nhật" : "Thêm"}
                 </Button>
               </DialogFooter>
             </form>

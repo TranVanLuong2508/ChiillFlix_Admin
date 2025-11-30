@@ -9,7 +9,7 @@ export const formEpisodeSchema = z.object({
     .positive({ message: "Thời lượng phải lớn hơn 0" })
     .min(1, { message: "Thời lượng tối thiểu là 1 phút" }),
   videoUrl: z.string().min(1, {
-    message: "Video URL không được bỏ trống",
+    message: "Nhập Video URL hoặc nhấn vào nút Upload để upload video",
   }),
   thumbUrl: z.string().min(1, {
     message: "Thumbnail URL không được bỏ trống",

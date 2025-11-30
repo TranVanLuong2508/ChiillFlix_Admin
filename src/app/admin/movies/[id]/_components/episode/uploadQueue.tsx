@@ -62,14 +62,14 @@ export const UploadQueue = ({ onRestore }: UploadQueueProps) => {
                         )}
                       </div>
                       <div className="flex items-center">
-                        <div className="text-xs font-medium min-w-[80px] text-right">
-                          {upload.status === 'pending' && <span className="text-gray-500">Pending</span>}
+                        <div className="text-xs font-medium min-w-[94px] text-right">
+                          {upload.status === 'pending' && <span className="text-gray-500">Đang chờ</span>}
                           {upload.status === 'uploading' && <span className="text-blue-600">{upload.progress}%</span>}
-                          {upload.status === 'processing' && <span className="text-yellow-600">Processing</span>}
+                          {upload.status === 'processing' && <span className="text-yellow-600">Đang xử lý</span>}
                           {upload.status === 'completed' && (
                             <Button
                               variant="link"
-                              className="p-0 text-blue-600 font-semibold flex items-center gap-1 cursor-pointer"
+                              className="p-0 text-blue-600 font-semibold flex items-center gap-1 cursor-pointer text-xs"
                               onClick={() => onRestore(upload.id)}
                             >
                               <StepForward className="size-4" /> Tiếp tục

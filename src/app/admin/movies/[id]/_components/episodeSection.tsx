@@ -98,6 +98,7 @@ export const EpisodeSection = ({
     const res = await EpisodeService.createEpisode(payload);
     if (res.EC === 0 && res.data) {
       toast.success(res.EM);
+      setRestoreData(null);
       setIsCreateOpen(false);
       getEpisodePagination();
     } else {

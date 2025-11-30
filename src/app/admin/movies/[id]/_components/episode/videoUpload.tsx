@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useUploadStore } from "@/stores/upload.store";
 import { CloudUpload } from "lucide-react";
 import { toast } from "sonner";
 
