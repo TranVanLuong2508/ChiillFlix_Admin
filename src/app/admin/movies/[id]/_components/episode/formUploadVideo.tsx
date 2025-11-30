@@ -1,8 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-
 import {
   Accordion,
   AccordionContent,
@@ -10,40 +7,59 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormControl, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { VideoUpload } from "./videoUpload";
-import { useEffect, useRef, useState } from "react";
-
-interface UploadProgress {
-  percentage: number;
-  uploadedBytes: number;
-  totalBytes: number;
-}
+import { useEffect, useState } from "react";
+import { useUploadStore } from "@/stores/upload.store";
+import { v4 as uuidv4 } from 'uuid';
+import { toast } from "sonner";
+import { useFormContext } from "react-hook-form";
 
 interface FormUploadVideoProps {
   field: any;
+  onAddToQueue?: () => void;
 }
 
-export const FormUploadVideo = ({ field }: FormUploadVideoProps) => {
+export const FormUploadVideo = ({ field, onAddToQueue }: FormUploadVideoProps) => {
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState<UploadProgress>({
-    percentage: 0,
-    uploadedBytes: 0,
-    totalBytes: 0,
-  });
-  const [assetId, setAssetId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [playbackUrl, setPlaybackUrl] = useState<string | null>(null);
-  const uploadRef = useRef<any>(null);
+  const { addToQueue } = useUploadStore();
+  const form = useFormContext();
 
   useEffect(() => {
     if (!playbackUrl) return;
-
     field.onChange(playbackUrl);
-    setUploading(false);
   }, [playbackUrl])
+
+  useEffect(() => {
+    if (field.value && field.value !== playbackUrl) {
+      setPlaybackUrl(field.value);
+    }
+  }, [field.value]);
+
+  const handleAddToQueue = () => {
+    if (!file) {
+      toast.error("Vui lòng chọn video để upload");
+      return;
+    }
+
+    const formData = form.getValues();
+    const id = uuidv4();
+
+    addToQueue({
+      id,
+      file,
+      fileName: file.name,
+      fileSize: file.size,
+      formData,
+    });
+
+    toast.success("Đã thêm vào hàng chờ upload");
+    if (onAddToQueue) {
+      onAddToQueue();
+    }
+  };
 
   return (
     <FormItem>
@@ -52,7 +68,8 @@ export const FormUploadVideo = ({ field }: FormUploadVideoProps) => {
         <div className="flex flex-col gap-2">
           <Input
             {...field}
-            placeholder="URL video" />
+            placeholder="URL video"
+          />
           <Accordion type="single" collapsible>
             <AccordionItem value="upload-video" >
               <AccordionTrigger
@@ -64,19 +81,24 @@ export const FormUploadVideo = ({ field }: FormUploadVideoProps) => {
                 <VideoUpload
                   file={file}
                   setFile={setFile}
-                  uploading={uploading}
-                  setUploading={setUploading}
-                  progress={progress}
-                  setProgress={setProgress}
-                  assetId={assetId}
-                  setAssetId={setAssetId}
-                  error={error}
-                  setError={setError}
                   playbackUrl={playbackUrl}
                   setPlaybackUrl={setPlaybackUrl}
-                  uploadRef={uploadRef}
                   onPlaybackUrlChange={setPlaybackUrl}
+                  handleAddToQueue={handleAddToQueue}
+                  disabled={!!playbackUrl}
                 />
+
+                {/* {!playbackUrl && file && (
+                  <div className="mt-2 flex justify-end">
+                    <Button
+                      type="button"
+                      onClick={handleAddToQueue}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Upload Video
+                    </Button>
+                  </div>
+                )} */}
               </AccordionContent>
             </AccordionItem>
           </Accordion>

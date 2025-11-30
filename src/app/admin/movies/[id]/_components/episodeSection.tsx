@@ -7,8 +7,6 @@ import { ListOrdered } from "lucide-react";
 
 import { IPartDetail } from "@/types/part.type";
 
-import PartService from "@/services/part.service";
-
 import {
   Select,
   SelectContent,
@@ -16,31 +14,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
 import { IEpisodeColumn } from "@/types/episode.type";
 import { PaginationState } from "@tanstack/react-table";
 import EpisodeService from "@/services/episode.service";
 import { DataTable } from "./episode/data-table";
 import { columns } from "./episode/columns";
+
 import { formatDate } from "@/utils/formateDate";
 import { formEpisodeSchema } from "@/lib/validators/episode";
 import { generateSlug } from "@/utils/generateSlug";
 import { usePartStore } from "@/stores/part.store";
+import { useUploadStore } from "@/stores/upload.store";
+import { UploadManager } from "./episode/uploadManager";
+import { UploadQueue } from "./episode/uploadQueue";
 
 interface EpisodeSectionProps {
-  id: string;
   parts: IPartDetail[];
   selectedPart: string;
   setSelectedPart: (part: string) => void;
 }
 
 export const EpisodeSection = ({
-  id,
   parts,
   selectedPart,
   setSelectedPart,
 }: EpisodeSectionProps) => {
   const { hasUpdateEpisode, resetHasUpdateEpisode } = usePartStore();
+  const { uploads, removeFromQueue } = useUploadStore();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [restoreData, setRestoreData] = useState<any>(null);
 
   const [episodeData, setEpisodeData] = useState<IEpisodeColumn[]>([]);
   const [pageCount, setPageCount] = useState<number>(1);
@@ -102,6 +105,17 @@ export const EpisodeSection = ({
     }
   };
 
+  const handleRestoreUpload = (uploadId: string) => {
+    const upload = uploads.find(u => u.id === uploadId);
+    if (upload && upload.status === 'completed' && upload.result) {
+      setRestoreData({
+        ...upload.formData,
+        videoUrl: upload.result.playbackUrl
+      });
+      setIsCreateOpen(true);
+      removeFromQueue(uploadId);
+    }
+  };
 
   if (!parts || parts.length === 0) {
     return (
@@ -114,46 +128,52 @@ export const EpisodeSection = ({
   }
 
   return (
-    <div className="mx-[100px]">
-      <div className="flex justify-between pb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <ListOrdered size={20} />
-            <span className="border-b border-zinc-500">
-              Danh sách tập phim:
-            </span>
-          </h2>
-          <Select value={selectedPart} onValueChange={setSelectedPart}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Chọn phần" />
-            </SelectTrigger>
-            <SelectContent>
-              {parts.map((part) => (
-                <SelectItem key={part.id} value={part.id}>
-                  {part.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="relative">
+      <div className="mx-[100px]">
+        <div className="flex justify-between pb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <ListOrdered size={20} />
+              <span className="border-b border-zinc-500">
+                Danh sách tập phim:
+              </span>
+            </h2>
+            <Select value={selectedPart} onValueChange={setSelectedPart}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Chọn phần" />
+              </SelectTrigger>
+              <SelectContent>
+                {parts.map((part) => (
+                  <SelectItem key={part.id} value={part.id}>
+                    {part.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-x-2">
+          </div>
         </div>
-        <div className="space-x-2">
+        <div>
+          {selectedPart !== "" && (
+            <DataTable
+              data={episodeData}
+              pageCount={pageCount}
+              pagination={pagination}
+              setPagination={setPagination}
+              columns={columns}
+              hiddenColumns={["id", "partId", 'videoUrl', 'thumbUrl']}
+              isOpenCreate={isCreateOpen}
+              onOpenCreateChange={setIsCreateOpen}
+              handleCreateEpisode={handleCreateEpisode}
+              initialData={restoreData}
+            />
+          )}
         </div>
       </div>
-      <div>
-        {selectedPart !== "" && (
-          <DataTable
-            data={episodeData}
-            pageCount={pageCount}
-            pagination={pagination}
-            setPagination={setPagination}
-            columns={columns}
-            hiddenColumns={["id", "partId", 'videoUrl', 'thumbUrl']}
-            isOpenCreate={isCreateOpen}
-            onOpenCreateChange={setIsCreateOpen}
-            handleCreateEpisode={handleCreateEpisode}
-          />
-        )}
-      </div>
+
+      <UploadManager />
+      <UploadQueue onRestore={handleRestoreUpload} />
     </div>
   )
 }

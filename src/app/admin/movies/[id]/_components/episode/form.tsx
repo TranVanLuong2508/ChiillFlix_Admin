@@ -91,7 +91,7 @@ export const FormEpisode = ({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
-        <ScrollArea className="max-h-[calc(100vh-5rem)] rounded-md px-4 py-5">
+        <ScrollArea className="max-h-[calc(100vh-10rem)] rounded-md px-4 py-5">
           <DialogHeader className="pb-2">
             <DialogTitle>
               {initialData ? "Cập Nhật Thông Tin Tập" : "Thêm Tập Mới"}
@@ -161,7 +161,10 @@ export const FormEpisode = ({
                     control={form.control}
                     name="videoUrl"
                     render={({ field }) => (
-                      <FormUploadVideo field={field} />
+                      <FormUploadVideo
+                        field={field}
+                        onAddToQueue={() => onOpenChange(false)}
+                      />
                     )}
                   />
                 </div>
