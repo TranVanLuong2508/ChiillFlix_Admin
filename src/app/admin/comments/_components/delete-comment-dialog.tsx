@@ -63,22 +63,24 @@ export function DeleteCommentDialog({
                     <AlertDialogTitle>
                         {isBulk ? "Xác nhận xóa bình luận" : "Xác nhận xóa bình luận"}
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-2">
-                        <p>
-                            {isBulk
-                                ? "Bạn có chắc chắn muốn xóa các bình luận đã chọn?"
-                                : "Bạn có chắc chắn muốn xóa bình luận này?"}
-                        </p>
-                        {!isBulk && (
-                            <div className="p-3 bg-muted rounded-md">
-                                <p className="text-sm font-medium text-foreground line-clamp-3">
-                                    "{commentContent}"
-                                </p>
-                            </div>
-                        )}
-                        <p className="text-red-600 font-medium">
-                            Hành động này không thể hoàn tác.
-                        </p>
+                    <AlertDialogDescription asChild>
+                        <div className="space-y-2">
+                            <p>
+                                {isBulk
+                                    ? "Bạn có chắc chắn muốn xóa các bình luận đã chọn?"
+                                    : "Bạn có chắc chắn muốn xóa bình luận này?"}
+                            </p>
+                            {!isBulk && (
+                                <div className="p-3 bg-muted rounded-md">
+                                    <p className="text-sm font-medium text-foreground line-clamp-3">
+                                        "{commentContent}"
+                                    </p>
+                                </div>
+                            )}
+                            <p className="text-red-600 font-medium">
+                                Hành động này không thể hoàn tác.
+                            </p>
+                        </div>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

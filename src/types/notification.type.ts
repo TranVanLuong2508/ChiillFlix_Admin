@@ -4,13 +4,19 @@ export interface NotificationResult {
   filmId?: string;
   slug?: string;
   filmTitle?: string;
-  // Report-related fields
+  reportId?: string;
+  reportType?: "COMMENT" | "RATING";
   reporterId?: number;
   reporterName?: string;
   reporterAvatar?: string;
   commentContent?: string;
   commentUserId?: number;
   commentUserName?: string;
+  ratingId?: string;
+  ratingContent?: string;
+  ratingScore?: number;
+  ratingUserId?: number;
+  ratingUserName?: string;
   filmSlug?: string;
   reason?: string;
   description?: string;

@@ -1,15 +1,14 @@
 import privateAxios from "@/lib/axios/privateAxios";
-import publicAxios from "@/lib/axios/publicAxios";
-import { ICommentPagination, UpdateCommentDto } from "@/types/comment.type";
 import { IBackendRes } from "@/types/backend.type";
+import { IRatingPagination } from "@/types/rating.type";
 
-export const commentService = {
-  getAllComments: (
+export const ratingService = {
+  getAllRatings: (
     page: number = 1,
     limit: number = 10,
     sort?: string,
     filter?: Record<string, any>,
-  ): Promise<IBackendRes<ICommentPagination>> => {
+  ): Promise<IBackendRes<IRatingPagination>> => {
     const params = new URLSearchParams();
     params.append("page", page.toString());
     params.append("limit", limit.toString());
@@ -25,33 +24,36 @@ export const commentService = {
         }
       });
     }
-    return privateAxios.get(`/comment/all-comments?${params.toString()}`);
+    return privateAxios.get(`/rating/all-ratings?${params.toString()}`);
   },
 
-  getCommentById: (commentId: string): Promise<IBackendRes<any>> => {
-    return publicAxios.get(`/comment/get-comment/${commentId}`);
+  getStatistics: (): Promise<IBackendRes<any>> => {
+    return privateAxios.get(`/rating/statistics`);
   },
 
-  updateComment: (commentId: string, dto: UpdateCommentDto): Promise<IBackendRes<any>> => {
-    return privateAxios.patch(`/comment/update-comment/${commentId}`, dto);
+  deleteRating: (ratingId: string): Promise<IBackendRes<any>> => {
+    return privateAxios.delete(`/rating/delete-rating/${ratingId}`);
   },
 
-  deleteComment: (commentId: string): Promise<IBackendRes<any>> => {
-    return privateAxios.delete(`/comment/delete-comment/${commentId}`);
+  restoreRating: (ratingId: string): Promise<IBackendRes<any>> => {
+    return privateAxios.patch(`/rating/admin-restore/${ratingId}`);
   },
 
-  hardDeleteComment: (commentId: string): Promise<IBackendRes<any>> => {
-    return privateAxios.delete(`/comment/hard-delete-comment/${commentId}`);
+  hideRating: (ratingId: string): Promise<IBackendRes<any>> => {
+    return privateAxios.patch(`/rating/hide/${ratingId}`);
   },
 
-  toggleHideComment: (commentId: string): Promise<IBackendRes<any>> => {
-    return privateAxios.patch(`/comment/toggle-hide/${commentId}`);
+  unhideRating: (ratingId: string): Promise<IBackendRes<any>> => {
+    return privateAxios.patch(`/rating/unhide/${ratingId}`);
   },
 
-  // Reports endpoints
+  hardDeleteRating: (ratingId: string): Promise<IBackendRes<any>> => {
+    return privateAxios.delete(`/rating/hard-delete/${ratingId}`);
+  },
+
   getReports: (query: { status?: string; page?: number; limit?: number }): Promise<IBackendRes<any>> => {
     const params = new URLSearchParams();
-    params.append("reportType", "COMMENT");
+    params.append("reportType", "RATING");
     if (query.status) params.append("status", query.status);
     if (query.page) params.append("page", query.page.toString());
     if (query.limit) params.append("limit", query.limit.toString());
@@ -62,15 +64,11 @@ export const commentService = {
     return privateAxios.post(`/report/${reportId}/dismiss`, { note });
   },
 
-  hideFromReport: (reportId: string, reason: string, note?: string): Promise<IBackendRes<any>> => {
+  deleteFromReport: (reportId: string, reason: string, note?: string): Promise<IBackendRes<any>> => {
     return privateAxios.post(`/report/${reportId}/delete-target`, { reason, note });
   },
 
   hardDeleteFromReport: (reportId: string, note?: string): Promise<IBackendRes<any>> => {
     return privateAxios.post(`/report/${reportId}/hard-delete-target`, { note });
-  },
-
-  getStatistics: (): Promise<IBackendRes<any>> => {
-    return privateAxios.get("/comment/statistics");
   },
 };

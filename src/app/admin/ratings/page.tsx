@@ -5,7 +5,7 @@ import { PaginationState } from "@tanstack/react-table";
 import AdminHeader from "@/components/admin/layout/AdminHeader";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { useCommentStore } from "@/stores/commentStore";
+import { useRatingStore } from "@/stores/ratingStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReportsTable } from "./_components/reports-table";
@@ -13,23 +13,23 @@ import { Statistics } from "./_components/statistics";
 import { useSearchParams, useRouter } from "next/navigation";
 import { socket } from "@/lib/socket";
 
-const CommentsPage = () => {
-    const { comments, meta, loading, fetchComments, deleteComment } = useCommentStore();
+const RatingsPage = () => {
+    const { ratings, meta, loading, fetchRatings } = useRatingStore();
     const searchParams = useSearchParams();
     const router = useRouter();
     const tabParam = searchParams.get("tab");
 
-    const [activeTab, setActiveTab] = useState<"comments" | "reports" | "statistics">("comments");
+    const [activeTab, setActiveTab] = useState<"ratings" | "reports" | "statistics">("ratings");
 
     useEffect(() => {
-        if (tabParam === "reports" || tabParam === "comments" || tabParam === "statistics") {
+        if (tabParam === "ratings" || tabParam === "reports" || tabParam === "statistics") {
             setActiveTab(tabParam);
         }
     }, [tabParam]);
 
     const handleTabChange = (value: string) => {
-        setActiveTab(value as "comments" | "reports" | "statistics");
-        router.push(`/admin/comments?tab=${value}`);
+        setActiveTab(value as "ratings" | "reports" | "statistics");
+        router.push(`/admin/ratings?tab=${value}`);
     };
 
     const [pagination, setPagination] = useState<PaginationState>(() => {
@@ -39,66 +39,57 @@ const CommentsPage = () => {
     const pageCount = meta ? meta.totalPages : 0;
 
     useEffect(() => {
-        if (activeTab === "comments") {
+        if (activeTab === "ratings") {
             const page = pagination.pageIndex + 1;
             const limit = pagination.pageSize;
-            fetchComments(page, limit);
+            fetchRatings(page, limit);
         }
-    }, [pagination.pageIndex, pagination.pageSize, activeTab, fetchComments]);
+    }, [pagination.pageIndex, pagination.pageSize, activeTab, fetchRatings]);
 
+    // Socket listeners for realtime updates
     useEffect(() => {
-        const handleNewComment = () => {
-            if (activeTab === "comments") {
+        const handleNewRating = () => {
+            if (activeTab === "ratings") {
                 const page = pagination.pageIndex + 1;
                 const limit = pagination.pageSize;
-                fetchComments(page, limit);
+                fetchRatings(page, limit);
             }
         };
 
-        const handleUpdateComment = () => {
-            if (activeTab === "comments") {
+        const handleUpdateRating = () => {
+            if (activeTab === "ratings") {
                 const page = pagination.pageIndex + 1;
                 const limit = pagination.pageSize;
-                fetchComments(page, limit);
+                fetchRatings(page, limit);
             }
         };
 
-        const handleDeleteComment = () => {
-            if (activeTab === "comments") {
+        const handleDeleteRating = () => {
+            if (activeTab === "ratings") {
                 const page = pagination.pageIndex + 1;
                 const limit = pagination.pageSize;
-                fetchComments(page, limit);
+                fetchRatings(page, limit);
             }
         };
 
-        const handleHideComment = () => {
-            if (activeTab === "comments") {
+        const handleHideRating = () => {
+            if (activeTab === "ratings") {
                 const page = pagination.pageIndex + 1;
                 const limit = pagination.pageSize;
-                fetchComments(page, limit);
+                fetchRatings(page, limit);
             }
         };
 
-        socket.on('newComment', handleNewComment);
-        socket.on('updateComment', handleUpdateComment);
-        socket.on('deleteComment', handleDeleteComment);
-        socket.on('hideComment', handleHideComment);
-        socket.on('unhideComment', handleUpdateComment);
+        socket.on('ratingUpdated', handleNewRating);
+        socket.on('ratingDeleted', handleDeleteRating);
+        socket.on('hideRating', handleHideRating);
 
         return () => {
-            socket.off('newComment', handleNewComment);
-            socket.off('updateComment', handleUpdateComment);
-            socket.off('deleteComment', handleDeleteComment);
-            socket.off('hideComment', handleHideComment);
-            socket.off('unhideComment', handleUpdateComment);
+            socket.off('ratingUpdated', handleNewRating);
+            socket.off('ratingDeleted', handleDeleteRating);
+            socket.off('hideRating', handleHideRating);
         };
-    }, [activeTab, pagination.pageIndex, pagination.pageSize, fetchComments]);
-
-    const handleDeleteSelected = async (ids: string[]) => {
-        for (const id of ids) {
-            await deleteComment(id);
-        }
-    };
+    }, [activeTab, pagination.pageIndex, pagination.pageSize, fetchRatings]);
 
     return (
         <div className="flex flex-col h-full w-full">
@@ -106,12 +97,12 @@ const CommentsPage = () => {
             <main className="flex-1 overflow-auto p-6 bg-gray-50">
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
                     <TabsList className="mb-4">
-                        <TabsTrigger value="comments">Tất cả bình luận</TabsTrigger>
+                        <TabsTrigger value="ratings">Tất cả đánh giá</TabsTrigger>
                         <TabsTrigger value="reports">Báo cáo</TabsTrigger>
                         <TabsTrigger value="statistics">Thống kê</TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="comments">
+                    <TabsContent value="ratings">
                         <div className="space-y-4">
                             {loading ? (
                                 <div className="space-y-4">
@@ -127,7 +118,6 @@ const CommentsPage = () => {
                                                 <Skeleton className="h-4 w-[100px]" />
                                                 <Skeleton className="h-4 w-[150px]" />
                                                 <Skeleton className="h-4 w-[120px]" />
-                                                <Skeleton className="h-4 w-[100px]" />
                                             </div>
                                         </div>
 
@@ -138,7 +128,6 @@ const CommentsPage = () => {
                                                     <Skeleton className="h-4 w-[100px]" />
                                                     <Skeleton className="h-4 w-[150px]" />
                                                     <Skeleton className="h-4 w-[120px]" />
-                                                    <Skeleton className="h-4 w-[100px]" />
                                                 </div>
                                             </div>
                                         ))}
@@ -156,13 +145,12 @@ const CommentsPage = () => {
                             ) : (
                                 <DataTable
                                     columns={columns}
-                                    data={comments}
+                                    data={ratings}
+                                    hiddenColumns={["ratingId"]}
                                     pagination={pagination}
                                     pageCount={pageCount}
-                                    hiddenColumns={["commentId", "totalChildrenComment"]}
                                     setPagination={setPagination}
                                     searchPlaceholder="Tìm theo tên người dùng..."
-                                    onDeleteSelected={handleDeleteSelected}
                                 />
                             )}
                         </div>
@@ -181,4 +169,4 @@ const CommentsPage = () => {
     );
 };
 
-export default CommentsPage;
+export default RatingsPage;

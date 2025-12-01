@@ -25,35 +25,29 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { DataTablePagination } from "../../../../components/table-comment/data-table-pagination";
-import { DataTableViewOptions } from "../../../../components/table-comment/data-table-view-option";
-import { DeleteCommentDialog } from "./delete-comment-dialog";
-import { CommentColumn } from "@/types/comment.type";
+import { DataTablePagination } from "@/components/table-rating/data-table-pagination";
+import { DataTableViewOptions } from "@/components/table-rating/data-table-view-option";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    hiddenColumns: string[];
+    hiddenColumns?: string[];
     pagination: PaginationState;
     pageCount: number;
     setPagination: OnChangeFn<PaginationState>;
     searchPlaceholder?: string;
     onSearch?: (value: string) => void;
-    addButton?: React.ReactNode;
-    onDeleteSelected?: (ids: string[]) => void;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    hiddenColumns,
+    hiddenColumns = [],
     pagination,
     pageCount,
     setPagination,
     searchPlaceholder,
     onSearch,
-    addButton,
-    onDeleteSelected,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -64,11 +58,11 @@ export function DataTable<TData, TValue>({
             hiddenColumns.reduce((acc, col) => ({ ...acc, [col]: false }), {})
         );
     const [rowSelection, setRowSelection] = React.useState({});
+
     const table = useReactTable({
         data,
         columns,
         pageCount,
-        getRowId: (row: any) => row.commentId,
         state: {
             sorting,
             columnFilters,
@@ -89,47 +83,17 @@ export function DataTable<TData, TValue>({
         manualPagination: true,
     });
 
-    const selectedRows = React.useMemo(
-        () => {
-            return table.getSelectedRowModel().rows.map((row) => row.original as CommentColumn);
-        },
-        [rowSelection, table]
-    );
-    const selectedRowIds = selectedRows.map((d) => d.commentId);
-    const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
-
     return (
         <div className="space-y-4">
-            <DeleteCommentDialog
-                open={bulkDeleteOpen}
-                onOpenChange={setBulkDeleteOpen}
-                commentId={selectedRowIds.join(",")}
-                commentContent={selectedRows.map((d) => d.content.substring(0, 50)).join(", ")}
-                isBulk
-                onBulkDelete={async () => {
-                    if (onDeleteSelected) await onDeleteSelected(selectedRowIds);
-                    setBulkDeleteOpen(false);
-                }}
-            />
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1">
-                    <input
-                        type="text"
-                        placeholder={searchPlaceholder || "Tìm kiếm..."}
-                        value={(table.getColumn("userName")?.getFilterValue() as string) ?? ""}
-                        onChange={(e) =>
-                            table.getColumn("userName")?.setFilterValue(e.target.value)
-                        }
-                        className="w-60 text-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {addButton}
-                    {selectedRowIds.length > 0 && onDeleteSelected && (
-                        <button
-                            className="ml-2 px-2 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600"
-                            onClick={() => setBulkDeleteOpen(true)}
-                        >
-                            Xóa đã chọn ({selectedRowIds.length})
-                        </button>
+                    {onSearch && (
+                        <input
+                            type="text"
+                            placeholder={searchPlaceholder || "Tìm kiếm..."}
+                            onChange={(e) => onSearch(e.target.value)}
+                            className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                     )}
                 </div>
                 <DataTableViewOptions table={table} />

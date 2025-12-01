@@ -34,9 +34,11 @@ interface ActionsProps {
 export function Actions({ comment }: ActionsProps) {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [hardDeleteDialogOpen, setHardDeleteDialogOpen] = useState(false);
     const [confirmHideOpen, setConfirmHideOpen] = useState(false);
     const [isHiding, setIsHiding] = useState(false);
-    const { toggleHideComment } = useCommentStore();
+    const { toggleHideComment, hardDeleteComment } = useCommentStore();
+    const [isHardDeleting, setIsHardDeleting] = useState(false);
 
     const handleToggleHide = async () => {
         setIsHiding(true);
@@ -51,6 +53,18 @@ export function Actions({ comment }: ActionsProps) {
             );
         } else {
             toast.error("Không thể thay đổi trạng thái bình luận");
+        }
+    };
+
+    const handleHardDelete = async () => {
+        setIsHardDeleting(true);
+        const success = await hardDeleteComment(comment.commentId);
+        setIsHardDeleting(false);
+        setHardDeleteDialogOpen(false);
+        if (success) {
+            toast.success("Đã xóa vĩnh viễn bình luận");
+        } else {
+            toast.error("Không thể xóa bình luận");
         }
     };
 
@@ -93,16 +107,15 @@ export function Actions({ comment }: ActionsProps) {
                         )}
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => setDeleteDialogOpen(true)}
+                        className="text-red-600 font-semibold"
+                        onClick={() => setHardDeleteDialogOpen(true)}
                     >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Xóa
+                        <Trash2 className="mr-2 h-4 w-4 text-red-600" />
+                        Xóa vĩnh viễn
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* AlertDialog xác nhận ẩn/hiện */}
             <AlertDialog open={confirmHideOpen} onOpenChange={setConfirmHideOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -139,6 +152,39 @@ export function Actions({ comment }: ActionsProps) {
                 commentId={comment.commentId}
                 commentContent={comment.content}
             />
+
+            <AlertDialog open={hardDeleteDialogOpen} onOpenChange={setHardDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-red-600">
+                            Xác nhận xóa vĩnh viễn bình luận
+                        </AlertDialogTitle>
+                        <AlertDialogDescription asChild>
+                            <div className="space-y-2">
+                                <p>Bạn có chắc chắn muốn <strong className="text-red-600">XÓA VĨNH VIỄN</strong> bình luận này?</p>
+                                <div className="p-3 bg-muted rounded-md">
+                                    <p className="text-sm font-medium text-foreground line-clamp-3">
+                                        "{comment.content}"
+                                    </p>
+                                </div>
+                                <p className="text-red-600 font-bold">
+                                    CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn bình luận và TẤT CẢ bình luận con. Không thể khôi phục!
+                                </p>
+                            </div>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isHardDeleting}>Hủy</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleHardDelete}
+                            disabled={isHardDeleting}
+                            className="bg-red-600 hover:bg-red-700"
+                        >
+                            {isHardDeleting ? "Đang xóa..." : "Xóa vĩnh viễn"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

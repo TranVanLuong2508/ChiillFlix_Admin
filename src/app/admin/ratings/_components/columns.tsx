@@ -2,14 +2,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "../../../../components/table-comment/data-table-column-header";
+import { DataTableColumnHeader } from "../../../../components/table-rating/data-table-column-header";
 import { Actions } from "./actions";
 import { formatDateTime } from "@/utils/formateDate";
-import { CommentColumn } from "@/types/comment.type";
+import { RatingColumn } from "@/types/rating.type";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
+import { Eye, EyeOff, Star } from "lucide-react";
 
-export const columns: ColumnDef<CommentColumn>[] = [
+export const columns: ColumnDef<RatingColumn>[] = [
     {
         id: "select",
         header: ({ table }) => (
@@ -33,12 +33,12 @@ export const columns: ColumnDef<CommentColumn>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "commentId",
+        accessorKey: "ratingId",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Mã BL" />
+            <DataTableColumnHeader column={column} title="Mã ĐG" />
         ),
         cell: ({ row }) => {
-            const id = row.getValue("commentId") as string;
+            const id = row.getValue("ratingId") as string;
             return <div className="font-mono text-xs">{id.substring(0, 8)}...</div>;
         },
         enableSorting: true,
@@ -84,13 +84,29 @@ export const columns: ColumnDef<CommentColumn>[] = [
         enableSorting: true,
     },
     {
+        accessorKey: "ratingValue",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Đánh giá" />
+        ),
+        cell: ({ row }) => {
+            const value = row.getValue("ratingValue") as number;
+            return (
+                <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="font-semibold">{value.toFixed(1)}</span>
+                </div>
+            );
+        },
+        enableSorting: true,
+    },
+    {
         accessorKey: "content",
         header: "Nội dung",
         cell: ({ row }) => {
             const content = row.getValue("content") as string;
             return (
                 <div className="max-w-md truncate" title={content}>
-                    {content}
+                    {content || <span className="text-gray-400 italic">Không có nội dung</span>}
                 </div>
             );
         },
@@ -114,72 +130,38 @@ export const columns: ColumnDef<CommentColumn>[] = [
     {
         accessorKey: "isHidden",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Trạng thái" />
+            <DataTableColumnHeader column={column} title="Hiển thị" />
         ),
         cell: ({ row }) => {
             const isHidden = row.getValue("isHidden") as boolean;
             return isHidden ? (
-                <Badge variant="secondary" className="gap-1">
-                    <EyeOff className="h-3 w-3" />
+                <Badge variant="secondary">
+                    <EyeOff className="mr-1 h-4 w-4" />
                     Ẩn
                 </Badge>
             ) : (
-                <Badge variant="default" className="gap-1 bg-green-600">
-                    <Eye className="h-3 w-3" />
-                    Hiển thị
-                </Badge>
+                <Badge variant="default" className="bg-green-600">
+                    <Eye className="mr-1 h-4 w-4" />
+                    Hiển thị</Badge>
             );
         },
         enableSorting: true,
     },
-    {
-        accessorKey: "totalLike",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Thích" />
-        ),
-        cell: ({ row }) => {
-            const totalLike = row.getValue("totalLike") as number;
-            return (
-                <div className="flex items-center gap-1">
-                    <ThumbsUp className="h-3 w-3 text-blue-500" />
-                    <span>{totalLike}</span>
-                </div>
-            );
-        },
-        enableSorting: true,
-    },
-    {
-        accessorKey: "totalDislike",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Không thích" />
-        ),
-        cell: ({ row }) => {
-            const totalDislike = row.getValue("totalDislike") as number;
-            return (
-                <div className="flex items-center gap-1">
-                    <ThumbsDown className="h-3 w-3 text-red-500" />
-                    <span>{totalDislike}</span>
-                </div>
-            );
-        },
-        enableSorting: true,
-    },
-    {
-        accessorKey: "totalChildrenComment",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Trả lời" />
-        ),
-        cell: ({ row }) => {
-            const totalChildrenComment = row.getValue("totalChildrenComment") as number;
-            return (
-                <div className="flex items-center gap-1">
-                    <MessageCircle className="h-3 w-3 text-gray-500" />
-                    <span>{totalChildrenComment}</span>
-                </div>
-            );
-        },
-        enableSorting: true,
-    },
+    // {
+    //     accessorKey: "deletedAt",
+    //     header: ({ column }) => (
+    //         <DataTableColumnHeader column={column} title="Trạng thái" />
+    //     ),
+    //     cell: ({ row }) => {
+    //         const deletedAt = row.getValue("deletedAt") as Date | undefined;
+    //         return deletedAt ? (
+    //             <Badge variant="destructive">Đã xóa</Badge>
+    //         ) : (
+    //             <Badge variant="default" className="bg-blue-600">Hoạt động</Badge>
+    //         );
+    //     },
+    //     enableSorting: true,
+    // },
     {
         accessorKey: "createdAt",
         header: ({ column }) => (
@@ -191,7 +173,7 @@ export const columns: ColumnDef<CommentColumn>[] = [
     {
         accessorKey: "updatedAt",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Ngày Chỉnh Sửa" />
+            <DataTableColumnHeader column={column} title="Ngày Cập Nhật" />
         ),
         cell: ({ row }) => <div>{formatDateTime(row.getValue("updatedAt"))}</div>,
         enableSorting: true,
@@ -200,8 +182,8 @@ export const columns: ColumnDef<CommentColumn>[] = [
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const comment = row.original;
-            return <Actions comment={comment} />;
+            const rating = row.original;
+            return <Actions rating={rating} />;
         },
     },
 ];

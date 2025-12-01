@@ -59,23 +59,32 @@ export default function AdminHeader() {
     }
 
     const handleReportNotification = (data: any) => {
+      const reportTypeText = data.reportType === 'COMMENT' ? 'bình luận' : 'đánh giá';
+
       addNotification({
         notificationId: data.notificationId,
         type: 'report',
-        message: `${data.reporter.fullName} đã báo cáo bình luận`,
+        message: data.message || `${data.reporterName} đã báo cáo ${reportTypeText}`,
         isRead: false,
-        createdAt: data.createdAt,
+        createdAt: data.createdAt || new Date().toISOString(),
         result: {
-          commentId: data.comment.commentId,
-          reporterId: data.reporter.userId,
-          reporterName: data.reporter.fullName,
-          reporterAvatar: data.reporter.avatarUrl,
-          commentContent: data.comment.content,
-          commentUserId: data.comment.user.userId,
-          commentUserName: data.comment.user.fullName,
-          filmId: data.film?.filmId,
-          filmTitle: data.film?.title,
-          filmSlug: data.film?.slug,
+          reportId: data.reportId,
+          reportType: data.reportType,
+          commentId: data.commentId,
+          ratingId: data.ratingId,
+          reporterId: data.reporterId,
+          reporterName: data.reporterName,
+          reporterAvatar: data.reporterAvatar,
+          commentContent: data.commentContent,
+          commentUserId: data.commentUserId,
+          commentUserName: data.commentUserName,
+          ratingContent: data.ratingContent,
+          ratingScore: data.ratingScore,
+          ratingUserId: data.ratingUserId,
+          ratingUserName: data.ratingUserName,
+          filmId: data.filmId,
+          filmTitle: data.filmTitle,
+          filmSlug: data.filmSlug,
           reason: data.reason,
           description: data.description,
         },
@@ -83,19 +92,26 @@ export default function AdminHeader() {
 
       fetchUnreadCount();
 
-      toast.info(`Báo cáo mới từ ${data.reporter.fullName}`, {
+      toast.info(`Báo cáo ${reportTypeText} mới từ ${data.reporterName}`, {
         id: `report-${data.notificationId}`,
         description: <span className="text-red-500">Lý do: {data.reason}</span>,
       });
     };
 
+    const handleReportProcessed = async () => {
+      await fetchNotifications(1, 20);
+      await fetchUnreadCount();
+    };
+
     socket.on('reportNotification', handleReportNotification);
+    socket.on('reportProcessed', handleReportProcessed);
 
     return () => {
       socket.off('connect', registerAdmin);
       socket.off('reportNotification', handleReportNotification);
+      socket.off('reportProcessed', handleReportProcessed);
     };
-  }, [authUser?.userId, addNotification, fetchUnreadCount]);
+  }, [authUser?.userId, addNotification, fetchUnreadCount, fetchNotifications]);
 
   const haneleLogOut = async () => {
     try {
@@ -116,8 +132,6 @@ export default function AdminHeader() {
       <header className="flex items-center sticky top-0 z-10 gap-4 border-b bg-white px-6 py-4">
         <SidebarTrigger />
         <h1 className="text-2xl font-bold flex-1 ">{tabHeaderName}</h1>
-
-        {/* Notification Bell */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
@@ -131,7 +145,7 @@ export default function AdminHeader() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-96 max-h-[500px] overflow-y-auto">
-            <DropdownMenuLabel className="flex items-center justify-between">
+            <DropdownMenuLabel className="flex items-center justify-between" >
               <span>Thông báo báo cáo</span>
               {unreadCount > 0 && (
                 <span className="text-xs text-gray-500">
@@ -147,9 +161,9 @@ export default function AdminHeader() {
               </div>
             ) : (
               <div className="space-y-2 p-2">
-                {notifications.slice(0, 10).map((notif) => (
+                {notifications.slice(0, 10).map((notif, index) => (
                   <div
-                    key={notif.notificationId}
+                    key={`${notif.notificationId}-${index}`}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${notif.isRead ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'
                       } hover:bg-gray-100`}
                     onClick={async () => {
@@ -159,7 +173,12 @@ export default function AdminHeader() {
                       }
 
                       if (notif.type === 'report') {
-                        router.push('/admin/comments?tab=reports');
+                        const reportType = notif.result?.reportType;
+                        if (reportType === 'RATING') {
+                          router.push('/admin/ratings?tab=reports');
+                        } else {
+                          router.push('/admin/comments?tab=reports');
+                        }
                       }
                     }}
                   >

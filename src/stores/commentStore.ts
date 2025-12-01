@@ -11,14 +11,17 @@ interface CommentState {
     total: number;
     totalPages: number;
   } | null;
+  statistics: any;
   loading: boolean;
   error: string | null;
 }
 
 interface CommentActions {
   fetchComments: (page?: number, limit?: number, sort?: string, filter?: Record<string, any>) => Promise<void>;
+  fetchStatistics: () => Promise<void>;
   updateComment: (commentId: string, dto: UpdateCommentDto) => Promise<boolean>;
   deleteComment: (commentId: string) => Promise<boolean>;
+  hardDeleteComment: (commentId: string) => Promise<boolean>;
   toggleHideComment: (commentId: string) => Promise<boolean>;
   clearError: () => void;
 }
@@ -27,6 +30,7 @@ export const useCommentStore = create<CommentState & CommentActions>((set, get) 
   comments: [],
   allComments: [],
   meta: null,
+  statistics: null,
   loading: false,
   error: null,
 
@@ -42,15 +46,15 @@ export const useCommentStore = create<CommentState & CommentActions>((set, get) 
             const filmInfo = item.film || parentFilm;
 
             result.push({
-              commentId: item.id || item.commentId,
+              commentId: item.commentId,
               content: item.content,
               isHidden: item.isHidden,
               totalLike: item.totalLike,
               totalDislike: item.totalDislike,
               totalChildrenComment: item.totalChildrenComment,
-              userName: item.user?.name || item.user?.fullName || "Unknown",
+              userName: item.user?.name || item.user?.fullName || "Không rõ",
               userAvatar: item.user?.avatar || item.user?.avatarUrl || "",
-              filmTitle: filmInfo?.title || "Unknown",
+              filmTitle: filmInfo?.title || "Không rõ",
               filmId: filmInfo?.filmId || "",
               createdAt: item.createdAt || new Date(),
               updatedAt: item.updatedAt || new Date(),
@@ -145,6 +149,27 @@ export const useCommentStore = create<CommentState & CommentActions>((set, get) 
     }
   },
 
+  hardDeleteComment: async (commentId: string) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await commentService.hardDeleteComment(commentId);
+      if (res.EC === 1) {
+        await get().fetchComments(get().meta?.page || 1, get().meta?.limit || 10);
+        set({ loading: false });
+        return true;
+      } else {
+        set({ error: res.EM || "Failed to hard delete comment", loading: false });
+        return false;
+      }
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "An error occurred",
+        loading: false,
+      });
+      return false;
+    }
+  },
+
   toggleHideComment: async (commentId: string) => {
     set({ loading: true, error: null });
     try {
@@ -163,6 +188,23 @@ export const useCommentStore = create<CommentState & CommentActions>((set, get) 
         loading: false,
       });
       return false;
+    }
+  },
+
+  fetchStatistics: async () => {
+    set({ loading: true, error: null });
+    try {
+      const res = await commentService.getStatistics();
+      if (res.EC === 1 && res.data) {
+        set({ statistics: res.data, loading: false });
+      } else {
+        set({ error: res.EM || "Failed to fetch statistics", loading: false });
+      }
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "An error occurred",
+        loading: false,
+      });
     }
   },
 
