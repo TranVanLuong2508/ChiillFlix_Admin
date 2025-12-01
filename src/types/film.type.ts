@@ -3,6 +3,13 @@ import { Actor_FilmDetail } from "./actor.type"
 import { Director_FilmDetail } from "./director.type"
 import { Producer_FilmDetail } from "./producer.type"
 
+interface IUser_Film {
+  userId: number;
+  fullName: string;
+  phoneNumber: string;
+  avatarUrl: string;
+}
+
 export interface FilmColumn {
   filmId: string
   title: string
@@ -33,9 +40,15 @@ export interface IFilmPaginationRes {
   duration: number
   createdAt: string
   updatedAt: string
+
   publicStatus: IAllCodeRes
   country: IAllCodeRes
   language: IAllCodeRes
+}
+
+export interface IFilmDeletedPaginationRes extends IFilmPaginationRes {
+  deletedAt: string;
+  deletedBy: IUser_Film
 }
 
 export interface IFilmPagination {
@@ -46,6 +59,16 @@ export interface IFilmPagination {
     total: number
   }
   result: IFilmPaginationRes[]
+}
+
+export interface IFilmDeletedPagination {
+  meta: {
+    current: number
+    pageSize: number
+    pages: number
+    total: number
+  }
+  result: IFilmDeletedPaginationRes[]
 }
 
 
@@ -153,3 +176,13 @@ export interface FilmDataStream {
 }
 
 // Get Detail Film
+// Retore Film 
+export interface IFilmRestoreRes {
+  restore: boolean;
+}
+// Retore Film 
+// Hard delete
+export interface IFilmHardDeleteRes {
+  deleted: boolean;
+}
+// Hard delete
