@@ -25,14 +25,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { filteType, IReturnRole, IRole } from "@/types/role.type";
-import { RoleService } from "@/services/roleService";
 import { DataTablePagination } from "@/components/table/data-table-pagination";
-import { DropdownFilter } from "@/components/admin/roles/DropdownFilter";
 import { toast } from "sonner";
 import { UserColumns } from "./UserColumn";
 import UserService from "@/services/userService";
 import { IUserBasic } from "@/types/user.type";
+import { CreateUserModal } from "../modal/CreateUserModal";
+import { allCodeService } from "@/services/allCodeService";
+import { AllCodeRow } from "@/types/backend.type";
+import { RoleService } from "@/services/roleService";
+import { IRole } from "@/types/role.type";
+import { EditUserModal } from "../modal/EditUserModal";
 
 export function UserTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -40,16 +43,30 @@ export function UserTable() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const [openCreateModal, setOpenCreateModal] = React.useState(false);
+  const [openEditModal, setOpenEditModal] = React.useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
+  const [deletingUser, setDeletingUser] = React.useState(false);
+  const [genderList, setGenderList] = React.useState<AllCodeRow[]>([]);
+  const [roleList, setRoleList] = React.useState<IRole[]>([]);
+  const [editingUser, setEditingUser] = React.useState<IUserBasic | null>(null);
+
   const [userList, setUserLIst] = React.useState<IUserBasic[]>([]);
 
-  const [statusFilter, setStatusFilter] = React.useState<filteType>("all");
-
   const handleEditUser = (userId: number) => {
-    console.log("EDIT USER: ", userId);
+    const user = userList.find(u => u.userId === userId);
+    if (user) {
+      setEditingUser(user);
+      setOpenEditModal(true);
+    }
   };
 
   const handleDeleteUser = async (userId: number) => {
     console.log("DELTE USER: ", userId);
+  };
+
+  const handleCreateUser = () => {
+    setOpenCreateModal(true);
   };
 
   const table = useReactTable({
@@ -75,6 +92,40 @@ export function UserTable() {
     fetchUserData();
   }, []);
 
+  React.useEffect(() => {
+    fetchGenderList();
+    fetchRoleList()
+  }, []);
+
+
+
+  const fetchGenderList = async () => {
+    try {
+      const res = await allCodeService.getGendersList()
+      if (res && res?.EC === 1 && res.data?.GENDER
+        && res.data.GENDER.length > 0
+      ) {
+        setGenderList(res.data.GENDER)
+      }
+    } catch (error) {
+      console.log("Error from fetch gender list", error)
+    }
+  }
+
+
+  const fetchRoleList = async () => {
+    try {
+      const res = await RoleService.CallFetchRolesList()
+      if (res && res?.EC === 1 && res.data?.roles
+        && res.data.roles.length > 0
+      ) {
+        setRoleList(res.data.roles)
+      }
+    } catch (error) {
+      console.log("Error from fetch role list", error)
+    }
+  }
+
   const fetchUserData = async () => {
     try {
       const res = await UserService.CallGetAllUserList();
@@ -85,8 +136,16 @@ export function UserTable() {
       console.log("Error loading roles:", error);
     }
   };
-
-  console.log("Check userList: ", userList);
+  const fetchUserDataReverse = async () => {
+    try {
+      const res = await UserService.CallGetAllUserList();
+      if (res?.EC === 1 && res.data?.users) {
+        setUserLIst(res.data.users.reverse());
+      }
+    } catch (error) {
+      console.log("Error loading roles:", error);
+    }
+  };
 
   return (
     <>
@@ -99,7 +158,9 @@ export function UserTable() {
             className="max-w-sm"
           />
 
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer transition-all duration-300">
+          <Button
+            onClick={() => handleCreateUser()}
+            className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer transition-all duration-300">
             + Thêm User
           </Button>
 
@@ -177,6 +238,22 @@ export function UserTable() {
         </div>
         <DataTablePagination table={table} />
       </div>
+
+      <CreateUserModal
+        open={openCreateModal}
+        onClose={() => setOpenCreateModal(false)}
+        onSuccess={() => fetchUserDataReverse()}
+        genderList={genderList}
+        roleList={roleList}
+      />
+      <EditUserModal
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        onSuccess={() => fetchUserDataReverse()}
+        user={editingUser}
+        genderList={genderList}
+        roleList={roleList}
+      />
     </>
   );
 }

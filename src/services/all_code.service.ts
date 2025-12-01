@@ -11,6 +11,10 @@ const allCodeServie = {
       `${baseURL}/all-codes/type/get-by-type?type=${type}`
     ) as Promise<IBackendRes<IAllCodeResponse<T>>>;
   },
+
+  getAllCodeByType: (type: string) => {
+    return publicAxios.get(`/all-codes/type/get-by-type?type=${type}`) as Promise<IBackendRes<any>>
+  },
 };
 
 export default allCodeServie;

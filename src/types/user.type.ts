@@ -42,3 +42,22 @@ export interface IUserBasic {
 export interface UserData {
   users: IUserBasic[];
 }
+
+export interface IUserCreate {
+  email: string;
+  password: string;
+  fullName: string;
+  phoneNumber: string;
+  age: number;
+  genderCode: string;
+  roleId: number;
+}
+
+export interface IUserUpdate {
+  userId: number;
+  fullName: string;
+  phoneNumber: string;
+  age: number;
+  genderCode: string;
+  roleId: number;
+}
