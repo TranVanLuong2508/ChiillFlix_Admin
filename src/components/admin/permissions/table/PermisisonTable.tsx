@@ -32,6 +32,9 @@ import { permisionColumns } from "./PermissionsColumns";
 import { IPermissionn } from "@/types/permission.type";
 import { PermmissionService } from "@/services/permissionService";
 import "../../../../styles/HideScrollBar.css";
+import { CreatePermissionModal } from "../modals/CreatePermissionModal";
+import { EditPermissionModal } from "../modals/EditPermissionModal";
+import { ConfirmDeletePermissionModal } from "../modals/ConfirmDeletePermissionModal";
 
 export function PermissionsTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -48,53 +51,24 @@ export function PermissionsTable() {
 
   const [editingPermissionId, setEditingPermissionId] = React.useState<number | null>(null);
   const [deletingPermission, setDeletingPermission] = React.useState<IPermissionn | null>(null);
-  const [restoringPermission, setRestoringPermission] = React.useState<IPermissionn | null>(null);
-  //   const [statusFilter, setStatusFilter] = React.useState<filteType>("all");
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
-  const handleEditPermisison = (roleId: number) => {
-    // setEditingRoleId(roleId);
-    // setOpenEditRoleModal(true);
+
+  const handleEditPermisison = (permissionId: number) => {
+    setEditingPermissionId(permissionId);
+    setOpenEditPermisisonModal(true);
   };
 
-  const handleDeletePermission = async (roleId: number) => {
-    try {
-      //   const per = roleList.find((r) => r.roleId === roleId) || null;
-      //   setDeletingRole(role);
-      //   const res = await RoleService.CallCheckRoleBeforeDelete(roleId);
-      //   console.log("Check res CallCheckRoleBeforeDelete: ", res);
-      //   if (res?.EC === 1 && res.data) {
-      //     setConfirmDeleteOpen(true);
-      //   } else if (res?.EC === 0) {
-      //     toast.error("Không thể xoá vai trò");
-      //   }
-    } catch (error) {
-      console.error("Error check delete role:", error);
-      toast.error("Lỗi khi kiểm tra vai trò trước khi xoá");
-    }
+  const handleDeletePermission = (permissionId: number) => {
+    const perToDelete = permissionList.find((item) => item.permissionId === permissionId)
+    setDeletingPermission(perToDelete ?? null);
+    setConfirmDeleteOpen(true);
   };
 
-  const handleRestorePermison = async (roleId: number) => {
-    try {
-      //   const role = roleList.find((r) => r.roleId === roleId) || null;
-      //   setRestoringPermission(role);
-      //   const res = await RoleService.CallRestoreRole(roleId);
-      //   console.log("Check res CallCheckRoleBeforeDelete: ", res);
-      //   if (res?.EC === 1 && res.data) {
-      //     toast.success(`khôi mục ROLE: ${res.data.roleName} `);
-      //     fetchRoleData();
-      //   } else {
-      //     toast.success(`khôi mục vai trò thất bại`);
-      //   }
-    } catch (error) {
-      console.error("Error restore role:", error);
-      toast.error("Lỗi khi khôi phục vai trò");
-    }
-  };
 
   const table = useReactTable({
     data: permissionList,
-    columns: permisionColumns(handleEditPermisison, handleDeletePermission, handleRestorePermison),
+    columns: permisionColumns(handleEditPermisison, handleDeletePermission),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -126,33 +100,30 @@ export function PermissionsTable() {
     }
   };
 
-  //   React.useEffect(() => {
-  //     applyFilter(statusFilter);
-  //   }, [statusFilter, originalRoles]);
+  const fetchPermissionDataToTop = async (permissionId: number) => {
+    try {
+      const res = await PermmissionService.CallFetchPermissionList()
 
-  //   const fetchRoleDataToTop = async (roleId: number) => {
-  //     try {
-  //       const res = await RoleService.CallFetchRolesList();
+      if (res?.EC === 1 && res.data?.permissions) {
+        const permissions = res.data.permissions;
+        const updatedRole = permissions.find((r) => r.permissionId === permissionId);
 
-  //       if (res?.EC === 1 && res.data?.roles) {
-  //         const roles = res.data.roles;
-  //         const updatedRole = roles.find((r) => r.roleId === roleId);
+        if (!updatedRole) {
+          setOriginalPermissions(permissions);
+          setPermissionList(permissions);
+          return;
+        }
 
-  //         if (!updatedRole) {
-  //           setOriginalRoles(roles);
-  //           setRoleList(roles);
-  //           return;
-  //         }
+        const newList = [updatedRole, ...permissions.filter((r) => r.permissionId !== permissionId)];
 
-  //         const newList = [updatedRole, ...roles.filter((r) => r.roleId !== roleId)];
+        setOriginalPermissions(newList);
+        setPermissionList(newList);
+      }
+    } catch (error) {
+      console.log("Error fetch permission data to top:", error);
+    }
+  };
 
-  //         setOriginalRoles(newList);
-  //         setRoleList(newList);
-  //       }
-  //     } catch (error) {
-  //       console.log("Error fetch role data to top:", error);
-  //     }
-  //   };
 
   const handleOpenCreateModal = () => {
     setOpenAddPermisisonModal(true);
@@ -162,35 +133,13 @@ export function PermissionsTable() {
     setOpenAddPermisisonModal(false);
   };
 
-  const handleOpenEditModal = () => {
+  const handleOpenEditModal = (permissionId: number) => {
     setOpenEditPermisisonModal(true);
   };
 
   const handleCloseEditModal = () => {
     setOpenEditPermisisonModal(false);
   };
-
-  //   const applyFilter = (status: filteType) => {
-  //     setStatusFilter(status);
-
-  //     if (status === "all") {
-  //       setRoleList(originalRoles);
-  //       return;
-  //     }
-
-  //     if (status === "active") {
-  //       setRoleList(originalRoles.filter((role) => !role.isDeleted));
-  //       return;
-  //     }
-
-  //     if (status === "deleted") {
-  //       setRoleList(originalRoles.filter((role) => role.isDeleted));
-  //       return;
-  //     }
-  //   };
-
-  console.log("Check roleList: ", permissionList);
-
   return (
     <>
       <div className="w-full space-y-4">
@@ -288,6 +237,26 @@ export function PermissionsTable() {
         </div>
         <DataTablePagination table={table} />
       </div>
+
+      <CreatePermissionModal
+        open={openAddPermisisonModal}
+        onClose={handleCloseCreateModal}
+        onSuccess={(newPermissionId) => { fetchPermissionDataToTop(newPermissionId) }}
+      />
+
+      <EditPermissionModal
+        open={openEditPermisisonModal}
+        onClose={handleCloseEditModal}
+        permissionId={editingPermissionId}
+        onSuccess={(updatedPermissionId) => { fetchPermissionDataToTop(updatedPermissionId) }}
+      />
+
+      <ConfirmDeletePermissionModal
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        permission={deletingPermission}
+        onSuccess={(permissionId) => { fetchPermissionDataToTop(permissionId) }}
+      />
     </>
   );
 }

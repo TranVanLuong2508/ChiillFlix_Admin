@@ -91,75 +91,75 @@ export function AppSidebar() {
         { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
         ...(viewFilms
           ? [
-              {
-                title: "Phim",
-                icon: Film,
-                href: adminPath.MOVIES,
-              },
-            ]
+            {
+              title: "Phim",
+              icon: Film,
+              href: adminPath.MOVIES,
+            },
+          ]
           : []),
         ...(viewDirectors
           ? [
-              {
-                title: "Đạo Diễn",
-                icon: Clapperboard,
-                href: adminPath.DIRECTORS,
-              },
-            ]
+            {
+              title: "Đạo Diễn",
+              icon: Clapperboard,
+              href: adminPath.DIRECTORS,
+            },
+          ]
           : []),
         ...(viewActors
           ? [
-              {
-                title: "Diễn Viên",
-                icon: UserRound,
-                href: adminPath.ACTORS,
-              },
-            ]
+            {
+              title: "Diễn Viên",
+              icon: UserRound,
+              href: adminPath.ACTORS,
+            },
+          ]
           : []),
         ...(viewProducers
           ? [
-              {
-                title: "Nhà Sản Xuất",
-                icon: Star,
-                href: adminPath.PRODUCERS,
-              },
-            ]
+            {
+              title: "Nhà Sản Xuất",
+              icon: Star,
+              href: adminPath.PRODUCERS,
+            },
+          ]
           : []),
         ...(viewPayments
           ? [
-              {
-                title: "Thanh toán",
-                icon: CircleDollarSign,
-                href: adminPath.PAYMENTS,
-              },
-            ]
+            {
+              title: "Thanh toán",
+              icon: CircleDollarSign,
+              href: adminPath.PAYMENTS,
+            },
+          ]
           : []),
         ...(viewUsers
           ? [
-              {
-                title: "Người dùng",
-                icon: Users,
-                href: adminPath.USERS,
-              },
-            ]
+            {
+              title: "Người dùng",
+              icon: Users,
+              href: adminPath.USERS,
+            },
+          ]
           : []),
         ...(viewPermissions
           ? [
-              {
-                title: "Quyền hạn",
-                icon: ShieldCheck,
-                href: adminPath.PERMISSIONS,
-              },
-            ]
+            {
+              title: "Quyền hạn",
+              icon: ShieldCheck,
+              href: adminPath.PERMISSIONS,
+            },
+          ]
           : []),
         ...(viewRoles
           ? [
-              {
-                title: "Vai trò",
-                icon: UserCheck,
-                href: adminPath.ROLES,
-              },
-            ]
+            {
+              title: "Vai trò",
+              icon: UserCheck,
+              href: adminPath.ROLES,
+            },
+          ]
           : []),
       ];
 
@@ -167,7 +167,6 @@ export function AppSidebar() {
     }
   }, [permissions]);
 
-  console.log("Check sidebar menu: ", SidebarMenuItems);
   return (
     <Sidebar className="border-r bg-white">
       <SidebarHeader className="border-b bg-gradient-to-b from-slate-900 to-black">

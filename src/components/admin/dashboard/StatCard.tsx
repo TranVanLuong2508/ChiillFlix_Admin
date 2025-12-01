@@ -9,13 +9,18 @@ interface StatCardProps {
   value: string | number;
   icon: LucideIcon;
   description?: string;
+  isCurrency?: boolean;
   trend?: {
     value: number;
     isPositive: boolean;
   };
 }
 
-export function StatCard({ title, value, icon: Icon, description, trend }: StatCardProps) {
+export function StatCard({ title, value, icon: Icon, description, isCurrency = false, trend }: StatCardProps) {
+  const formatCurrency = (num: number) => {
+    return new Intl.NumberFormat("vi-VN").format(num);
+  };
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -24,7 +29,13 @@ export function StatCard({ title, value, icon: Icon, description, trend }: StatC
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          <AnimatedNumber value={value as number} />
+          {isCurrency ? (
+            <>
+              <AnimatedNumber value={value as number} /> <span className="text-lg">VNĐ</span>
+            </>
+          ) : (
+            <AnimatedNumber value={value as number} />
+          )}
         </div>
         {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
         {trend && (

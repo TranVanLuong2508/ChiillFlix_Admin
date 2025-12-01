@@ -99,6 +99,7 @@ export default function AdminDashboard() {
           value={totalRevenue}
           icon={DollarSign}
           description="Tổng doanh thu từ gói đăng ký"
+          isCurrency={true}
           trend={{ value: 8.2, isPositive: true }}
         />
         <StatCard
