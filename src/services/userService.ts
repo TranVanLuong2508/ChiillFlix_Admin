@@ -14,6 +14,10 @@ const UserService = {
   CallUpdateUser: (payload: IUserUpdate): Promise<IBackendRes<{ userId: number, updatedAt: string }>> => {
     return privateAxios.patch(`/users/update`, payload);
   },
+
+  CallDeleteUser: (userId: number): Promise<IBackendRes<{ userId: number }>> => {
+    return privateAxios.delete(`/users/${userId}`);
+  },
 };
 
 export default UserService;

@@ -12,4 +12,8 @@ export const allCodeService = {
   getGendersList: () => {
     return publicAxios.get(`/all-codes/type/get-by-type?type=GENDER`) as Promise<IBackendRes<IGenderData>>;
   },
+
+  getPlanDurationsList: () => {
+    return publicAxios.get(`/all-codes/type/get-by-type?type=TIME_UNIT`) as Promise<IBackendRes<any>>;
+  },
 };

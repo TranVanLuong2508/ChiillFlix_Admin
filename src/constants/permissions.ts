@@ -32,4 +32,7 @@ export const ALL_PERMISSIONS = {
   ROLES: {
     GET_All: { method: "GET", apiPath: "/api/v1/roles", module: "ROLES" },
   },
+  PLANS: {
+    GET_All: { method: "GET", apiPath: "/api/v1/subscription-plans", module: "PLANS" },
+  },
 };

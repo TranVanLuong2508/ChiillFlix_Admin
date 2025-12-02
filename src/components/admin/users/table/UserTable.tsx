@@ -36,6 +36,7 @@ import { AllCodeRow } from "@/types/backend.type";
 import { RoleService } from "@/services/roleService";
 import { IRole } from "@/types/role.type";
 import { EditUserModal } from "../modal/EditUserModal";
+import { ConfirmDeleteUserModal } from "../modal/ConfirmDeleteUserModal";
 
 export function UserTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -46,11 +47,10 @@ export function UserTable() {
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [openEditModal, setOpenEditModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
-  const [deletingUser, setDeletingUser] = React.useState(false);
+  const [deletingUser, setDeletingUser] = React.useState<IUserBasic | null>(null);
   const [genderList, setGenderList] = React.useState<AllCodeRow[]>([]);
   const [roleList, setRoleList] = React.useState<IRole[]>([]);
   const [editingUser, setEditingUser] = React.useState<IUserBasic | null>(null);
-
   const [userList, setUserLIst] = React.useState<IUserBasic[]>([]);
 
   const handleEditUser = (userId: number) => {
@@ -62,7 +62,29 @@ export function UserTable() {
   };
 
   const handleDeleteUser = async (userId: number) => {
-    console.log("DELTE USER: ", userId);
+    const user = userList.find(u => u.userId === userId);
+    if (user) {
+      setDeletingUser(user);
+      setOpenDeleteModal(true);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingUser) return;
+    try {
+      const res = await UserService.CallDeleteUser(deletingUser.userId);
+      if (res && res?.EC === 1) {
+        toast.success("Xoá người dùng thành công!");
+        setOpenDeleteModal(false);
+        setDeletingUser(null);
+        fetchUserData();
+      } else {
+        toast.error(res?.EM || "Đã có lỗi xảy ra khi xoá người dùng!");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Đã có lỗi xảy ra khi xoá người dùng!");
+    }
   };
 
   const handleCreateUser = () => {
@@ -133,7 +155,7 @@ export function UserTable() {
         setUserLIst(res.data.users);
       }
     } catch (error) {
-      console.log("Error loading roles:", error);
+      console.log("Error loading user list:", error);
     }
   };
   const fetchUserDataReverse = async () => {
@@ -143,7 +165,7 @@ export function UserTable() {
         setUserLIst(res.data.users.reverse());
       }
     } catch (error) {
-      console.log("Error loading roles:", error);
+      console.log("Error loading user list reverse:", error);
     }
   };
 
@@ -219,7 +241,10 @@ export function UserTable() {
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => {
                   return (
-                    <TableRow key={row.id} className={"bg-white"}>
+                    <TableRow
+                      key={row.id}
+                      className={row.original.isDeleted ? "bg-gray-200 opacity-50 hover:bg-gray-200" : "bg-white"}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}
@@ -253,6 +278,21 @@ export function UserTable() {
         user={editingUser}
         genderList={genderList}
         roleList={roleList}
+      />
+      <ConfirmDeleteUserModal
+        open={openDeleteModal}
+        onClose={() => {
+          setOpenDeleteModal(false);
+          setDeletingUser(null);
+        }}
+        onDeleted={() => {
+          setOpenDeleteModal(false);
+          setDeletingUser(null);
+        }}
+        userId={deletingUser?.userId ?? null}
+        userName={deletingUser?.fullName}
+        userEmail={deletingUser?.email}
+        onDeleteUser={handleConfirmDelete}
       />
     </>
   );

@@ -25,6 +25,7 @@ import {
   Star,
   UserRound,
   CircleDollarSign,
+  Diamond,
 } from "lucide-react";
 import { adminPath } from "@/constants/path";
 import { useAuthStore } from "@/stores/authStore";
@@ -86,6 +87,11 @@ export function AppSidebar() {
           item.apiPath === ALL_PERMISSIONS.PAYMENTS.GET_All.apiPath &&
           item.method === ALL_PERMISSIONS.PAYMENTS.GET_All.method,
       );
+      const viewPlans = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.PLANS.GET_All.apiPath &&
+          item.method === ALL_PERMISSIONS.PLANS.GET_All.method,
+      );
 
       const full = [
         { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
@@ -125,6 +131,15 @@ export function AppSidebar() {
             },
           ]
           : []),
+        ...(viewPlans
+          ? [
+            {
+              title: "Gói VIP",
+              icon: Gem,
+              href: adminPath.VIP_PLANS,
+            },
+          ]
+          : []),
         ...(viewPayments
           ? [
             {
@@ -161,6 +176,7 @@ export function AppSidebar() {
             },
           ]
           : []),
+
       ];
 
       setSidebarMenuItems(full);
