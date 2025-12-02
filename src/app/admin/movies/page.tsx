@@ -68,6 +68,7 @@ const MoviesPage = () => {
         pageCount={pageCount}
         hiddenColumns={["filmId", "slug", "country", "view"]}
         setPagination={setPagination}
+        onSuccess={getFilmPagination}
       />
     </div>
   );

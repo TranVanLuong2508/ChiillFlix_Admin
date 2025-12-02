@@ -27,6 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
@@ -53,7 +64,6 @@ export function DataTable<TData, TValue>({
   setPagination,
   onSuccess,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -64,6 +74,7 @@ export function DataTable<TData, TValue>({
   });
   const [rowSelection, setRowSelection] = useState({})
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleRestoreSelected = async () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -92,10 +103,6 @@ export function DataTable<TData, TValue>({
   const handleDeleteSelected = async () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     if (selectedRows.length === 0) return;
-
-    if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedRows.length} phim này không? Hành động này không thể hoàn tác.`)) {
-      return;
-    }
 
     setIsLoading(true);
     try {
@@ -141,87 +148,113 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder="Nhập tên phim..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <div className="flex items-center gap-2">
-          <DataTableViewOptions table={table} />
-          <div>
+    <>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Input
+            placeholder="Nhập tên phim..."
+            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("title")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+          <div className="flex items-center gap-2">
+            <DataTableViewOptions table={table} />
+            <div>
+              <Button
+                size={"sm"}
+                variant={"outline"}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleRestoreSelected}
+                disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
+              >
+                <ArchiveRestore />
+                <span>Khôi phục ({table.getFilteredSelectedRowModel().rows.length})</span>
+              </Button>
+            </div>
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleRestoreSelected}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => setOpen(true)}
               disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
             >
-              <ArchiveRestore />
-              <span>Khôi phục ({table.getFilteredSelectedRowModel().rows.length})</span>
+              <Shredder />
+              <span>Xóa tất cả ({table.getFilteredSelectedRowModel().rows.length})</span>
             </Button>
           </div>
-          <Button
-            size={"sm"}
-            variant={"outline"}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleDeleteSelected}
-            disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
-          >
-            <Shredder />
-            <span>Xóa tất cả ({table.getFilteredSelectedRowModel().rows.length})</span>
-          </Button>
         </div>
-      </div>
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+        <div className="overflow-hidden rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DataTablePagination table={table} />
       </div>
-      <DataTablePagination table={table} />
-    </div>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600">Xác nhận xóa thông tin phim</AlertDialogTitle>
+            <AlertDialogDescription>
+              Lưu ý: Sau khi xóa thành công, dữ liệu sẽ không thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className="cursor-pointer"
+            >
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteSelected}
+              className="bg-zinc-900 cursor-pointer hover:bg-red-500 text-white hover:text-white"
+            >
+              Xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

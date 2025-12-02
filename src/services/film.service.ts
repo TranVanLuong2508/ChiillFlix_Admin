@@ -69,6 +69,10 @@ const FilmService = {
   hardDeleteBulk: (filmIds: string[]): Promise<IBackendRes<IFilmHardDeleteBulkRes>> => {
     return privateAxios.delete(`/films/admin/hard_delete_list`, { data: { filmIds } })
   },
+
+  bulkDelete: (filmIds: string[]): Promise<IBackendRes<IFilmHardDeleteBulkRes>> => {
+    return privateAxios.delete(`/films/admin/sort_delete`, { data: { filmIds } })
+  },
 }
 
 export default FilmService;
