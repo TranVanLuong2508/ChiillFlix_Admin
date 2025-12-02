@@ -50,7 +50,7 @@ const TrashPage = () => {
       }
     } else {
       if (res.data && res.data.result.length === 0) {
-        toast.info("No data");
+        setFilmData([]);
       } else {
         toast.error(res.EM);
       }
@@ -79,6 +79,7 @@ const TrashPage = () => {
         pageCount={pageCount}
         hiddenColumns={["filmId", "slug", "country", "view", "createdAt", "updatedAt", "language", "publicStatus", "duration"]}
         setPagination={setPagination}
+        onSuccess={getFilmPagination}
       />
     </div>
   )

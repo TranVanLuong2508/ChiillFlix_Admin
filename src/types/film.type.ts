@@ -192,3 +192,19 @@ export interface IFilmHardDeleteRes {
   deleted: boolean;
 }
 // Hard delete
+// Bulk Restore
+export interface IFilmRestoreBulkRes {
+  restoredCount: number,
+  restoredIds: string[],
+  restore: boolean,
+}
+// Bulk Restore
+
+// Bulk Hard Delete
+export interface IFilmHardDeleteBulkRes {
+  deletedCount: number,
+  deletedIds: string[],
+  deleted: boolean,
+}
+// Bulk Hard Delete
+

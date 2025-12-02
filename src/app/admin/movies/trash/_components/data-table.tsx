@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react"
+import FilmService from "@/services/film.service"
+import { toast } from "sonner"
+import { FilmDeletedColumn } from "@/types/film.type"
 
 import {
   ColumnDef,
@@ -38,6 +41,7 @@ interface DataTableProps<TData, TValue> {
   pagination: PaginationState;
   pageCount: number;
   setPagination: OnChangeFn<PaginationState>;
+  onSuccess?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -47,6 +51,7 @@ export function DataTable<TData, TValue>({
   pagination,
   pageCount,
   setPagination,
+  onSuccess,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -58,6 +63,60 @@ export function DataTable<TData, TValue>({
     }, {} as VisibilityState),
   });
   const [rowSelection, setRowSelection] = useState({})
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRestoreSelected = async () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    if (selectedRows.length === 0) return;
+
+    setIsLoading(true);
+    try {
+      const listFilmId = selectedRows.map((row: any) => row.original.filmId);
+      const res = await FilmService.restoreFilmBulk(listFilmId);
+      if (res.EC === 0 && res.data) {
+        toast.success(`Khôi phục ${res.data.restoredCount}  phim thành công`);
+        setRowSelection({});
+        if (onSuccess) onSuccess();
+      } else {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+        console.log(">> Error Restore Bulk Film: ", res.EM);
+      }
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error('>> Error Restore Bulk Film: ', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    if (selectedRows.length === 0) return;
+
+    if (!confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedRows.length} phim này không? Hành động này không thể hoàn tác.`)) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const listFilmId = selectedRows.map((row: any) => row.original.filmId);
+
+      const res = await FilmService.hardDeleteBulk(listFilmId);
+      if (res.EC === 0 && res.data) {
+        toast.success(`Đã xóa vĩnh viễn ${res.data.deletedCount} phim`);
+        setRowSelection({});
+        if (onSuccess) onSuccess();
+      } else {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+        console.log(">> Error Hard Delete Bulk Film: ", res.EM);
+      }
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error('>> Error Hard Delete Bulk Film: ', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const table = useReactTable({
     data,
@@ -98,21 +157,23 @@ export function DataTable<TData, TValue>({
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer"
-              onClick={() => router.push("/admin/movies/create")}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleRestoreSelected}
+              disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
             >
               <ArchiveRestore />
-              <span>Khôi phục</span>
+              <span>Khôi phục ({table.getFilteredSelectedRowModel().rows.length})</span>
             </Button>
           </div>
           <Button
             size={"sm"}
             variant={"outline"}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-600 text-white hover:text-white cursor-pointer"
-            onClick={() => router.push("/admin/movies/trash")}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleDeleteSelected}
+            disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
           >
             <Shredder />
-            <span>Xóa tất cả</span>
+            <span>Xóa tất cả ({table.getFilteredSelectedRowModel().rows.length})</span>
           </Button>
         </div>
       </div>

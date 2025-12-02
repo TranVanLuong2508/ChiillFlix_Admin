@@ -7,8 +7,10 @@ import {
   IFilmDeletedPagination,
   IFilmDeleteRes,
   IFilmDetailRes,
+  IFilmHardDeleteBulkRes,
   IFilmHardDeleteRes,
   IFilmPagination,
+  IFilmRestoreBulkRes,
   IFilmRestoreRes,
 } from "@/types/film.type";
 
@@ -58,7 +60,15 @@ const FilmService = {
 
   restoreFilm: (filmId: string): Promise<IBackendRes<IFilmRestoreRes>> => {
     return privateAxios.post(`/films/admin/restore/${filmId}`)
-  }
+  },
+
+  restoreFilmBulk: (filmIds: string[]): Promise<IBackendRes<IFilmRestoreBulkRes>> => {
+    return privateAxios.patch(`/films/admin/restore_list`, { filmIds })
+  },
+
+  hardDeleteBulk: (filmIds: string[]): Promise<IBackendRes<IFilmHardDeleteBulkRes>> => {
+    return privateAxios.delete(`/films/admin/hard_delete_list`, { data: { filmIds } })
+  },
 }
 
 export default FilmService;

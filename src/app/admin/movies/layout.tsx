@@ -6,7 +6,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col">
       <AdminHeader />
-      <ScrollArea className="min-h-[calc(100vh-71px)] bg-gray-50 overflow-y-hidden">
+      <ScrollArea className="min-h-[calc(100vh-71px)] max-h-[calc(100vh-71px)] bg-gray-50 overflow-y-hidden">
         <main className="flex-1 overflow-auto p-6 pb-2 ">
           <div className="container mx-auto">
             {children}
