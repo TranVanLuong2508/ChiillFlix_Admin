@@ -111,7 +111,7 @@ export function Actions({ comment }: ActionsProps) {
                         onClick={() => setHardDeleteDialogOpen(true)}
                     >
                         <Trash2 className="mr-2 h-4 w-4 text-red-600" />
-                        Xóa vĩnh viễn
+                        Xóa
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -157,11 +157,11 @@ export function Actions({ comment }: ActionsProps) {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-red-600">
-                            Xác nhận xóa vĩnh viễn bình luận
+                            Xác nhận xóa bình luận
                         </AlertDialogTitle>
                         <AlertDialogDescription asChild>
                             <div className="space-y-2">
-                                <p>Bạn có chắc chắn muốn <strong className="text-red-600">XÓA VĨNH VIỄN</strong> bình luận này?</p>
+                                <p>Bạn có chắc chắn muốn <strong className="text-red-600">XÓA</strong> bình luận này?</p>
                                 <div className="p-3 bg-muted rounded-md">
                                     <p className="text-sm font-medium text-foreground line-clamp-3">
                                         "{comment.content}"
@@ -180,7 +180,7 @@ export function Actions({ comment }: ActionsProps) {
                             disabled={isHardDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isHardDeleting ? "Đang xóa..." : "Xóa vĩnh viễn"}
+                            {isHardDeleting ? "Đang xóa..." : "Xóa"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

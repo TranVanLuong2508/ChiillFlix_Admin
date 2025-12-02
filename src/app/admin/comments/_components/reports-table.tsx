@@ -26,7 +26,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, AlertTriangle, XCircle, EyeOff, CheckCircle2, AlertCircle, Trash2, MessageSquare } from "lucide-react";
 import { socket } from "@/lib/socket";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { useReportStore, type Report } from "@/stores/reportStore";
@@ -48,18 +48,17 @@ export function ReportsTable() {
 
     const { hardDeleteComment } = useCommentStore();
 
-    const [dismissDialog, setDismissDialog] = useState<{ open: boolean; reportId: string | null }>({
+    const [dismissDialog, setDismissDialog] = useState<{ open: boolean; report: Report | null }>({
         open: false,
-        reportId: null,
+        report: null,
     });
-    const [hideDialog, setHideDialog] = useState<{ open: boolean; reportId: string | null }>({
+    const [hideDialog, setHideDialog] = useState<{ open: boolean; report: Report | null }>({
         open: false,
-        reportId: null,
+        report: null,
     });
-    const [hardDeleteDialog, setHardDeleteDialog] = useState<{ open: boolean; reportId: string | null; commentId: string | null }>({
+    const [hardDeleteDialog, setHardDeleteDialog] = useState<{ open: boolean; report: Report | null }>({
         open: false,
-        reportId: null,
-        commentId: null,
+        report: null,
     });
     const [viewDialog, setViewDialog] = useState<{ open: boolean; report: Report | null }>({
         open: false,
@@ -103,13 +102,13 @@ export function ReportsTable() {
     const { fetchUnreadCount, fetchNotifications } = useNotificationStore();
 
     const handleDismiss = async () => {
-        if (!dismissDialog.reportId) return;
+        if (!dismissDialog.report) return;
         setIsSubmitting(true);
 
-        const success = await dismissReport(dismissDialog.reportId, dismissNote);
+        const success = await dismissReport(dismissDialog.report.reportId, dismissNote);
 
         if (success) {
-            setDismissDialog({ open: false, reportId: null });
+            setDismissDialog({ open: false, report: null });
             setDismissNote("");
             fetchUnreadCount();
             fetchNotifications(1, 20);
@@ -119,13 +118,13 @@ export function ReportsTable() {
     };
 
     const handleHide = async () => {
-        if (!hideDialog.reportId || !hideReason) return;
+        if (!hideDialog.report || !hideReason) return;
         setIsSubmitting(true);
 
-        const success = await deleteTargetFromReport(hideDialog.reportId, hideReason, hideNote);
+        const success = await deleteTargetFromReport(hideDialog.report.reportId, hideReason, hideNote);
 
         if (success) {
-            setHideDialog({ open: false, reportId: null });
+            setHideDialog({ open: false, report: null });
             setHideReason("");
             setHideNote("");
             fetchUnreadCount();
@@ -136,13 +135,13 @@ export function ReportsTable() {
     };
 
     const handleHardDelete = async () => {
-        if (!hardDeleteDialog.reportId) return;
+        if (!hardDeleteDialog.report) return;
         setIsSubmitting(true);
 
-        const success = await hardDeleteTargetFromReport(hardDeleteDialog.reportId);
+        const success = await hardDeleteTargetFromReport(hardDeleteDialog.report.reportId);
 
         if (success) {
-            setHardDeleteDialog({ open: false, reportId: null, commentId: null });
+            setHardDeleteDialog({ open: false, report: null });
             fetchUnreadCount();
             fetchNotifications(1, 20);
         }
@@ -249,7 +248,7 @@ export function ReportsTable() {
                                                         <DropdownMenuItem
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                setDismissDialog({ open: true, reportId: report.reportId });
+                                                                setDismissDialog({ open: true, report });
                                                             }}
                                                         >
                                                             Từ chối (Không vi phạm)
@@ -257,24 +256,20 @@ export function ReportsTable() {
                                                         <DropdownMenuItem
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                setHideDialog({ open: true, reportId: report.reportId });
+                                                                setHideDialog({ open: true, report });
                                                             }}
                                                             className="text-red-600"
                                                         >
-                                                            Ẩn & Cảnh cáo
+                                                            Ẩn bình luận
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                setHardDeleteDialog({
-                                                                    open: true,
-                                                                    reportId: report.reportId,
-                                                                    commentId: report.targetData?.commentId || null
-                                                                });
+                                                                setHardDeleteDialog({ open: true, report });
                                                             }}
                                                             className="text-red-800 font-semibold"
                                                         >
-                                                            Xóa vĩnh viễn
+                                                            Xóa & Cảnh cáo
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -352,7 +347,7 @@ export function ReportsTable() {
                                     <Button
                                         variant="outline"
                                         onClick={() => {
-                                            setDismissDialog({ open: true, reportId: viewDialog.report!.reportId });
+                                            setDismissDialog({ open: true, report: viewDialog.report });
                                             setViewDialog({ open: false, report: null });
                                         }}
                                     >
@@ -361,7 +356,7 @@ export function ReportsTable() {
                                     <Button
                                         variant="destructive"
                                         onClick={() => {
-                                            setHideDialog({ open: true, reportId: viewDialog.report!.reportId });
+                                            setHideDialog({ open: true, report: viewDialog.report });
                                             setViewDialog({ open: false, report: null });
                                         }}
                                     >
@@ -375,67 +370,158 @@ export function ReportsTable() {
             </Dialog>
 
             <Dialog open={dismissDialog.open} onOpenChange={(open) => setDismissDialog({ ...dismissDialog, open })}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Từ chối báo cáo</DialogTitle>
-                        <DialogDescription>
-                            Báo cáo này sẽ được đánh dấu là không vi phạm. Người báo cáo sẽ nhận được thông báo.
-                        </DialogDescription>
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                            </div>
+                            <div>
+                                <DialogTitle>Từ chối báo cáo</DialogTitle>
+                                <DialogDescription className="mt-1">
+                                    Xác nhận bình luận này không vi phạm quy tắc cộng đồng
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <Textarea
-                        placeholder="Ghi chú (tùy chọn)..."
-                        value={dismissNote}
-                        onChange={(e) => setDismissNote(e.target.value)}
-                        className="min-h-[100px]"
-                    />
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setDismissDialog({ open: false, reportId: null })} disabled={isSubmitting}>
-                            Hủy
+
+                    {dismissDialog.report?.targetData && (
+                        <div className="rounded-lg border bg-gray-50 p-3">
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                <MessageSquare className="h-4 w-4 text-gray-500" />
+                                <span className="font-medium">{dismissDialog.report.targetData.user?.fullName}</span>
+                            </div>
+                            <p className="text-sm text-gray-700 line-clamp-3">
+                                {dismissDialog.report.targetData.content || <span className="italic text-gray-400">Không có nội dung</span>}
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                        <div className="flex gap-2">
+                            <AlertCircle className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+                            <div className="text-sm text-green-700">
+                                <p className="font-medium">Hành động này sẽ:</p>
+                                <ul className="mt-1 list-disc list-inside space-y-0.5 text-green-600">
+                                    <li>Đánh dấu báo cáo là "Không vi phạm"</li>
+                                    <li>Gửi thông báo cho người báo cáo</li>
+                                    <li>Bình luận sẽ được giữ nguyên</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDismissDialog({ open: false, report: null })}
+                            disabled={isSubmitting}
+                            className="flex-1 sm:flex-none"
+                        >
+                            Hủy bỏ
                         </Button>
-                        <Button onClick={handleDismiss} disabled={isSubmitting}>
-                            {isSubmitting ? "Đang xử lý..." : "Xác nhận"}
+                        <Button
+                            onClick={handleDismiss}
+                            disabled={isSubmitting}
+                            className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700"
+                        >
+                            {isSubmitting ? "Đang xử lý..." : "Xác nhận từ chối"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={hideDialog.open} onOpenChange={(open) => setHideDialog({ ...hideDialog, open })}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Ẩn bình luận & Cảnh cáo</DialogTitle>
-                        <DialogDescription>
-                            Bình luận sẽ bị ẩn và người dùng sẽ nhận được cảnh cáo. Người báo cáo sẽ được thông báo.
-                        </DialogDescription>
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+                                <EyeOff className="h-5 w-5 text-orange-600" />
+                            </div>
+                            <div>
+                                <DialogTitle>Ẩn bình luận & Cảnh cáo</DialogTitle>
+                                <DialogDescription className="mt-1">
+                                    Bình luận sẽ bị ẩn và người dùng nhận cảnh cáo
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <div className="space-y-4">
+
+                    {hideDialog.report?.targetData && (
+                        <div className="rounded-lg border bg-gray-50 p-3">
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                <MessageSquare className="h-4 w-4 text-gray-500" />
+                                <span className="font-medium">{hideDialog.report.targetData.user?.fullName}</span>
+                            </div>
+                            <p className="text-sm text-gray-700 line-clamp-3">
+                                {hideDialog.report.targetData.content || <span className="italic text-gray-400">Không có nội dung</span>}
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="space-y-3">
                         <div>
-                            <label className="text-sm font-medium">Lý do vi phạm *</label>
+                            <label className="text-sm font-medium text-gray-700">
+                                Lý do vi phạm <span className="text-red-500">*</span>
+                            </label>
                             <Select value={hideReason} onValueChange={setHideReason}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Chọn lý do..." />
+                                <SelectTrigger className="mt-1.5">
+                                    <SelectValue placeholder="Chọn lý do vi phạm..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Spam">Spam</SelectItem>
-                                    <SelectItem value="Ngôn từ gây thù ghét">Ngôn từ gây thù ghét</SelectItem>
-                                    <SelectItem value="Quấy rối">Quấy rối</SelectItem>
-                                    <SelectItem value="Nội dung không phù hợp">Nội dung không phù hợp</SelectItem>
-                                    <SelectItem value="Thông tin sai lệch">Thông tin sai lệch</SelectItem>
+                                    <SelectItem value="Ngôn từ thô tục, xúc phạm">Ngôn từ thô tục, xúc phạm</SelectItem>
+                                    <SelectItem value="Phát tán thông tin sai sự thật">Phát tán thông tin sai sự thật</SelectItem>
+                                    <SelectItem value="Quảng cáo, spam, lừa đảo">Quảng cáo, spam, lừa đảo</SelectItem>
+                                    <SelectItem value="Kích động bạo lực, thù ghét">Kích động bạo lực, thù ghét</SelectItem>
+                                    <SelectItem value="Nội dung khiêu dâm, đồi trụy">Nội dung khiêu dâm, đồi trụy</SelectItem>
+                                    <SelectItem value="Tiết lộ thông tin cá nhân">Tiết lộ thông tin cá nhân</SelectItem>
+                                    <SelectItem value="Bắt nạt, quấy rối người khác">Bắt nạt, quấy rối người khác</SelectItem>
+                                    <SelectItem value="Vi phạm pháp luật, bản quyền">Vi phạm pháp luật, bản quyền</SelectItem>
+                                    <SelectItem value="Nội dung không liên quan đến phim">Nội dung không liên quan đến phim</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Textarea
-                            placeholder="Ghi chú thêm (tùy chọn)..."
-                            value={hideNote}
-                            onChange={(e) => setHideNote(e.target.value)}
-                            className="min-h-[100px]"
-                        />
+                        {/* <div>
+                            <label className="text-sm font-medium text-gray-700">Ghi chú thêm</label>
+                            <Textarea
+                                placeholder="Nhập ghi chú cho người dùng (tùy chọn)..."
+                                value={hideNote}
+                                onChange={(e) => setHideNote(e.target.value)}
+                                className="mt-1.5 min-h-20 resize-none"
+                            />
+                        </div> */}
                     </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setHideDialog({ open: false, reportId: null })} disabled={isSubmitting}>
-                            Hủy
+
+                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
+                        <div className="flex gap-2">
+                            <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5 shrink-0" />
+                            <div className="text-sm text-orange-700">
+                                <p className="font-medium">Hành động này sẽ:</p>
+                                <ul className="mt-1 list-disc list-inside space-y-0.5 text-orange-600">
+                                    <li>Ẩn bình luận khỏi trang phim</li>
+                                    <li>Gửi cảnh cáo vi phạm cho người dùng</li>
+                                    <li>Thông báo cho người báo cáo</li>
+                                    <li>Có thể hiện lại trong quản lý bình luận</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setHideDialog({ open: false, report: null })}
+                            disabled={isSubmitting}
+                            className="flex-1 sm:flex-none"
+                        >
+                            Hủy bỏ
                         </Button>
-                        <Button variant="destructive" onClick={handleHide} disabled={!hideReason || isSubmitting}>
-                            {isSubmitting ? "Đang xử lý..." : "Xác nhận ẩn"}
+                        <Button
+                            onClick={handleHide}
+                            disabled={!hideReason || isSubmitting}
+                            className="flex-1 sm:flex-none bg-orange-600 hover:bg-orange-700"
+                        >
+                            {isSubmitting ? "Đang xử lý..." : "Ẩn & Cảnh cáo"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -443,31 +529,61 @@ export function ReportsTable() {
 
             {/* Hard Delete Dialog */}
             <Dialog open={hardDeleteDialog.open} onOpenChange={(open) => setHardDeleteDialog({ ...hardDeleteDialog, open })}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="text-red-600">Xóa vĩnh viễn bình luận</DialogTitle>
-                        <DialogDescription asChild>
-                            <div className="space-y-2">
-                                <p>Bạn có chắc chắn muốn <strong className="text-red-600">XÓA VĨNH VIỄN</strong> bình luận này?</p>
-                                <p className="text-red-600 font-bold">
-                                    CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn bình luận và TẤT CẢ bình luận con. Không thể khôi phục!
-                                </p>
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                                <Trash2 className="h-5 w-5 text-red-600" />
                             </div>
-                        </DialogDescription>
+                            <div>
+                                <DialogTitle className="text-red-600">Xóa bình luận</DialogTitle>
+                                <DialogDescription className="mt-1">
+                                    Hành động này không thể hoàn tác
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <DialogFooter>
+
+                    {hardDeleteDialog.report?.targetData && (
+                        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                <MessageSquare className="h-4 w-4 text-gray-500" />
+                                <span className="font-medium">{hardDeleteDialog.report.targetData.user?.fullName}</span>
+                            </div>
+                            <p className="text-sm text-gray-700 line-clamp-3">
+                                {hardDeleteDialog.report.targetData.content || <span className="italic text-gray-400">Không có nội dung</span>}
+                            </p>
+                        </div>
+                    )}
+
+                    <div className="rounded-lg border border-red-300 bg-red-50 p-3">
+                        <div className="flex gap-2">
+                            <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 shrink-0" />
+                            <div className="text-sm text-red-700">
+                                <p className="font-bold">CẢNH BÁO NGHIÊM TRỌNG:</p>
+                                <ul className="mt-1 list-disc list-inside space-y-0.5 text-red-600">
+                                    <li>Xóa vĩnh viễn bình luận này</li>
+                                    <li>Xóa TẤT CẢ bình luận con (nếu có)</li>
+                                    <li>Không thể khôi phục sau khi xóa</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2 sm:gap-2">
                         <Button
                             variant="outline"
-                            onClick={() => setHardDeleteDialog({ open: false, reportId: null, commentId: null })}
+                            onClick={() => setHardDeleteDialog({ open: false, report: null })}
                             disabled={isSubmitting}
+                            className="flex-1 sm:flex-none"
                         >
-                            Hủy
+                            Hủy bỏ
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={handleHardDelete}
                             disabled={isSubmitting}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700"
                         >
                             {isSubmitting ? "Đang xóa..." : "Xóa vĩnh viễn"}
                         </Button>
