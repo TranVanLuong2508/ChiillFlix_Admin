@@ -17,6 +17,7 @@ export interface FilmColumn {
   originalTitle: string
   slug: string
   view: number
+  isVip: boolean
   duration: number
   publicStatus: string
   createdAt: string
@@ -43,6 +44,7 @@ export interface IFilmPaginationRes {
   originalTitle: string
   slug: string
   view: number
+  isVip: boolean
   duration: number
   createdAt: string
   updatedAt: string
@@ -108,6 +110,7 @@ export interface Producer {
 export interface IFilmCreateReq {
   originalTitle: string;
   title: string;
+  isVip: boolean;
   description: string;
   releaseDate: string;
   year: string;

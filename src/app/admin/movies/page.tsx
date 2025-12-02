@@ -31,6 +31,7 @@ const MoviesPage = () => {
         originalTitle: item.originalTitle,
         slug: item.slug,
         view: item.view,
+        isVip: item.isVip,
         createdAt: formatDate(item.createdAt),
         updatedAt: formatDate(item.updatedAt),
         duration: item.duration,
