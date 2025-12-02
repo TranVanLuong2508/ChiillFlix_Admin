@@ -3,11 +3,12 @@ import { Actor_FilmDetail } from "./actor.type"
 import { Director_FilmDetail } from "./director.type"
 import { Producer_FilmDetail } from "./producer.type"
 
-interface IUser_Film {
+export interface IUser_Film {
   userId: number;
   fullName: string;
   phoneNumber: string;
   avatarUrl: string;
+  email: string;
 }
 
 export interface FilmColumn {
@@ -22,6 +23,11 @@ export interface FilmColumn {
   updatedAt: string
   country: string
   language: string
+}
+
+export interface FilmDeletedColumn extends FilmColumn {
+  deletedAt: string;
+  deletedBy: IUser_Film
 }
 
 interface IAllCodeRes {

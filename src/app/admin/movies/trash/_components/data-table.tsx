@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import { DataTableViewOptions } from "@/components/table/data-table-view-option"
-import { ArchiveRestore, CirclePlus, Trash } from "lucide-react"
+import { ArchiveRestore, CirclePlus, Shredder } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface DataTableProps<TData, TValue> {
@@ -101,8 +101,8 @@ export function DataTable<TData, TValue>({
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer"
               onClick={() => router.push("/admin/movies/create")}
             >
-              <CirclePlus />
-              <span>Tạo mới</span>
+              <ArchiveRestore />
+              <span>Khôi phục</span>
             </Button>
           </div>
           <Button
@@ -111,8 +111,8 @@ export function DataTable<TData, TValue>({
             className="flex items-center gap-2 bg-red-600 hover:bg-red-600 text-white hover:text-white cursor-pointer"
             onClick={() => router.push("/admin/movies/trash")}
           >
-            <Trash />
-            <span>Thùng rác</span>
+            <Shredder />
+            <span>Xóa tất cả</span>
           </Button>
         </div>
       </div>
