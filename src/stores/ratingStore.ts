@@ -36,9 +36,17 @@ export const useRatingStore = create<RatingState & RatingActions>((set, get) => 
   fetchRatings: async (page = 1, limit = 10, sort?: string, filter?: Record<string, any>) => {
     set({ loading: true, error: null });
     try {
-      const res = await ratingService.getAllRatings(page, limit, sort, filter);
+      const apiFilter: Record<string, any> = {};
+      if (filter?.filmId) apiFilter.filmId = filter.filmId;
+      if (filter?.isHidden !== undefined) apiFilter.isHidden = filter.isHidden;
+      if (filter?.ratingValue) apiFilter.ratingValue = filter.ratingValue;
+      const needsClientFilter = filter?.userName;
+      const fetchLimit = needsClientFilter ? 1000 : limit;
+      const fetchPage = needsClientFilter ? 1 : page;
+
+      const res = await ratingService.getAllRatings(fetchPage, fetchLimit, sort, apiFilter);
       if (res.EC === 1 && res.data?.ratings) {
-        const mappedRatings: RatingColumn[] = res.data.ratings.map((r: any) => ({
+        let mappedRatings: RatingColumn[] = res.data.ratings.map((r: any) => ({
           ratingId: r.ratingId,
           ratingValue: r.ratingValue,
           content: r.content || "",
@@ -53,11 +61,30 @@ export const useRatingStore = create<RatingState & RatingActions>((set, get) => 
           isHidden: r.isHidden || false,
         }));
 
-        set({
-          ratings: mappedRatings,
-          meta: res.data.meta,
-          loading: false,
-        });
+        if (filter?.userName) {
+          const searchTerm = filter.userName.toLowerCase();
+          mappedRatings = mappedRatings.filter((r) => r.userName.toLowerCase().includes(searchTerm));
+        }
+
+        if (needsClientFilter) {
+          const total = mappedRatings.length;
+          const totalPages = Math.ceil(total / limit);
+          const startIndex = (page - 1) * limit;
+          const endIndex = startIndex + limit;
+          const paginatedRatings = mappedRatings.slice(startIndex, endIndex);
+
+          set({
+            ratings: paginatedRatings,
+            meta: { page, limit, total, totalPages },
+            loading: false,
+          });
+        } else {
+          set({
+            ratings: mappedRatings,
+            meta: res.data.meta,
+            loading: false,
+          });
+        }
       } else {
         set({
           error: res.EM || "Failed to fetch ratings",

@@ -225,9 +225,12 @@ export function ReportsTable() {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="max-w-xs truncate">
-                                            {report.targetData?.content || <span className="text-gray-400 italic">
-                                                {report.reportType === "COMMENT" ? "Bình luận đã bị xóa" : "Đánh giá đã bị xóa"}
-                                            </span>}
+                                            {report.targetData
+                                                ? (report.targetData.content || <span className="text-gray-400 italic">Không có nội dung</span>)
+                                                : <span className="text-gray-400 italic">
+                                                    {report.reportType === "COMMENT" ? "Bình luận đã bị xóa" : "Đánh giá đã bị xóa"}
+                                                </span>
+                                            }
                                         </TableCell>
                                         <TableCell>
                                             {report.targetData?.user?.fullName || <span className="text-gray-400">Không rõ</span>}
@@ -319,8 +322,12 @@ export function ReportsTable() {
                                     Nội dung {viewDialog.report.reportType === "COMMENT" ? "bình luận" : "đánh giá"}
                                 </h4>
                                 <p className="whitespace-pre-wrap">
-                                    {viewDialog.report.targetData?.content ||
-                                        (viewDialog.report.reportType === "COMMENT" ? "Bình luận đã bị xóa" : "Đánh giá đã bị xóa")}
+                                    {viewDialog.report.targetData
+                                        ? (viewDialog.report.targetData.content || <span className="text-gray-400 italic">Không có nội dung</span>)
+                                        : <span className="text-gray-400 italic">
+                                            {viewDialog.report.reportType === "COMMENT" ? "Bình luận đã bị xóa" : "Đánh giá đã bị xóa"}
+                                        </span>
+                                    }
                                 </p>
                                 <div className="mt-2 text-sm text-gray-500 flex gap-4">
                                     <span>Bởi: {viewDialog.report.targetData?.user?.fullName || "Không rõ"}</span>

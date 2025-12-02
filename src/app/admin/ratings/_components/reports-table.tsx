@@ -220,7 +220,10 @@ export function ReportsTable() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="max-w-xs truncate">
-                                            {report.targetData?.content || <span className="text-gray-400 italic">Đánh giá đã bị xóa</span>}
+                                            {report.targetData
+                                                ? (report.targetData.content || <span className="text-gray-400 italic">Không có nội dung</span>)
+                                                : <span className="text-gray-400 italic">Đánh giá đã bị xóa</span>
+                                            }
                                         </TableCell>
                                         <TableCell>
                                             {report.targetData?.user?.fullName || <span className="text-gray-400">Unknown</span>}

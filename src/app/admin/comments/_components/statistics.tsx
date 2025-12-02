@@ -5,12 +5,32 @@ import { useCommentStore } from "@/stores/commentStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, TrendingUp, Users, BarChart3, Eye, EyeOff } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { socket } from "@/lib/socket";
 
 export function Statistics() {
     const { statistics, loading, fetchStatistics } = useCommentStore();
 
     useEffect(() => {
         fetchStatistics();
+    }, [fetchStatistics]);
+
+    // Cập nhật realtime khi có thay đổi comment
+    useEffect(() => {
+        const handleCommentChange = () => {
+            fetchStatistics();
+        };
+
+        socket.on('newComment', handleCommentChange);
+        socket.on('deleteComment', handleCommentChange);
+        socket.on('hideComment', handleCommentChange);
+        socket.on('unhideComment', handleCommentChange);
+
+        return () => {
+            socket.off('newComment', handleCommentChange);
+            socket.off('deleteComment', handleCommentChange);
+            socket.off('hideComment', handleCommentChange);
+            socket.off('unhideComment', handleCommentChange);
+        };
     }, [fetchStatistics]);
 
     if (loading) {
@@ -67,14 +87,14 @@ export function Statistics() {
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="border-orange-200 bg-orange-50">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Bình luận bị ẩn</CardTitle>
-                        <EyeOff className="h-4 w-4 text-red-600" />
+                        <CardTitle className="text-sm font-medium text-orange-700">Bình luận bị ẩn</CardTitle>
+                        <EyeOff className="h-4 w-4 text-orange-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{statistics.hiddenComments?.toLocaleString() || 0}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className="text-2xl font-bold text-orange-600">{statistics.hiddenComments?.toLocaleString() || 0}</div>
+                        <p className="text-xs text-orange-600/70">
                             {statistics.totalComments > 0
                                 ? ((statistics.hiddenComments / statistics.totalComments) * 100).toFixed(1)
                                 : 0}% tổng số

@@ -3,8 +3,9 @@
 import { useEffect } from "react";
 import { useRatingStore } from "@/stores/ratingStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, TrendingUp, Users, BarChart3 } from "lucide-react";
+import { Star, TrendingUp, Users, BarChart3, EyeOff } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { socket } from "@/lib/socket";
 
 export function Statistics() {
     const { statistics, loading, fetchStatistics } = useRatingStore();
@@ -12,12 +13,27 @@ export function Statistics() {
     useEffect(() => {
         fetchStatistics();
     }, [fetchStatistics]);
+    useEffect(() => {
+        const handleRatingChange = () => {
+            fetchStatistics();
+        };
+
+        socket.on('ratingUpdated', handleRatingChange);
+        socket.on('ratingDeleted', handleRatingChange);
+        socket.on('hideRating', handleRatingChange);
+
+        return () => {
+            socket.off('ratingUpdated', handleRatingChange);
+            socket.off('ratingDeleted', handleRatingChange);
+            socket.off('hideRating', handleRatingChange);
+        };
+    }, [fetchStatistics]);
 
     if (loading) {
         return (
             <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-4">
-                    {[...Array(4)].map((_, i) => (
+                <div className="grid gap-4 md:grid-cols-5">
+                    {[...Array(5)].map((_, i) => (
                         <Card key={i}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <Skeleton className="h-4 w-[100px]" />
@@ -40,10 +56,12 @@ export function Statistics() {
 
     const distributionData = statistics.distribution || {};
     const maxDistribution = Math.max(...Object.values(distributionData).map((v: any) => Number(v)));
+    const hiddenRatings = statistics.hiddenRatings || 0;
+    const totalWithHidden = statistics.totalRatings + hiddenRatings;
 
     return (
         <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-5">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Tổng đánh giá</CardTitle>
@@ -51,7 +69,20 @@ export function Statistics() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{statistics.totalRatings.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">Tất cả đánh giá trong hệ thống</p>
+                        <p className="text-xs text-muted-foreground">Đánh giá đang hiển thị</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-orange-200 bg-orange-50">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-orange-700">Đánh giá bị ẩn</CardTitle>
+                        <EyeOff className="h-4 w-4 text-orange-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-orange-600">{hiddenRatings.toLocaleString()}</div>
+                        <p className="text-xs text-orange-600/70">
+                            {totalWithHidden > 0 ? ((hiddenRatings / totalWithHidden) * 100).toFixed(1) : 0}% tổng số
+                        </p>
                     </CardContent>
                 </Card>
 
@@ -74,7 +105,7 @@ export function Statistics() {
                     <CardContent>
                         <div className="text-2xl font-bold">{distributionData['5'] || 0}</div>
                         <p className="text-xs text-muted-foreground">
-                            {((distributionData['5'] / statistics.totalRatings) * 100).toFixed(1)}% tổng số
+                            {statistics.totalRatings > 0 ? ((distributionData['5'] / statistics.totalRatings) * 100).toFixed(1) : 0}% tổng số
                         </p>
                     </CardContent>
                 </Card>
@@ -87,7 +118,7 @@ export function Statistics() {
                     <CardContent>
                         <div className="text-2xl font-bold">{distributionData['1'] || 0}</div>
                         <p className="text-xs text-muted-foreground">
-                            {((distributionData['1'] / statistics.totalRatings) * 100).toFixed(1)}% tổng số
+                            {statistics.totalRatings > 0 ? ((distributionData['1'] / statistics.totalRatings) * 100).toFixed(1) : 0}% tổng số
                         </p>
                     </CardContent>
                 </Card>

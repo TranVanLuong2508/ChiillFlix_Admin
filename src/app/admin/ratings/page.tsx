@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { PaginationState } from "@tanstack/react-table";
 import AdminHeader from "@/components/admin/layout/AdminHeader";
 import { DataTable } from "./_components/data-table";
@@ -12,6 +12,7 @@ import { ReportsTable } from "./_components/reports-table";
 import { Statistics } from "./_components/statistics";
 import { useSearchParams, useRouter } from "next/navigation";
 import { socket } from "@/lib/socket";
+import { RatingFiltersComponent, RatingFilters } from "./_components/rating-filters";
 
 const RatingsPage = () => {
     const { ratings, meta, loading, fetchRatings } = useRatingStore();
@@ -20,6 +21,7 @@ const RatingsPage = () => {
     const tabParam = searchParams.get("tab");
 
     const [activeTab, setActiveTab] = useState<"ratings" | "reports" | "statistics">("ratings");
+    const [filters, setFilters] = useState<RatingFilters>({});
 
     useEffect(() => {
         if (tabParam === "ratings" || tabParam === "reports" || tabParam === "statistics") {
@@ -38,58 +40,57 @@ const RatingsPage = () => {
 
     const pageCount = meta ? meta.totalPages : 0;
 
+    const handleFiltersChange = useCallback((newFilters: RatingFilters) => {
+        setFilters(newFilters);
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
+    const handleResetFilters = useCallback(() => {
+        setFilters({});
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }, []);
+
     useEffect(() => {
         if (activeTab === "ratings") {
             const page = pagination.pageIndex + 1;
             const limit = pagination.pageSize;
-            fetchRatings(page, limit);
+
+            const apiFilter: Record<string, any> = {};
+            if (filters.filmId) apiFilter.filmId = filters.filmId;
+            if (filters.isHidden) apiFilter.isHidden = filters.isHidden === "true";
+            if (filters.userName) apiFilter.userName = filters.userName;
+            if (filters.ratingValue) apiFilter.ratingValue = parseInt(filters.ratingValue);
+
+            fetchRatings(page, limit, undefined, Object.keys(apiFilter).length > 0 ? apiFilter : undefined);
         }
-    }, [pagination.pageIndex, pagination.pageSize, activeTab, fetchRatings]);
+    }, [pagination.pageIndex, pagination.pageSize, activeTab, filters, fetchRatings]);
 
-    // Socket listeners for realtime updates
     useEffect(() => {
-        const handleNewRating = () => {
+        const handleRatingUpdate = () => {
             if (activeTab === "ratings") {
                 const page = pagination.pageIndex + 1;
                 const limit = pagination.pageSize;
-                fetchRatings(page, limit);
+
+                const apiFilter: Record<string, any> = {};
+                if (filters.filmId) apiFilter.filmId = filters.filmId;
+                if (filters.isHidden) apiFilter.isHidden = filters.isHidden === "true";
+                if (filters.userName) apiFilter.userName = filters.userName;
+                if (filters.ratingValue) apiFilter.ratingValue = parseInt(filters.ratingValue);
+
+                fetchRatings(page, limit, undefined, Object.keys(apiFilter).length > 0 ? apiFilter : undefined);
             }
         };
 
-        const handleUpdateRating = () => {
-            if (activeTab === "ratings") {
-                const page = pagination.pageIndex + 1;
-                const limit = pagination.pageSize;
-                fetchRatings(page, limit);
-            }
-        };
-
-        const handleDeleteRating = () => {
-            if (activeTab === "ratings") {
-                const page = pagination.pageIndex + 1;
-                const limit = pagination.pageSize;
-                fetchRatings(page, limit);
-            }
-        };
-
-        const handleHideRating = () => {
-            if (activeTab === "ratings") {
-                const page = pagination.pageIndex + 1;
-                const limit = pagination.pageSize;
-                fetchRatings(page, limit);
-            }
-        };
-
-        socket.on('ratingUpdated', handleNewRating);
-        socket.on('ratingDeleted', handleDeleteRating);
-        socket.on('hideRating', handleHideRating);
+        socket.on('ratingUpdated', handleRatingUpdate);
+        socket.on('ratingDeleted', handleRatingUpdate);
+        socket.on('hideRating', handleRatingUpdate);
 
         return () => {
-            socket.off('ratingUpdated', handleNewRating);
-            socket.off('ratingDeleted', handleDeleteRating);
-            socket.off('hideRating', handleHideRating);
+            socket.off('ratingUpdated', handleRatingUpdate);
+            socket.off('ratingDeleted', handleRatingUpdate);
+            socket.off('hideRating', handleRatingUpdate);
         };
-    }, [activeTab, pagination.pageIndex, pagination.pageSize, fetchRatings]);
+    }, [activeTab, pagination.pageIndex, pagination.pageSize, filters, fetchRatings]);
 
     return (
         <div className="flex flex-col h-full w-full">
@@ -104,6 +105,12 @@ const RatingsPage = () => {
 
                     <TabsContent value="ratings">
                         <div className="space-y-4">
+                            <RatingFiltersComponent
+                                filters={filters}
+                                onFiltersChange={handleFiltersChange}
+                                onReset={handleResetFilters}
+                            />
+
                             {loading ? (
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">

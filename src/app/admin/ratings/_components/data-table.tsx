@@ -85,17 +85,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 flex-1">
-                    {onSearch && (
-                        <input
-                            type="text"
-                            placeholder={searchPlaceholder || "Tìm kiếm..."}
-                            onChange={(e) => onSearch(e.target.value)}
-                            className="max-w-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    )}
-                </div>
+            <div className="flex items-center justify-end gap-4">
                 <DataTableViewOptions table={table} />
             </div>
             <div className="rounded-md border bg-white">

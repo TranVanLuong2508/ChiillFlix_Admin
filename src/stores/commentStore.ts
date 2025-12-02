@@ -37,7 +37,7 @@ export const useCommentStore = create<CommentState & CommentActions>((set, get) 
   fetchComments: async (page = 1, limit = 10, sort?: string, filter?: Record<string, any>) => {
     set({ loading: true, error: null });
     try {
-      const res = await commentService.getAllComments(1, 1000, sort, filter);
+      const res = await commentService.getAllComments(1, 1000, sort);
       if (res.EC === 1 && res.data?.comments) {
         const flattenComments = (items: any[]): CommentColumn[] => {
           const result: CommentColumn[] = [];
@@ -69,7 +69,20 @@ export const useCommentStore = create<CommentState & CommentActions>((set, get) 
           return result;
         };
 
-        const allComments = flattenComments(res.data.comments);
+        let allComments = flattenComments(res.data.comments);
+        if (filter) {
+          if (filter.filmId) {
+            allComments = allComments.filter((c) => c.filmId === filter.filmId);
+          }
+          if (filter.isHidden !== undefined) {
+            allComments = allComments.filter((c) => c.isHidden === filter.isHidden);
+          }
+          if (filter.userName) {
+            const searchTerm = filter.userName.toLowerCase();
+            allComments = allComments.filter((c) => c.userName.toLowerCase().includes(searchTerm));
+          }
+        }
+
         const total = allComments.length;
         const totalPages = Math.ceil(total / limit);
         const startIndex = (page - 1) * limit;
