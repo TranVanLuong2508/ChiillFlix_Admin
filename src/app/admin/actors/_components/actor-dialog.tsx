@@ -282,7 +282,7 @@ export function ActorDialog({
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="genderCode">
-                                Giới Tính <span className="text-gray-400 text-sm font-normal">(không bắt buộc)</span>
+                                Giới Tính
                             </Label>
                             <Select
                                 value={genderCode}
@@ -325,7 +325,7 @@ export function ActorDialog({
 
                     <div className="space-y-2">
                         <Label htmlFor="avatarUrl">
-                            Ảnh đại diện <span className="text-gray-400 text-sm font-normal">(không bắt buộc)</span>
+                            Ảnh đại diện
                         </Label>
                         <UploadThumb field={{
                             ...register("avatarUrl"),
@@ -337,7 +337,7 @@ export function ActorDialog({
 
                     <div className="space-y-2">
                         <Label htmlFor="shortBio">
-                            Tiểu Sử <span className="text-gray-400 text-sm font-normal">(không bắt buộc)</span>
+                            Tiểu Sử
                         </Label>
                         <Textarea
                             id="shortBio"
