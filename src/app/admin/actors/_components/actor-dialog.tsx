@@ -226,6 +226,9 @@ export function ActorDialog({
                         {mode === "create"
                             ? "Điền thông tin để thêm diễn viên mới"
                             : "Cập nhật thông tin diễn viên"}
+                        <span className="block mt-1 text-xs">
+                            <span className="text-red-500">*</span> Trường bắt buộc
+                        </span>
                     </DialogDescription>
                 </DialogHeader>
 
@@ -250,7 +253,9 @@ export function ActorDialog({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="birthDate">Ngày Sinh</Label>
+                            <Label htmlFor="birthDate">
+                                Ngày Sinh <span className="text-red-500">*</span>
+                            </Label>
                             <div className="relative">
                                 <DatePicker
                                     id="birthDate"
@@ -266,7 +271,8 @@ export function ActorDialog({
                                     showMonthDropdown
                                     showYearDropdown
                                     dropdownMode="select"
-                                    maxDate={new Date()}
+                                    minDate={new Date(new Date().getFullYear() - 100, 0, 1)}
+                                    maxDate={new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())}
                                 />
                                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                             </div>
@@ -275,7 +281,9 @@ export function ActorDialog({
                             )}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="genderCode">Giới Tính</Label>
+                            <Label htmlFor="genderCode">
+                                Giới Tính <span className="text-gray-400 text-sm font-normal">(không bắt buộc)</span>
+                            </Label>
                             <Select
                                 value={genderCode}
                                 onValueChange={(value) => setValue("genderCode", value)}
@@ -295,7 +303,9 @@ export function ActorDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="nationalityCode">Quốc Tịch</Label>
+                        <Label htmlFor="nationalityCode">
+                            Quốc Tịch <span className="text-red-500">*</span>
+                        </Label>
                         <Select
                             value={nationalityCode}
                             onValueChange={(value) => setValue("nationalityCode", value)}
@@ -314,7 +324,9 @@ export function ActorDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="avatarUrl">Ảnh đại diện</Label>
+                        <Label htmlFor="avatarUrl">
+                            Ảnh đại diện <span className="text-gray-400 text-sm font-normal">(không bắt buộc)</span>
+                        </Label>
                         <UploadThumb field={{
                             ...register("avatarUrl"),
                             value: watch("avatarUrl"),
@@ -324,7 +336,9 @@ export function ActorDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="shortBio">Tiểu Sử</Label>
+                        <Label htmlFor="shortBio">
+                            Tiểu Sử <span className="text-gray-400 text-sm font-normal">(không bắt buộc)</span>
+                        </Label>
                         <Textarea
                             id="shortBio"
                             {...register("shortBio")}
