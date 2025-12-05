@@ -120,7 +120,7 @@ export function Actions({ rating }: ActionsProps) {
                         onClick={() => setHardDeleteDialogOpen(true)}
                     >
                         <Trash2 className="mr-2 h-4 w-4 text-red-600" />
-                        Xóa vĩnh viễn
+                        Xóa
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
