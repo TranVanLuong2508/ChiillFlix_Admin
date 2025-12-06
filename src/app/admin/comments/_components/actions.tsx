@@ -62,7 +62,7 @@ export function Actions({ comment }: ActionsProps) {
         setIsHardDeleting(false);
         setHardDeleteDialogOpen(false);
         if (success) {
-            toast.success("Đã xóa vĩnh viễn bình luận");
+            toast.success("Đã xóa bình luận");
         } else {
             toast.error("Không thể xóa bình luận");
         }
@@ -156,19 +156,19 @@ export function Actions({ comment }: ActionsProps) {
             <AlertDialog open={hardDeleteDialogOpen} onOpenChange={setHardDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-red-600">
+                        <AlertDialogTitle className="text-black dark:text-white">
                             Xác nhận xóa bình luận
                         </AlertDialogTitle>
                         <AlertDialogDescription asChild>
                             <div className="space-y-2">
-                                <p>Bạn có chắc chắn muốn <strong className="text-red-600">XÓA</strong> bình luận này?</p>
+                                <p>Bạn có chắc chắn muốn xóa bình luận này?</p>
                                 <div className="p-3 bg-muted rounded-md">
                                     <p className="text-sm font-medium text-foreground line-clamp-3">
                                         "{comment.content}"
                                     </p>
                                 </div>
                                 <p className="text-red-600 font-bold">
-                                    CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn bình luận và TẤT CẢ bình luận con. Không thể khôi phục!
+                                    CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn bình luận và tất cả bình luận con. Không thể khôi phục!
                                 </p>
                             </div>
                         </AlertDialogDescription>

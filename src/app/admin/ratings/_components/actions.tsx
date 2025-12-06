@@ -75,7 +75,7 @@ export function Actions({ rating }: ActionsProps) {
         setIsHardDeleting(false);
         setHardDeleteDialogOpen(false);
         if (success) {
-            toast.success("Đã xóa vĩnh viễn đánh giá");
+            toast.success("Đã xóa đánh giá");
         } else {
             toast.error("Không thể xóa đánh giá");
         }
@@ -190,12 +190,12 @@ export function Actions({ rating }: ActionsProps) {
             <AlertDialog open={hardDeleteDialogOpen} onOpenChange={setHardDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-red-600">
-                            Xác nhận xóa vĩnh viễn đánh giá
+                        <AlertDialogTitle className="text-black dark:text-white">
+                            Xác nhận xóa đánh giá
                         </AlertDialogTitle>
                         <AlertDialogDescription asChild>
                             <div className="space-y-2">
-                                <p>Bạn có chắc chắn muốn <strong className="text-red-600">XÓA VĨNH VIỄN</strong> đánh giá này?</p>
+                                <p>Bạn có chắc chắn muốn xóa đánh giá này?</p>
                                 <div className="p-3 bg-muted rounded-md">
                                     <p className="text-sm font-medium text-foreground">
                                         Đánh giá: {rating.ratingValue} ⭐
@@ -219,7 +219,7 @@ export function Actions({ rating }: ActionsProps) {
                             disabled={isHardDeleting}
                             className="bg-red-600 hover:bg-red-700"
                         >
-                            {isHardDeleting ? "Đang xóa..." : "Xóa vĩnh viễn"}
+                            {isHardDeleting ? "Đang xóa..." : "Xóa"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -258,7 +258,7 @@ export function ReportsTable() {
                                                                 e.stopPropagation();
                                                                 setHideDialog({ open: true, report });
                                                             }}
-                                                            className="text-red-600"
+                                                            className="text-amber-600"
                                                         >
                                                             Ẩn bình luận
                                                         </DropdownMenuItem>
@@ -267,7 +267,7 @@ export function ReportsTable() {
                                                                 e.stopPropagation();
                                                                 setHardDeleteDialog({ open: true, report });
                                                             }}
-                                                            className="text-red-800 font-semibold"
+                                                            className="text-red-600 font-semibold"
                                                         >
                                                             Xóa & Cảnh cáo
                                                         </DropdownMenuItem>
@@ -353,15 +353,35 @@ export function ReportsTable() {
                                     >
                                         Từ chối
                                     </Button>
-                                    <Button
-                                        variant="destructive"
-                                        onClick={() => {
-                                            setHideDialog({ open: true, report: viewDialog.report });
-                                            setViewDialog({ open: false, report: null });
-                                        }}
-                                    >
-                                        Xử lý vi phạm
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="destructive">
+                                                Xử lý vi phạm
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                onClick={() => {
+                                                    setHideDialog({ open: true, report: viewDialog.report });
+                                                    setViewDialog({ open: false, report: null });
+                                                }}
+                                                className="text-amber-600 cursor-pointer"
+                                            >
+                                                <EyeOff className="h-4 w-4 mr-2" />
+                                                Ẩn bình luận
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={() => {
+                                                    setHardDeleteDialog({ open: true, report: viewDialog.report });
+                                                    setViewDialog({ open: false, report: null });
+                                                }}
+                                                className="text-red-600 font-semibold cursor-pointer"
+                                            >
+                                                <XCircle className="h-4 w-4 mr-2" />
+                                                Xóa & Cảnh cáo
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </DialogFooter>
                             )}
                         </div>
@@ -585,7 +605,7 @@ export function ReportsTable() {
                             disabled={isSubmitting}
                             className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700"
                         >
-                            {isSubmitting ? "Đang xóa..." : "Xóa vĩnh viễn"}
+                            {isSubmitting ? "Đang xóa..." : "Xóa"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
