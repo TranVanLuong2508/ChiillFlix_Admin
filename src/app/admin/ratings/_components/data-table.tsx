@@ -25,35 +25,29 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { DataTablePagination } from "../../../../components/table-director/data-table-pagination";
-import { DataTableViewOptions } from "../../../../components/table-director/data-table-view-option";
-import { DirectorColumn } from "@/types/director.type";
-import { DeleteDirectorDialog } from "./delete-director-dialog";
+import { DataTablePagination } from "@/components/table-rating/data-table-pagination";
+import { DataTableViewOptions } from "@/components/table-rating/data-table-view-option";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    hiddenColumns: string[];
+    hiddenColumns?: string[];
     pagination: PaginationState;
     pageCount: number;
     setPagination: OnChangeFn<PaginationState>;
     searchPlaceholder?: string;
     onSearch?: (value: string) => void;
-    addButton?: React.ReactNode;
-    onDeleteSelected?: (ids: string[]) => void;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    hiddenColumns,
+    hiddenColumns = [],
     pagination,
     pageCount,
     setPagination,
     searchPlaceholder,
     onSearch,
-    addButton,
-    onDeleteSelected,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -89,48 +83,9 @@ export function DataTable<TData, TValue>({
         manualPagination: true,
     });
 
-    const selectedRows = React.useMemo(
-        () => {
-            return table.getSelectedRowModel().rows.map((row) => row.original as DirectorColumn);
-        },
-        [rowSelection, table]
-    );
-    const selectedRowIds = selectedRows.map((d) => d.directorId);
-    const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
-
     return (
         <div className="space-y-4">
-            <DeleteDirectorDialog
-                open={bulkDeleteOpen}
-                onOpenChange={setBulkDeleteOpen}
-                directorId={selectedRowIds.join(",")}
-                directorName={selectedRows.map((d) => d.directorName).join(", ")} isBulk
-                onBulkDelete={async () => {
-                    if (onDeleteSelected) await onDeleteSelected(selectedRowIds);
-                    setBulkDeleteOpen(false);
-                }}
-            />
-            <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 flex-1">
-                    <input
-                        type="text"
-                        placeholder={searchPlaceholder || "Tìm kiếm..."}
-                        value={(table.getColumn("directorName")?.getFilterValue() as string) ?? ""}
-                        onChange={(e) =>
-                            table.getColumn("directorName")?.setFilterValue(e.target.value)
-                        }
-                        className="w-60 text-sm px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {addButton}
-                    {selectedRowIds.length > 0 && onDeleteSelected && (
-                        <button
-                            className="ml-2 px-2 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600"
-                            onClick={() => setBulkDeleteOpen(true)}
-                        >
-                            Xóa đã chọn ({selectedRowIds.length})
-                        </button>
-                    )}
-                </div>
+            <div className="flex items-center justify-end gap-4">
                 <DataTableViewOptions table={table} />
             </div>
             <div className="rounded-md border bg-white">

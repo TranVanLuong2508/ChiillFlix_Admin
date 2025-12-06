@@ -1,0 +1,58 @@
+export interface NotificationResult {
+  commentId?: string;
+  parentId?: string;
+  filmId?: string;
+  slug?: string;
+  filmTitle?: string;
+  reportId?: string;
+  reportType?: "COMMENT" | "RATING";
+  reporterId?: number;
+  reporterName?: string;
+  reporterAvatar?: string;
+  commentContent?: string;
+  commentUserId?: number;
+  commentUserName?: string;
+  ratingId?: string;
+  ratingContent?: string;
+  ratingScore?: number;
+  ratingUserId?: number;
+  ratingUserName?: string;
+  filmSlug?: string;
+  reason?: string;
+  description?: string;
+}
+
+export interface Notification {
+  notificationId: number;
+  type: "reply" | "reaction" | "system" | "report";
+  message: string;
+  data?: any;
+  isRead: boolean;
+  replier?: {
+    userId: number;
+    fullName: string;
+    email?: string;
+    avatarUrl?: string;
+  };
+  result?: NotificationResult;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotificationResponse {
+  EC: number;
+  EM: string;
+  data: Notification[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface UnreadCountResponse {
+  EC: number;
+  EM: string;
+  count: number;
+}
