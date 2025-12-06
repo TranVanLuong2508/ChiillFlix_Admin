@@ -69,7 +69,7 @@ export const Actions = ({ row }: ActionsProps) => {
           className="cursor-pointer"
         >
           <Copy size={4} className="text-amber-500" />
-          <strong>ID Phim</strong>
+          <strong>ID Tập phim</strong>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {initDataUpdate && (
