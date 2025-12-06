@@ -84,17 +84,21 @@ export const ActorForm = ({
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
-        <FormLabel>Diễn viên</FormLabel>
+        <FormLabel>Diễn viên<span className="text-red-500">*</span></FormLabel>
         <FormControl>
           <Search
             selectedActor={selectedActor}
             handleSelectActor={handleSelectActor}
           />
         </FormControl>
-        <FormDescription>
-          *Vui lòng kiểm tra và nhập tên nhân vật mà diễn viên đóng
-        </FormDescription>
         <FormMessage />
+        <div className="text-muted-foreground text-sm space-y-2">
+          <p className="text-sm italic font-semibold">Lưu ý: </p>
+          <ul className="list-decimal pl-8">
+            <li>Chỉ được chọn tối đa 5 diễn viên chính.</li>
+            <li>Vui lòng kiểm tra và nhập tên nhân vật mà diễn viên đóng.</li>
+          </ul>
+        </div>
       </FormItem>
       <Collapsible
         open={isOpen}

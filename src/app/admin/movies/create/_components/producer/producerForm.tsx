@@ -89,17 +89,21 @@ export const ProducerForm = ({
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
-        <FormLabel>Nhà sản xuất</FormLabel>
+        <FormLabel>Nhà sản xuất<span className="text-red-500">*</span></FormLabel>
         <FormControl>
           <Search
             selectedProducer={selectedProducer}
             handleSelectProducer={handleSelectProducer}
           />
         </FormControl>
-        <FormDescription>
-          *Vui lòng kiểm tra và tích chọn nhà sản xuất chính
-        </FormDescription>
         <FormMessage />
+        <div className="text-muted-foreground text-sm space-y-2">
+          <p className="text-sm italic font-semibold">Lưu ý: </p>
+          <ul className="list-decimal pl-8">
+            <li>Chỉ được chọn tối đa 2 nhà sản xuất.</li>
+            <li>Vui lòng kiểm tra và tích chọn 1 nhà sản xuất chính.</li>
+          </ul>
+        </div>
       </FormItem>
       <Collapsible
         open={isOpen}

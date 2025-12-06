@@ -33,7 +33,6 @@ export interface IEpisodePagination {
 // create episode
 export interface ICreateEpisodeReq {
   title: string;
-  episodeNumber: number;
   duration: number;
   videoUrl: string;
   thumbUrl: string;

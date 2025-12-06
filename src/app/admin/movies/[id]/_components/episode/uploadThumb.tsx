@@ -22,6 +22,11 @@ export const UploadThumb = ({ field }: UploadThumbProps) => {
       return;
     }
 
+    if (file.size > 1024 * 1024 * 2) {
+      toast.warning("File upload phải có kích thước nhỏ hơn 2MB");
+      return;
+    }
+
     try {
       setLoading(true);
       setId(id);

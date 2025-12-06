@@ -45,7 +45,7 @@ export const MultiSelectForm = ({
 
   return (
     <FormItem className="flex-1">
-      <FormLabel>{label}</FormLabel>
+      <FormLabel>{label}<span className="text-red-500">*</span></FormLabel>
       <FormControl>
         <div className="flex flex-col gap-2">
           <ScrollArea className="max-h-[100px] border border-gray-200 p-2 rounded-lg">

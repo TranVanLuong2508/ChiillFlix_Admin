@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   onOpenCreateChange: (open: boolean) => void;
   handleCreateEpisode: (values: z.infer<typeof formEpisodeSchema>) => void;
   setPagination: OnChangeFn<PaginationState>;
+  initialData?: any;
 }
 
 export function DataTable<TData, TValue>({
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
   handleCreateEpisode,
 
   setPagination,
+  initialData,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -107,6 +109,7 @@ export function DataTable<TData, TValue>({
               open={isOpenCreate}
               onSubmit={handleCreateEpisode}
               onOpenChange={onOpenCreateChange}
+              initialData={initialData}
             />
           </div>
         </div>

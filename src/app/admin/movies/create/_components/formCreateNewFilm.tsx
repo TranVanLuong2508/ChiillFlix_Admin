@@ -49,7 +49,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
       slug: "",
       thumbUrl: "",
       ageCode: "",
-      duration: "",
+      duration: 0,
       typeCode: "",
       genreCodes: [],
       countryCode: "",
@@ -116,14 +116,17 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="originalTitle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên gốc phim</FormLabel>
+                  <FormLabel>Tên gốc phim<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Tên nước ngoài của phim nếu có không thì điền tên phim vào trường này.
-                  </FormDescription>
                   <FormMessage />
+                  <div className="text-muted-foreground text-sm space-y-2">
+                    <span className="font-semibold text-sm italic">Lưu ý:</span>
+                    <ul className="pl-8 list-decimal">
+                      <li>Tên nước ngoài của phim nếu có không thì điền tên phim vào trường này.</li>
+                    </ul>
+                  </div>
                 </FormItem>
               )}
             />
@@ -132,7 +135,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên phim</FormLabel>
+                  <FormLabel>Tên phim<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -146,7 +149,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="description"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Mô tả</FormLabel>
+                  <FormLabel>Mô tả<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Nhập mô tả phim"
@@ -155,6 +158,12 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
                     />
                   </FormControl>
                   <FormMessage />
+                  <div className="text-muted-foreground text-sm space-y-2">
+                    <span className="font-semibold text-sm italic">Lưu ý:</span>
+                    <ul className="list-decimal pl-8">
+                      <li>Mô tả phim không được vượt quá 1200 ký tự.</li>
+                    </ul>
+                  </div>
                 </FormItem>
               )}
             />
@@ -167,9 +176,9 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="duration"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Thời lượng phim (phút)</FormLabel>
+                  <FormLabel>Thời lượng phim (phút)<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input value={field.value} onChange={(e) => field.onChange(Number(e.target.value))} type="number" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -180,7 +189,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="year"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Năm</FormLabel>
+                  <FormLabel>Năm<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -195,7 +204,7 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
                 <FormItem className="flex-1">
                   <FormLabel>Ngày công chiếu</FormLabel>
                   <FormControl>
-                    <DatePicker field={field} />
+                    <DatePicker field={field} year={form.watch("year")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -265,14 +274,15 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
               name="slug"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Slug</FormLabel>
+                  <FormLabel>Slug<span className="text-red-500">*</span></FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Nhập slug muốn tạo có dấu hoặc không dấu" />
                   </FormControl>
-                  <FormDescription>
-                    Ví dụ: "đây là slug" hoặc "day la slug"
-                  </FormDescription>
                   <FormMessage />
+                  <div className="text-muted-foreground text-sm space-y-2">
+                    <span className="font-semibold text-sm italic">Ví dụ:</span>
+                    <span className="font-normal text-sm pl-1">"đây là slug" hoặc "day la slug"</span>
+                  </div>
                 </FormItem>
               )}
             />
@@ -339,22 +349,36 @@ export const FormCreateNewFilm = ({ onSubmit, initialData }: FormCreateNewFilmPr
             name="thumbUrl"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Upload thumbnail</FormLabel>
+                <FormLabel>Upload thumbnail<span className="text-red-500">*</span></FormLabel>
                 <FormControl>
                   <UploadThumb field={field} />
                 </FormControl>
                 <FormMessage />
+                <div className="text-muted-foreground text-sm space-y-2">
+                  <p className="text-sm italic font-semibold">Lưu ý: </p>
+                  <ul className="list-decimal pl-8">
+                    <li>Upload ảnh có định dạng .png, .jpg, .jpeg.</li>
+                    <li>Upload ảnh có kích thước tối đa 10MB.</li>
+                  </ul>
+                </div>
               </FormItem>
             )}
           />
 
 
           <FormItem>
-            <FormLabel>Upload ảnh</FormLabel>
+            <FormLabel>Upload ảnh<span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <UploadImage fields={fields} form={form} />
             </FormControl>
             <FormMessage />
+            <div className="text-muted-foreground text-sm space-y-2">
+              <p className="text-sm italic font-semibold">Lưu ý: </p>
+              <ul className="list-decimal pl-8">
+                <li>Upload ảnh có định dạng .png, .jpg, .jpeg.</li>
+                <li>Upload ảnh có kích thước tối đa 10MB.</li>
+              </ul>
+            </div>
           </FormItem>
 
           <Button type="submit" className={cn(

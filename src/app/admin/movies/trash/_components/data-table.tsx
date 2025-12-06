@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react"
+import FilmService from "@/services/film.service"
+import { toast } from "sonner"
+import { FilmDeletedColumn } from "@/types/film.type"
 
 import {
   ColumnDef,
@@ -39,10 +42,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DataTablePagination } from "@/components/table/data-table-pagination"
 import { DataTableViewOptions } from "@/components/table/data-table-view-option"
-import { ArchiveRestore, CirclePlus, CircleX, Trash } from "lucide-react"
+import { ArchiveRestore, CirclePlus, Shredder } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner";
-import FilmService from "@/services/film.service";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -63,7 +64,6 @@ export function DataTable<TData, TValue>({
   setPagination,
   onSuccess,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -72,10 +72,33 @@ export function DataTable<TData, TValue>({
       return acc;
     }, {} as VisibilityState),
   });
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const handleRestoreSelected = async () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    if (selectedRows.length === 0) return;
+
+    setIsLoading(true);
+    try {
+      const listFilmId = selectedRows.map((row: any) => row.original.filmId);
+      const res = await FilmService.restoreFilmBulk(listFilmId);
+      if (res.EC === 0 && res.data) {
+        toast.success(`Khôi phục ${res.data.restoredCount}  phim thành công`);
+        setRowSelection({});
+        if (onSuccess) onSuccess();
+      } else {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+        console.log(">> Error Restore Bulk Film: ", res.EM);
+      }
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
+      console.error('>> Error Restore Bulk Film: ', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleDeleteSelected = async () => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -85,23 +108,22 @@ export function DataTable<TData, TValue>({
     try {
       const listFilmId = selectedRows.map((row: any) => row.original.filmId);
 
-      const res = await FilmService.bulkDelete(listFilmId);
+      const res = await FilmService.hardDeleteBulk(listFilmId);
       if (res.EC === 0 && res.data) {
-        toast.success(`Đã xóa ${res.data.deletedCount} phim`);
+        toast.success(`Đã xóa vĩnh viễn ${res.data.deletedCount} phim`);
         setRowSelection({});
         if (onSuccess) onSuccess();
       } else {
         toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
-        console.log(">> Error Soft Delete Bulk Film: ", res.EM);
+        console.log(">> Error Hard Delete Bulk Film: ", res.EM);
       }
     } catch (error) {
       toast.error("Đã xảy ra lỗi, vui lòng thử lại sau!");
-      console.error('>> Error Soft Delete Bulk Film: ', error);
+      console.error('>> Error Hard Delete Bulk Film: ', error);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   const table = useReactTable({
     data,
@@ -143,31 +165,23 @@ export function DataTable<TData, TValue>({
               <Button
                 size={"sm"}
                 variant={"outline"}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600/90 text-white hover:text-white cursor-pointer"
-                onClick={() => router.push("/admin/movies/create")}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleRestoreSelected}
+                disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
               >
-                <CirclePlus />
-                <span>Tạo mới</span>
+                <ArchiveRestore />
+                <span>Khôi phục ({table.getFilteredSelectedRowModel().rows.length})</span>
               </Button>
             </div>
             <Button
               size={"sm"}
               variant={"outline"}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-600/80 text-white hover:text-white cursor-pointer"
-              disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-600 text-white hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setOpen(true)}
+              disabled={table.getFilteredSelectedRowModel().rows.length === 0 || isLoading}
             >
-              <CircleX />
-              <span>Xóa</span>
-            </Button>
-            <Button
-              size={"sm"}
-              variant={"outline"}
-              className="flex items-center gap-2 bg-gray-700 hover:bg-gray-700/90 text-white hover:text-white cursor-pointer"
-              onClick={() => router.push("/admin/movies/trash")}
-            >
-              <Trash />
-              <span>Thùng rác</span>
+              <Shredder />
+              <span>Xóa tất cả ({table.getFilteredSelectedRowModel().rows.length})</span>
             </Button>
           </div>
         </div>
@@ -221,9 +235,9 @@ export function DataTable<TData, TValue>({
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa thông tin phim</AlertDialogTitle>
+            <AlertDialogTitle className="text-red-600">Xác nhận xóa thông tin phim</AlertDialogTitle>
             <AlertDialogDescription>
-              Lưu ý: Sau khi xóa có thể vào thùng rác để khôi phục dữ liệu.
+              Lưu ý: Sau khi xóa thành công, dữ liệu sẽ không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

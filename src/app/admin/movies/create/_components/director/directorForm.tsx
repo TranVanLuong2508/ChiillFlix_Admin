@@ -92,17 +92,21 @@ export const DirectorForm = ({
   return (
     <div className="flex flex-col gap-2">
       <FormItem className="flex-1">
-        <FormLabel>Đạo diễn</FormLabel>
+        <FormLabel>Đạo diễn<span className="text-red-500">*</span></FormLabel>
         <FormControl>
           <Search
             selectedDirector={selectedDirector}
             handleSelectDirector={handleSelectDirector}
           />
         </FormControl>
-        <FormDescription>
-          *Vui lòng kiểm tra và tích chọn đạo diễn chính
-        </FormDescription>
         <FormMessage />
+        <div className="text-muted-foreground text-sm space-y-2">
+          <p className="text-sm italic font-semibold">Lưu ý: </p>
+          <ul className="list-decimal pl-8">
+            <li>Chỉ được chọn tối đa 2 đạo diễn.</li>
+            <li>Vui lòng kiểm tra và tích chọn 1 đạo diễn chính.</li>
+          </ul>
+        </div>
       </FormItem>
       <Collapsible
         open={isOpen}

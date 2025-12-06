@@ -3,18 +3,32 @@ import { Actor_FilmDetail } from "./actor.type"
 import { Director_FilmDetail } from "./director.type"
 import { Producer_FilmDetail } from "./producer.type"
 
+export interface IUser_Film {
+  userId: number;
+  fullName: string;
+  phoneNumber: string;
+  avatarUrl: string;
+  email: string;
+}
+
 export interface FilmColumn {
   filmId: string
   title: string
   originalTitle: string
   slug: string
   view: number
+  isVip: boolean
   duration: number
   publicStatus: string
   createdAt: string
   updatedAt: string
   country: string
   language: string
+}
+
+export interface FilmDeletedColumn extends FilmColumn {
+  deletedAt: string;
+  deletedBy: IUser_Film
 }
 
 interface IAllCodeRes {
@@ -30,12 +44,19 @@ export interface IFilmPaginationRes {
   originalTitle: string
   slug: string
   view: number
+  isVip: boolean
   duration: number
   createdAt: string
   updatedAt: string
+
   publicStatus: IAllCodeRes
   country: IAllCodeRes
   language: IAllCodeRes
+}
+
+export interface IFilmDeletedPaginationRes extends IFilmPaginationRes {
+  deletedAt: string;
+  deletedBy: IUser_Film
 }
 
 export interface IFilmPagination {
@@ -46,6 +67,16 @@ export interface IFilmPagination {
     total: number
   }
   result: IFilmPaginationRes[]
+}
+
+export interface IFilmDeletedPagination {
+  meta: {
+    current: number
+    pageSize: number
+    pages: number
+    total: number
+  }
+  result: IFilmDeletedPaginationRes[]
 }
 
 
@@ -79,6 +110,7 @@ export interface Producer {
 export interface IFilmCreateReq {
   originalTitle: string;
   title: string;
+  isVip: boolean;
   description: string;
   releaseDate: string;
   year: string;
@@ -153,3 +185,29 @@ export interface FilmDataStream {
 }
 
 // Get Detail Film
+// Retore Film 
+export interface IFilmRestoreRes {
+  restore: boolean;
+}
+// Retore Film 
+// Hard delete
+export interface IFilmHardDeleteRes {
+  deleted: boolean;
+}
+// Hard delete
+// Bulk Restore
+export interface IFilmRestoreBulkRes {
+  restoredCount: number,
+  restoredIds: string[],
+  restore: boolean,
+}
+// Bulk Restore
+
+// Bulk Hard Delete
+export interface IFilmHardDeleteBulkRes {
+  deletedCount: number,
+  deletedIds: string[],
+  deleted: boolean,
+}
+// Bulk Hard Delete
+

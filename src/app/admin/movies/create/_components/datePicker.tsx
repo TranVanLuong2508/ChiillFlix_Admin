@@ -1,18 +1,30 @@
+import { useMemo, useState } from "react"
 import { CalendarIcon } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-
 import { formatDate, isValidDate } from "@/utils/formateDate";
-import { useState } from "react"
+
 
 interface IDatePicker {
   field: any
+  year?: string
 }
 
-export const DatePicker = ({ field }: IDatePicker) => {
+export const DatePicker = ({ field, year }: IDatePicker) => {
   const [open, setOpen] = useState(false)
+
+  const minDate = useMemo(() => {
+    if (year && year.trim() !== "") {
+      const yearNum = parseInt(year);
+      if (!isNaN(yearNum)) {
+        return new Date(yearNum, 0, 1);
+      }
+    }
+    return undefined;
+  }, [year]);
 
   return (
     <div className="relative flex gap-2">
@@ -55,6 +67,15 @@ export const DatePicker = ({ field }: IDatePicker) => {
             mode="single"
             selected={field.value ? new Date(field.value) : undefined}
             captionLayout="dropdown"
+            hidden={minDate ? { before: minDate } : undefined}
+            startMonth={new Date(minDate ? minDate.getFullYear() : 2000, 0)}
+            endMonth={new Date(new Date().getFullYear() + 5, 0)}
+            disabled={(date) => {
+              if (minDate) {
+                return date < minDate;
+              }
+              return false;
+            }}
             onSelect={(date: any) => {
               field.onChange(date?.toISOString())
               setOpen(false)

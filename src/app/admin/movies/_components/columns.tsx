@@ -3,9 +3,22 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import { Checkbox } from "@/components/ui/checkbox"
-import { DataTableColumnHeader } from "../../../../components/table/data-table-column-header"
 import { Actions } from "./actions"
 import { FilmColumn } from "@/types/film.type"
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { useState } from "react"
+import FilmService from "@/services/film.service"
+import { toast } from "sonner"
 
 export const columns: ColumnDef<FilmColumn>[] = [
   {
@@ -49,6 +62,80 @@ export const columns: ColumnDef<FilmColumn>[] = [
     header: "Tên gốc",
     meta: {
       label: "Tên gốc",
+    },
+  },
+  {
+    accessorKey: "isVip",
+    header: "VIP",
+    meta: {
+      label: "VIP",
+    },
+    cell: ({ row }) => {
+      const [open, setOpen] = useState(false);
+      const filmId = row.getValue("filmId");
+      const [isVip, setIsVip] = useState<boolean>(row.getValue("isVip"));
+
+      const handleChangeVIP = async () => {
+        if (!filmId) {
+          setOpen(false);
+          return;
+        }
+        try {
+          const res = await FilmService.updateFilm(filmId as string, { isVip: !row.getValue("isVip") });
+
+          if (res.EC === 0 && res.data) {
+            toast.success("Cập nhật trạng thái thành công");
+            setIsVip(!isVip);
+          } else {
+            toast.error("Cập nhật trạng thái thất bại");
+          }
+
+        } catch (error) {
+          console.log("Error Change VIP: ", filmId, " - ", error);
+          toast.error("Cập nhật trạng thái thất bại");
+        }
+        setOpen(false);
+      }
+
+      return (
+        <>
+          <Checkbox
+            id={row.getValue("filmId")}
+            className="border border-zinc-800 data-[state=checked]:bg-transparent data-[state=checked]:text-amber-500 size-5"
+            checked={isVip}
+            onCheckedChange={() => setOpen(true)}
+          />
+          <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Xác nhận thay đổi trạng thái VIP</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Bạn có chắc chắn muốn thay đổi trạng thái VIP cho phim này không?
+                </AlertDialogDescription>
+                <div className="text-sm">
+                  <div className="flex items-center gap-2">
+                    <h2 className=" text-gray-800">Phim: </h2>
+                    <p className=" text-amber-500 font-semibold">{row.getValue("title")}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <h2 className=" text-gray-800">Tên gốc: </h2>
+                    <p className=" text-amber-500 font-semibold">{row.getValue("originalTitle")}</p>
+                  </div>
+                </div>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="cursor-pointer">Hủy</AlertDialogCancel>
+                <AlertDialogAction
+                  className="cursor-pointer"
+                  onClick={handleChangeVIP}
+                >
+                  Đồng ý
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      )
     },
   },
   {

@@ -13,9 +13,13 @@ const CreatePage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+
       const payload = {
         ...values,
         duration: Number(values.duration),
+        releaseDate: values.releaseDate || d.toISOString(),
       }
 
       const res = await FilmService.createFilm(payload);
