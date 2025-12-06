@@ -26,6 +26,8 @@ import {
   UserRound,
   CircleDollarSign,
   Diamond,
+  MessageSquare,
+  UserStar,
 } from "lucide-react";
 import { adminPath } from "@/constants/path";
 import { useAuthStore } from "@/stores/authStore";
@@ -92,6 +94,16 @@ export function AppSidebar() {
           item.apiPath === ALL_PERMISSIONS.PLANS.GET_All.apiPath &&
           item.method === ALL_PERMISSIONS.PLANS.GET_All.method,
       );
+      const viewComment = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.COMMENTS.GET_ALL.apiPath &&
+          item.method === ALL_PERMISSIONS.COMMENTS.GET_ALL.method,
+      );
+      const viewRating = permissions.find(
+        (item) =>
+          item.apiPath === ALL_PERMISSIONS.RATINGS.GET_ALL.apiPath &&
+          item.method === ALL_PERMISSIONS.RATINGS.GET_ALL.method,
+      );
 
       const full = [
         { title: "Dashboard", icon: LayoutDashboard, href: adminPath.DASHBOARD },
@@ -128,6 +140,24 @@ export function AppSidebar() {
                 title: "Nhà Sản Xuất",
                 icon: Star,
                 href: adminPath.PRODUCERS,
+              },
+            ]
+          : []),
+        ...(viewComment
+          ? [
+              {
+                title: "Bình luận",
+                icon: MessageSquare,
+                href: adminPath.COMMENTS,
+              },
+            ]
+          : []),
+        ...(viewRating
+          ? [
+              {
+                title: "Đánh giá",
+                icon: UserStar,
+                href: adminPath.RATINGS,
               },
             ]
           : []),

@@ -35,4 +35,10 @@ export const ALL_PERMISSIONS = {
   PLANS: {
     GET_All: { method: "GET", apiPath: "/api/v1/subscription-plans", module: "PLANS" },
   },
+  COMMENTS: {
+    GET_ALL: { method: "GET", apiPath: "/api/v1/comment/all-comments", module: "COMMENTS" },
+  },
+  RATINGS: {
+    GET_ALL: { method: "GET", apiPath: "/api/v1/rating/all-ratings", module: "RATINGS" },
+  },
 };
