@@ -7,41 +7,17 @@ import UserService from "@/services/userService";
 import { useEffect, useState } from "react";
 import PaymentService from "@/services/paymentService";
 import { IPayment } from "@/types/payment.type";
+import FilmService from "@/services/film.service";
+import _ from "lodash";
+import { FilmPieChartData } from "@/types/dashboard.type";
 
 export default function AdminDashboard() {
   const [totalUsers, setTotalUser] = useState(0);
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
-
-  const stats = {
-    filmsByGenre: [
-      { name: "Hành động", value: 45 },
-      { name: "Tâm lý", value: 30 },
-      { name: "Hài", value: 25 },
-      { name: "Kinh dị", value: 20 },
-      { name: "Sci-Fi", value: 15 },
-    ],
-    filmsByAgeRating: [
-      { name: "P - Mọi lứa tuổi", value: 50 },
-      { name: "C13 - Trên 13 tuổi", value: 40 },
-      { name: "C16 - Trên 16 tuổi", value: 30 },
-      { name: "C18 - Trên 18 tuổi", value: 15 },
-    ],
-    filmsByCountry: [
-      { name: "Việt Nam", value: 35 },
-      { name: "Hàn Quốc", value: 40 },
-      { name: "Mỹ", value: 50 },
-      { name: "Nhật Bản", value: 25 },
-      { name: "Trung Quốc", value: 20 },
-    ],
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(value);
-  };
+  const [filmsByGenre, setFilmsByGenre] = useState<FilmPieChartData[]>([]);
+  const [filmsByCountry, setFilmsByCountry] = useState<FilmPieChartData[]>([]);
+  const [filmsByAgeRating, setFilmsByAgeRating] = useState<FilmPieChartData[]>([]);
 
   const fetchUserData = async () => {
     try {
@@ -62,7 +38,6 @@ export default function AdminDashboard() {
         const paymentsData = res.data.payments ?? [];
         setPayments(paymentsData);
 
-        // Calculate total revenue from all payments
         const revenue = paymentsData.reduce((sum: number, payment: IPayment) => {
           return sum + (parseFloat(payment.amount) || 0);
         }, 0);
@@ -73,9 +48,52 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchFilmAndGenre = async () => {
+    try {
+      const [genreRes, countryRes, ageRes] = await Promise.all([
+        FilmService.getFilmListByGenreForDashBoard(),
+        FilmService.getFilmListByCountryForDashBoard(),
+        FilmService.getFilmListByAgeForDashBoard(),
+      ]);
+      if (genreRes && genreRes.EC === 1 && countryRes && countryRes.EC === 1) {
+        setFilmsByGenre(buildDataForFilm(genreRes.data.result, "genre"));
+        setFilmsByCountry(buildDataForFilm(countryRes.data.result, "country"));
+        setFilmsByAgeRating(buildDataForFilm(groupBy(ageRes.data.result), "age"));
+      }
+    } catch (error) {
+      console.log("Error from fetch payment data fetch film by genre: ", error);
+    }
+  };
+
+  const buildDataForFilm = (data: any, type: string): FilmPieChartData[] => {
+    const result: FilmPieChartData[] = [];
+    console.log("Check data input", data);
+    data.forEach((e: any) => {
+      result.push({ name: e[type], value: e.filmList.length });
+    });
+    return result;
+  };
+
+  const groupBy = (data: any) => {
+    return _(data)
+      .groupBy((x) => x.age)
+      .map((value, key) => {
+        let arrayFilm: any = [];
+        value.forEach((item) => {
+          arrayFilm.push(item.film);
+        });
+        return {
+          age: key,
+          filmList: arrayFilm,
+        };
+      })
+      .value();
+  };
+
   useEffect(() => {
     fetchUserData();
     fetchPaymentData();
+    fetchFilmAndGenre();
   }, []);
 
   return (
@@ -85,7 +103,6 @@ export default function AdminDashboard() {
         <p className="text-sm text-muted-foreground">Tổng quan thống kê hệ thống</p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Tổng số người dùng"
@@ -104,24 +121,19 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Tổng số phim"
-          value={stats.filmsByGenre.reduce((sum, item) => sum + item.value, 0).toLocaleString()}
+          value={filmsByGenre.reduce((sum, item) => sum + item.value, 0).toLocaleString()}
           icon={Film}
           description="Phim có sẵn trên nền tảng"
         />
       </div>
 
-      {/* Pie Charts */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <FilmPieChart title="Phim theo thể loại" description="Phân bổ phim theo thể loại" data={stats.filmsByGenre} />
-        <FilmPieChart
-          title="Phim theo độ tuổi"
-          description="Phân loại phim theo độ tuổi"
-          data={stats.filmsByAgeRating}
-        />
+        <FilmPieChart title="Phim theo thể loại" description="Phân bổ phim theo thể loại" data={filmsByGenre} />
+        <FilmPieChart title="Phim theo độ tuổi" description="Phân loại phim theo độ tuổi" data={filmsByAgeRating} />
         <FilmPieChart
           title="Phim theo quốc gia"
           description="Phân bổ phim theo quốc gia sản xuất"
-          data={stats.filmsByCountry}
+          data={filmsByCountry}
         />
       </div>
     </div>

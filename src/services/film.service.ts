@@ -15,64 +15,69 @@ import {
 } from "@/types/film.type";
 
 const FilmService = {
-  getFilmPagination: (
-    current: number,
-    pageSize: number,
-  ): Promise<IBackendRes<IFilmPagination>> => {
+  getFilmPagination: (current: number, pageSize: number): Promise<IBackendRes<IFilmPagination>> => {
     return publicAxios.get(`/films/admin`, {
       params: {
         current,
         pageSize,
-      }
-    })
+      },
+    });
   },
-  getFilmDeletedPagination: (
-    current: number,
-    pageSize: number,
-  ): Promise<IBackendRes<IFilmDeletedPagination>> => {
+  getFilmDeletedPagination: (current: number, pageSize: number): Promise<IBackendRes<IFilmDeletedPagination>> => {
     return publicAxios.get(`/films/admin/deleted`, {
       params: {
         current,
         pageSize,
-      }
-    })
+      },
+    });
   },
 
   getFilmDetail: (filmId: string): Promise<IBackendRes<IFilmDetailRes>> => {
-    return publicAxios.get(`/films/${filmId}`)
+    return publicAxios.get(`/films/${filmId}`);
   },
 
   createFilm: (payload: IFilmCreateReq): Promise<IBackendRes<IFilmCreateRes>> => {
-    return privateAxios.post(`/films`, payload)
+    return privateAxios.post(`/films`, payload);
   },
 
   deleteFilm: (filmId: string): Promise<IBackendRes<IFilmDeleteRes>> => {
-    return privateAxios.delete(`/films/${filmId}`)
+    return privateAxios.delete(`/films/${filmId}`);
   },
 
   updateFilm: (filmId: string, payload: Partial<IFilmCreateReq>): Promise<IBackendRes<IFilmCreateRes>> => {
-    return privateAxios.patch(`/films/${filmId}`, payload)
+    return privateAxios.patch(`/films/${filmId}`, payload);
   },
 
   hardDelete: (filmId: string): Promise<IBackendRes<IFilmHardDeleteRes>> => {
-    return privateAxios.delete(`/films/admin/hard_delete/${filmId}`)
+    return privateAxios.delete(`/films/admin/hard_delete/${filmId}`);
   },
 
   restoreFilm: (filmId: string): Promise<IBackendRes<IFilmRestoreRes>> => {
-    return privateAxios.post(`/films/admin/restore/${filmId}`)
+    return privateAxios.post(`/films/admin/restore/${filmId}`);
   },
 
   restoreFilmBulk: (filmIds: string[]): Promise<IBackendRes<IFilmRestoreBulkRes>> => {
-    return privateAxios.patch(`/films/admin/restore_list`, { filmIds })
+    return privateAxios.patch(`/films/admin/restore_list`, { filmIds });
   },
 
   hardDeleteBulk: (filmIds: string[]): Promise<IBackendRes<IFilmHardDeleteBulkRes>> => {
-    return privateAxios.delete(`/films/admin/hard_delete_list`, { data: { filmIds } })
+    return privateAxios.delete(`/films/admin/hard_delete_list`, { data: { filmIds } });
   },
 
   bulkDelete: (filmIds: string[]): Promise<IBackendRes<IFilmHardDeleteBulkRes>> => {
-    return privateAxios.delete(`/films/admin/sort_delete`, { data: { filmIds } })
+    return privateAxios.delete(`/films/admin/sort_delete`, { data: { filmIds } });
   },
-}
+
+  getFilmListByGenreForDashBoard: (): Promise<IBackendRes<any>> => {
+    return publicAxios.get(`/films/list-film-by-genre/chatbot`);
+  },
+
+  getFilmListByCountryForDashBoard: (): Promise<IBackendRes<any>> => {
+    return publicAxios.get(`/films/list-film-by-country/chatbot`);
+  },
+  getFilmListByAgeForDashBoard: (): Promise<IBackendRes<any>> => {
+    return publicAxios.get(`/films/list-film-by-age/dashboard`);
+  },
+};
 
 export default FilmService;
