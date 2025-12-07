@@ -7,34 +7,47 @@ import UserService from "@/services/userService";
 import { useEffect, useState } from "react";
 import PaymentService from "@/services/paymentService";
 import { IPayment } from "@/types/payment.type";
+import ChartService from "@/services/chart.service";
+import { toast } from "sonner";
+
+interface IStats {
+  filmsByGenre: { name: string; value: number }[];
+  filmsByAgeRating: { name: string; value: number }[];
+  filmsByCountry: { name: string; value: number }[];
+}
 
 export default function AdminDashboard() {
   const [totalUsers, setTotalUser] = useState(0);
   const [payments, setPayments] = useState<IPayment[]>([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
 
-  const stats = {
-    filmsByGenre: [
-      { name: "Hành động", value: 45 },
-      { name: "Tâm lý", value: 30 },
-      { name: "Hài", value: 25 },
-      { name: "Kinh dị", value: 20 },
-      { name: "Sci-Fi", value: 15 },
-    ],
-    filmsByAgeRating: [
-      { name: "P - Mọi lứa tuổi", value: 50 },
-      { name: "C13 - Trên 13 tuổi", value: 40 },
-      { name: "C16 - Trên 16 tuổi", value: 30 },
-      { name: "C18 - Trên 18 tuổi", value: 15 },
-    ],
-    filmsByCountry: [
-      { name: "Việt Nam", value: 35 },
-      { name: "Hàn Quốc", value: 40 },
-      { name: "Mỹ", value: 50 },
-      { name: "Nhật Bản", value: 25 },
-      { name: "Trung Quốc", value: 20 },
-    ],
-  };
+  const [stats, setStats] = useState<IStats>({
+    filmsByGenre: [],
+    filmsByAgeRating: [],
+    filmsByCountry: [],
+  })
+  // const stats = {
+  //   filmsByGenre: [
+  //     { name: "Hành động", value: 45 },
+  //     { name: "Tâm lý", value: 30 },
+  //     { name: "Hài", value: 25 },
+  //     { name: "Kinh dị", value: 20 },
+  //     { name: "Sci-Fi", value: 15 },
+  //   ],
+  //   filmsByAgeRating: [
+  //     { name: "P - Mọi lứa tuổi", value: 50 },
+  //     { name: "C13 - Trên 13 tuổi", value: 40 },
+  //     { name: "C16 - Trên 16 tuổi", value: 30 },
+  //     { name: "C18 - Trên 18 tuổi", value: 15 },
+  //   ],
+  //   filmsByCountry: [
+  //     { name: "Việt Nam", value: 35 },
+  //     { name: "Hàn Quốc", value: 40 },
+  //     { name: "Mỹ", value: 50 },
+  //     { name: "Nhật Bản", value: 25 },
+  //     { name: "Trung Quốc", value: 20 },
+  //   ],
+  // };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -73,9 +86,53 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchDataChartGenre = async () => {
+    try {
+      const res = await ChartService.getDataGenre();
+      if (res.EC === 0 && res.data && res.data.result) {
+        const result = res.data.result;
+        setStats((prev) => ({
+          ...prev,
+          filmsByGenre: result,
+        }));
+      } else {
+        toast.error(res?.EM || "Lỗi khi tải dữ liệu chart genre");
+      }
+    } catch (error) {
+      console.log("Error form fetch data chart genre: ", error)
+    }
+  }
+
+  const fetchDataChartCommon = async (type: string) => {
+    try {
+      const res = await ChartService.getDataCommon(type);
+      if (res.EC === 0 && res.data && res.data.result) {
+        const result = res.data.result;
+        if (type === "age") {
+          setStats((prev) => ({
+            ...prev,
+            filmsByAgeRating: result,
+          }));
+        } else if (type === "country") {
+          setStats((prev) => ({
+            ...prev,
+            filmsByCountry: result,
+          }));
+        }
+      } else {
+        toast.error(res?.EM || "Lỗi khi tải dữ liệu chart genre");
+      }
+    } catch (error) {
+      console.log(`Error form fetch data chart common: ${type} - `, error)
+    }
+  }
+
   useEffect(() => {
     fetchUserData();
     fetchPaymentData();
+    fetchDataChartGenre();
+    fetchDataChartCommon("age");
+    fetchDataChartCommon("country");
   }, []);
 
   return (
