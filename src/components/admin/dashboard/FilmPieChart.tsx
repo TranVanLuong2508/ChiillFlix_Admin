@@ -17,11 +17,14 @@ interface FilmPieChartProps {
 }
 
 const DEFAULT_COLORS = [
-    "hsl(217, 91%, 60%)",
-    "hsl(217, 91%, 55%)",
-    "hsl(217, 91%, 50%)",
-    "hsl(217, 91%, 45%)",
-    "hsl(217, 91%, 40%)",
+    "hsl(200, 90%, 55%)",
+    "hsl(215, 85%, 50%)",
+    "hsl(190, 85%, 55%)",
+    "hsl(175, 70%, 45%)",
+    "hsl(155, 70%, 45%)",
+    "hsl(260, 70%, 60%)",
+    "hsl(240, 65%, 55%)",
+    "hsl(225, 70%, 60%)",
 ];
 
 export function FilmPieChart({

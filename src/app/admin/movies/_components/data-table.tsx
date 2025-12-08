@@ -147,7 +147,7 @@ export function DataTable<TData, TValue>({
                 onClick={() => router.push("/admin/movies/create")}
               >
                 <CirclePlus />
-                <span>Tạo mới</span>
+                <span>Thêm mới</span>
               </Button>
             </div>
             <Button

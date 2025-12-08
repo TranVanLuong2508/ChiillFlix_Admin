@@ -85,7 +85,6 @@ export const FormUploadVideo = ({ field, onAddToQueue }: FormUploadVideoProps) =
                   setPlaybackUrl={setPlaybackUrl}
                   onPlaybackUrlChange={setPlaybackUrl}
                   handleAddToQueue={handleAddToQueue}
-                  disabled={!!playbackUrl}
                 />
               </AccordionContent>
             </AccordionItem>
