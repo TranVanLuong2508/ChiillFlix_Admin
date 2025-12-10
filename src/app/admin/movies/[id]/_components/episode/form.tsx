@@ -58,11 +58,11 @@ export const FormEpisode = ({
       thumbUrl: "",
     },
   });
+
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
     } else {
-      console.log("Check initdata: ", initialData)
       form.reset({
         title: "",
         duration: 0,

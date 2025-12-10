@@ -9,11 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Copy, MoreHorizontal, SquarePen, Trash2 } from "lucide-react"
+import { Copy, MoreHorizontal } from "lucide-react"
 import { IEpisodeColumn } from "@/types/episode.type"
 import { useEffect, useState } from "react";
 import z from "zod";
-import { formPartSchema } from "@/lib/validators/part";
 import { formEpisodeSchema } from "@/lib/validators/episode";
 import { usePartStore } from "@/stores/part.store";
 import { FormEpisode } from "./form";
@@ -34,8 +33,8 @@ export const Actions = ({ row }: ActionsProps) => {
     if (row) {
       const data: z.infer<typeof formEpisodeSchema> = {
         title: row.title,
-        episodeNumber: row.episodeNumber.toString(),
-        duration: row.duration.toString(),
+        // episodeNumber: row.episodeNumber,
+        duration: row.duration,
         videoUrl: row.videoUrl,
         thumbUrl: row.thumbUrl,
       }

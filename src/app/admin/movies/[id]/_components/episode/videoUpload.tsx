@@ -23,6 +23,7 @@ export const VideoUpload = ({
   handleAddToQueue,
   disabled = false
 }: VideoUploadProps) => {
+
   const checkFileSize = (file: File, maxGB = 5) => {
     const sizeInGB = file.size / 1024 / 1024 / 1024;
     return sizeInGB > maxGB;

@@ -92,40 +92,6 @@ export const UploadQueue = ({ onRestore }: UploadQueueProps) => {
                     </div>
                   </div>
 
-                  {/* <div className="flex items-center gap-3">
-                    <div className="flex-1">
-                      {upload.status === 'uploading' && (
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div
-                            className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                            style={{ width: `${upload.progress}%` }}
-                          />
-                        </div>
-                      )}
-                      {upload.status === 'processing' && (
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 animate-pulse">
-                          <div className="bg-yellow-500 h-1.5 rounded-full w-full" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="text-xs font-medium min-w-[80px] text-right">
-                      {upload.status === 'pending' && <span className="text-gray-500">Pending</span>}
-                      {upload.status === 'uploading' && <span className="text-blue-600">{upload.progress}%</span>}
-                      {upload.status === 'processing' && <span className="text-yellow-600">Processing</span>}
-                      {upload.status === 'completed' && (
-                        <Button
-                          variant="link"
-                          className="h-auto p-0 text-green-600 font-semibold"
-                          onClick={() => onRestore(upload.id)}
-                        >
-                          Hoàn tất
-                        </Button>
-                      )}
-                      {upload.status === 'error' && <span className="text-red-600">Error</span>}
-                    </div>
-                  </div> */}
-
                   {upload.error && (
                     <p className="text-xs text-red-500 mt-1">{upload.error}</p>
                   )}
