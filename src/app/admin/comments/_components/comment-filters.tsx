@@ -98,7 +98,6 @@ export function CommentFiltersComponent({
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="bg-white rounded-lg border shadow-sm">
-                {/* Header - Always visible */}
                 <CollapsibleTrigger asChild>
                     <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors">
                         <div className="flex items-center gap-2">
